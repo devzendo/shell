@@ -81,6 +81,44 @@ public class TestPluginMethodScanner {
     }
 
     // TODO all the above, but with iterator return types
+    private static class IteratorReturnNoArgs extends AbstractShellPlugin {
+        @SuppressWarnings("unused")
+        public Iterator<Object> funk() {
+            // do nothing
+            return null;
+        }
+    }
+    
+    @Test
+    public void iteratorReturnNoArgsOk() {
+        gotFunk(scanner.scanPluginMethods(new IteratorReturnNoArgs()));
+    }
+
+    private static class IteratorReturnListArgs extends AbstractShellPlugin {
+        @SuppressWarnings("unused")
+        public Iterator<Object> funk(final List<String> args) {
+            // do nothing
+            return null;
+        }
+    }
+    
+    @Test
+    public void iteratorReturnStringArgsOk() {
+        gotFunk(scanner.scanPluginMethods(new IteratorReturnListArgs()));
+    }
+
+    private static class IteratorReturnListIteratorArgs extends AbstractShellPlugin {
+        @SuppressWarnings("unused")
+        public Iterator<Object> funk(final List<String> args, final Iterator<Object> input) {
+            // do nothing
+            return null;
+        }
+    }
+    
+    @Test
+    public void iteratorReturnListIteratorArgsOk() {
+        gotFunk(scanner.scanPluginMethods(new IteratorReturnListIteratorArgs()));
+    }
 
     private void gotFunk(final Map<String, Method> map) {
         assertThat(map.size(), equalTo(1));
