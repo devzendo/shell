@@ -32,18 +32,20 @@ public class PluginMethodScanner {
         final Method[] methods = shellPlugin.getClass().getMethods();
         LOGGER.debug("Scanning " + methods.length + " method(s) from class " + shellPlugin.getClass().getSimpleName());
         for (final Method method : methods) {
+            // Ignore Object methods
             final String name = method.getName();
             if (name.equals("processCommandLine") || name.equals("notify") ||
                     name.equals("notifyAll") || name.equals("wait")) {
                 continue;
             }
+            
             LOGGER.debug("Considering method " + method);
             final Class<?> returnType = method.getReturnType();
             final Class<?>[] parameterTypes = method.getParameterTypes();
             if ((voidness(returnType) || iterator(returnType)) && 
-                (noParameters(parameterTypes) 
-                   || list(parameterTypes[0])
-                   || (list(parameterTypes[0]) && iterator(parameterTypes[1])))) {
+                   ((parameterTypes.length == 0) || 
+                    (parameterTypes.length == 1 && list(parameterTypes[0])) ||
+                    (parameterTypes.length == 2 && list(parameterTypes[0]) && iterator(parameterTypes[1])))) {
                 LOGGER.debug("Registering method " + method);
                 returnMethods.put(name, method);
             }
@@ -54,17 +56,12 @@ public class PluginMethodScanner {
     private boolean voidness(final Class<?> klass) {
         return klass.toString().equals("void"); // no other way to detect this? 
     }
+
     private boolean iterator(final Class<?> klass) {
-        final boolean itness = klass.isAssignableFrom(Iterator.class);
-        LOGGER.debug("iteratorness of " + klass + " is " + itness);
-        return itness;
+        return klass.isAssignableFrom(Iterator.class);
     }
 
     private boolean list(final Class<?> klass) {
         return klass.isAssignableFrom(List.class);
-    }
-
-    private boolean noParameters(final Class<?>[] parameterTypes) {
-        return parameterTypes.length == 0;
     }
 }
