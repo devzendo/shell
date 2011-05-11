@@ -45,7 +45,7 @@ public class TestPluginLoader {
             pluginLoader.loadPluginsFromClasspath("org/devzendo/shell/testpluginloader-nonexistant-plugins.properties");
             fail("Should have thrown ShellPluginException when loading a plugin that does not exist");
         } catch (final ShellPluginException e) {
-            assertThat(e.getMessage(), equalTo("Failure loading plugins: Cannot load class 'org.devzendo.shell.NonexistantTestPlugin: ClassNotFoundException: org.devzendo.shell.NonexistantTestPlugin"));
+            assertThat(e.getMessage(), equalTo("Failure loading plugins: Cannot load class 'org.devzendo.shell.NonexistantTestPlugin': ClassNotFoundException: org.devzendo.shell.NonexistantTestPlugin"));
         }
     }
 
@@ -58,4 +58,15 @@ public class TestPluginLoader {
             assertThat(e.getMessage(), equalTo("Failure loading plugins: Cannot load a Plugin from null or empty class name"));
         }
     }
+
+    @Test
+    public void doesNotLoadNonShellPlugin() {
+        try {
+            pluginLoader.loadPluginsFromClasspath("org/devzendo/shell/testpluginloader-notshellplugin.properties");
+            fail("Should have thrown ShellPluginException when loading a class that is not a ShellPlugin");
+        } catch (final ShellPluginException e) {
+            assertThat(e.getMessage(), equalTo("Failure loading plugins: Cannot load class 'org.devzendo.shell.NotAShellPlugin': ClassCastException: org.devzendo.shell.NotAShellPlugin cannot be cast to org.devzendo.shell.ShellPlugin"));
+        }
+    }
+
 }

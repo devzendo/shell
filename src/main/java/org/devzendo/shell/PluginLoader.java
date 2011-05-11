@@ -96,7 +96,7 @@ public class PluginLoader {
             final Class<ShellPlugin> klass = (Class<ShellPlugin>) Class.forName(pluginClassName);
             return klass.newInstance();
         } catch (final Exception e) {
-            final String warning = "Cannot load class '" + pluginClassName + ": " + e.getClass().getSimpleName() + ": " + e.getMessage();
+            final String warning = "Cannot load class '" + pluginClassName + "': " + e.getClass().getSimpleName() + ": " + e.getMessage();
             LOGGER.warn(warning);
             throw new IOException(warning);
         }
