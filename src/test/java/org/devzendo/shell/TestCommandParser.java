@@ -24,7 +24,7 @@ import org.junit.Test;
 
 
 public class TestCommandParser {
-    final CommandParserS parser = new CommandParserS();
+    final CommandParser parser = new CommandParser();
 
     @Test
     public void nullCommands() {

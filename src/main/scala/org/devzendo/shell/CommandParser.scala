@@ -18,7 +18,7 @@ package org.devzendo.shell
 
 import collection.JavaConversions._
 
-class CommandParserS {
+class CommandParser {
     def parse(inputLine: String): java.util.List[Command] = {
         var commands = new java.util.ArrayList[Command]()
         def sanitizedInput = nullToEmpty(inputLine).trim()
