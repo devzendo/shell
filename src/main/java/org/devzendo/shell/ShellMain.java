@@ -64,7 +64,7 @@ public class ShellMain {
                     new InternalShellPlugin()
                 );
             
-            final CommandParser parser = new CommandParser();
+            final CommandParserS parser = new CommandParserS();
             final CommandHandlerWirer wirer = new CommandHandlerWirer(commandRegistry);
             final BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
             try {
