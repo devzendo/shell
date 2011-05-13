@@ -25,15 +25,12 @@ import org.apache.log4j.Logger;
 import org.devzendo.commoncode.logging.Logging;
 
 public class ShellMain {
-
     private static final String SHELLPLUGIN_PROPERTIES = "shellplugin.properties";
-
     private static final Logger LOGGER = Logger.getLogger(ShellMain.class);
 
     public boolean quit;
 
     private final List<String> mArgList;
-
     private final PluginRegistrar mPluginRegistrar;
 
     public ShellMain(final List<String> argList) {
@@ -67,6 +64,8 @@ public class ShellMain {
                     new InternalShellPlugin()
                 );
             
+            final CommandParser parser = new CommandParser();
+            final CommandHandlerWirer wirer = new CommandHandlerWirer(commandRegistry);
             final BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
             try {
                 while (!quit) {
@@ -74,6 +73,9 @@ public class ShellMain {
                     System.out.flush();
                     final String input = br.readLine();
                     LOGGER.info("[" + input + "]");
+                    final List<Command> commands = parser.parse(input.trim());
+                    final List<CommandHandler> executors = wirer.wire(commands);
+                    // not sure how to execute at the moment...
                 }
             } catch (final IOException ioe) {
                 LOGGER.error(ioe.getMessage());

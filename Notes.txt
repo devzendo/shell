@@ -1,0 +1,28 @@
+command [arg1 .. argN]
+
+command1 [args] | command2 [args]               < iterator piping
+
+  first command receives empty-iterator, commands in the middle of the
+  pipeline receive their previous command's output iterator, command at the
+  end receives a stdout-output-iterator. each command is executed using a
+  shellplugin-command-execution-command which looks through the PluginRegistry
+  for methods to execute
+
+command "quotes bind | a string"                < quoting
+
+some internal commands and syntactic sugar
+
+command [args] > variable
+  same as command [args] | varstore variable
+  input iterator to varstore is stored as variable in the variable store.
+  output iterator to varstore is null-iterator, which ignores all input.
+  
+args:
+  numbers
+  strings
+  variable references
+                                              _ buffer-it2 stored in foo var
+execution mechanics:                         /
+      command1      command2     varstore foo
+     /        \    /       \     /          \
+empty-it     buffer-it1   buffer-it2        null-it

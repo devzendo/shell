@@ -15,11 +15,17 @@
  */
 package org.devzendo.shell;
 
+import java.util.ArrayList;
 import java.util.List;
 
-import org.devzendo.shell.pipe.InputPipe;
-import org.devzendo.shell.pipe.OutputPipe;
+public class CommandHandlerWirer {
+    private final CommandRegistry mCommandRegistry;
 
-public interface CommandHandler {
-    OutputPipe processCommand(List<Object> args, InputPipe inputObjects);
+    public CommandHandlerWirer(final CommandRegistry commandRegistry) {
+        mCommandRegistry = commandRegistry;
+    }
+
+    public List<CommandHandler> wire(final List<Command> commands) {
+        return new ArrayList<CommandHandler>();
+    }
 }

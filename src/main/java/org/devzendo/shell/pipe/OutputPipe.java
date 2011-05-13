@@ -13,13 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.devzendo.shell;
+package org.devzendo.shell.pipe;
 
-import java.util.List;
-
-import org.devzendo.shell.pipe.InputPipe;
-import org.devzendo.shell.pipe.OutputPipe;
-
-public interface CommandHandler {
-    OutputPipe processCommand(List<Object> args, InputPipe inputObjects);
+public interface OutputPipe {
+    void push(Object object);
 }

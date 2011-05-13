@@ -15,11 +15,14 @@
  */
 package org.devzendo.shell;
 
+import java.util.ArrayList;
 import java.util.List;
 
-import org.devzendo.shell.pipe.InputPipe;
-import org.devzendo.shell.pipe.OutputPipe;
 
-public interface CommandHandler {
-    OutputPipe processCommand(List<Object> args, InputPipe inputObjects);
+public class CommandParser {
+
+    public List<Command> parse(final String inputLine) {
+        final ArrayList<Command> cmds = new ArrayList<Command>();
+        return cmds;
+    }
 }
