@@ -16,21 +16,70 @@
  
 package org.devzendo.shell
 
-import collection.JavaConversions._
+import java.util.ArrayList
+import scala.collection.JavaConversions._
+import scala.util.parsing.combinator._
+
+case class VariableReference(val variableName: String)
 
 class CommandParser {
-    def parse(inputLine: String): java.util.List[Command] = {
-        var commands = new java.util.ArrayList[Command]()
+    
+    @throws(classOf[CommandParserException])
+    def parse(inputLine: String): CommandPipeline = {
         def sanitizedInput = nullToEmpty(inputLine).trim()
         if (sanitizedInput.size > 0) {
-            var commandTexts = sanitizedInput.split("\\|").toList
-            commands.addAll(commandTexts map (new Command(_)))
+            val ccp = new CommandCombinatorParser()
+            val parserOutput = ccp.parsePipeline(sanitizedInput)
+            parserOutput match {
+                case ccp.Success(r, _) => return r
+                case x => throw new CommandParserException(x.toString())
+            }
         }
-//        println("input '" + sanitizedInput + "' num is " + commands.size)
-        return commands
+        return new CommandPipeline()
     }
     
     private def nullToEmpty(input: String): String = {
         if (input == null) "" else input
+    }
+    
+    private class CommandCombinatorParser extends JavaTokenParsers {
+        def pipeline: Parser[CommandPipeline] = (
+                opt(">" ~> variable) // not happy with this syntax, but it avoids ambiguity
+              ~ repsep(command, "|") 
+              ~ opt(">" ~> variable)
+              ) ^^ {
+            case from ~ commandList ~ to =>
+                val pipeline = new CommandPipeline()
+                if (!from.isEmpty) {
+                    pipeline.setInputVariable(from.get)
+                }
+                if (!to.isEmpty) {
+                    pipeline.setOutputVariable(to.get)
+                }
+                pipeline.addCommands(commandList)
+                pipeline
+        }
+        
+        def command: Parser[Command] = ident ~ rep(argument) ^^ {
+            case name ~ argumentList => 
+                val argumentJavaList = new java.util.ArrayList[Object]
+                argumentList.foreach (x => argumentJavaList.add(x.asInstanceOf[Object]))
+                new Command(name, argumentJavaList)
+        }
+        
+        def variable: Parser[VariableReference] = ident ^^ (x => new VariableReference(x.toString))
+        
+        def argument: Parser[Any] = (
+                "true" ^^ (x => true)
+              | "false" ^^ (x => false)
+              | floatingPointNumber ^^ (_.toDouble)
+              | wholeNumber ^^ (_.toInt)
+              | variable 
+              | stringLiteral ^^ (x => x.substring(1, x.length - 1))
+              )
+        
+        def parsePipeline(input: String) = {
+            parseAll(pipeline, input)
+        }
     }
 }

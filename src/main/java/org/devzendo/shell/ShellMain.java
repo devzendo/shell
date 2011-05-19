@@ -73,9 +73,13 @@ public class ShellMain {
                     System.out.flush();
                     final String input = br.readLine();
                     LOGGER.info("[" + input + "]");
-                    final List<Command> commands = parser.parse(input.trim());
-                    final List<CommandHandler> executors = wirer.wire(commands);
-                    // not sure how to execute at the moment...
+                    try {
+                        final CommandPipeline commandPipeline = parser.parse(input.trim());
+                        final List<CommandHandler> executors = wirer.wire(commandPipeline);
+                        // not sure how to execute at the moment...
+                    } catch (CommandParserException cpe) {
+                        LOGGER.warn(cpe.getMessage());
+                    }
                 }
             } catch (final IOException ioe) {
                 LOGGER.error(ioe.getMessage());

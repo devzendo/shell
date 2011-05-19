@@ -15,17 +15,15 @@
  */
 package org.devzendo.shell;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 public class Command {
     private final String mName;
-    private final ArrayList<Object> mArgs;
+    private final List<Object> mArgs;
 
-    public Command(final String name, final Object ... args) {
+    public Command(final String name, final List<Object> args) {
         mName = name;
-        mArgs = new ArrayList<Object>(Arrays.asList(args));
+        mArgs = args;
     }
 
     public String getName() {

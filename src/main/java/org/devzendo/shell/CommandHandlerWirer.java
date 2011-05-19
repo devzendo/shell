@@ -25,7 +25,7 @@ public class CommandHandlerWirer {
         mCommandRegistry = commandRegistry;
     }
 
-    public List<CommandHandler> wire(final List<Command> commands) {
+    public List<CommandHandler> wire(final CommandPipeline commands) {
         return new ArrayList<CommandHandler>();
     }
 }
