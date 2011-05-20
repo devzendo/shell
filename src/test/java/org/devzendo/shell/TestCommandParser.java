@@ -106,9 +106,32 @@ public class TestCommandParser {
         assertThat(command3.getName(), equalTo("cmd3"));
         final List<Object> cmd3args = command3.getArgs();
         assertThat(cmd3args.size(), equalTo(3));
-        assertThat(((Double)cmd3args.get(0)), equalTo(5.0)); // Should be Integer
+        assertThat(((Integer)cmd3args.get(0)), equalTo(5));
         assertThat(((Boolean)cmd3args.get(1)), equalTo(true));
         assertThat(((Boolean)cmd3args.get(2)), equalTo(false));
+    }
+
+    private void dumpArgs(final List<Object> args) {
+        for (int i = 0; i < args.size(); i++) {
+            final Object arg = args.get(i);
+            System.out.println("#" + i + " [" + arg.getClass().getSimpleName() + "] = '" + arg + "' ");
+        }
+    }
+
+    @Test
+    public void parsingIntegerArguments() throws CommandParserException {
+        final CommandPipeline pipeline = parser.parse(
+            "cmd1 3 2.5 5");
+
+        final List<Command> cmds = pipeline.getCommands();
+        assertThat(cmds.size(), equalTo(1));
+        
+        final Command command1 = cmds.get(0);
+        final List<Object> cmd1args = command1.getArgs();
+        assertThat(cmd1args.size(), equalTo(3));
+        assertThat(((Integer)cmd1args.get(0)), equalTo(3));
+        assertThat(((Double)cmd1args.get(1)), closeTo(2.5, 0.1));
+        assertThat(((Integer)cmd1args.get(2)), equalTo(5));
     }
 
     @Test

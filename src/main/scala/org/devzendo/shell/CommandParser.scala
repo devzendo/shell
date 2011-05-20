@@ -69,11 +69,13 @@ class CommandParser {
         
         def variable: Parser[VariableReference] = ident ^^ (x => new VariableReference(x.toString))
         
+        def wholeIntegerNumber: Parser[String] = """-?\d+(?!\.)""".r
+        
         def argument: Parser[Any] = (
                 "true" ^^ (x => true)
               | "false" ^^ (x => false)
+              | wholeIntegerNumber ^^ (_.toInt)
               | floatingPointNumber ^^ (_.toDouble)
-              | wholeNumber ^^ (_.toInt)
               | variable 
               | stringLiteral ^^ (x => x.substring(1, x.length - 1))
               )
