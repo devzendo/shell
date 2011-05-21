@@ -55,12 +55,28 @@ public class TestCommandParser {
 
     @Test
     public void takeFromVariable() throws CommandParserException {
-        final CommandPipeline pipeline = parser.parse("> var foo ");
+        final CommandPipeline pipeline = parser.parse(" foo < var ");
         final List<Command> cmds = pipeline.getCommands();
         assertThat(cmds.size(), equalTo(1));
         final Command cmd = cmds.get(0);
         assertThat(cmd.getName(), equalTo("foo"));
         assertNoArgs(cmd);
+        assertThat(pipeline.getInputVariable().variableName(), equalTo("var"));
+        assertThat(pipeline.getOutputVariable(), nullValue());
+    }
+
+    @Test
+    public void takeFromVariableAndPipe() throws CommandParserException {
+        final CommandPipeline pipeline = parser.parse(" foo < var | bar");
+        final List<Command> cmds = pipeline.getCommands();
+        assertThat(cmds.size(), equalTo(2));
+        final Command foo = cmds.get(0);
+        assertThat(foo.getName(), equalTo("foo"));
+        assertNoArgs(foo);
+        final Command bar = cmds.get(1);
+        assertThat(bar.getName(), equalTo("bar"));
+        assertNoArgs(bar);
+
         assertThat(pipeline.getInputVariable().variableName(), equalTo("var"));
         assertThat(pipeline.getOutputVariable(), nullValue());
     }
@@ -80,7 +96,7 @@ public class TestCommandParser {
     @Test
     public void complexCommand() throws CommandParserException {
         final CommandPipeline pipeline = parser.parse(
-            "> invar cmd1 2.0 \"string 'hello' \" 2.3e5 6.8 ident | cmd2 | cmd3 5 true false > outvar");
+            "cmd1 2.0 \"string 'hello' \" 2.3e5 6.8 ident < invar| cmd2 | cmd3 5 true false > outvar");
 
         assertThat(pipeline.getInputVariable().variableName(), equalTo("invar"));
         assertThat(pipeline.getOutputVariable().variableName(), equalTo("outvar"));

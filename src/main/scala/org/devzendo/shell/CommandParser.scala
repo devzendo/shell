@@ -44,19 +44,22 @@ class CommandParser {
     
     private class CommandCombinatorParser extends JavaTokenParsers {
         def pipeline: Parser[CommandPipeline] = (
-                opt(">" ~> variable) // not happy with this syntax, but it avoids ambiguity
-              ~ repsep(command, "|") 
+                command ~ opt("<" ~> variable)
+              ~ opt("|" ~> repsep(command, "|")) 
               ~ opt(">" ~> variable)
               ) ^^ {
-            case from ~ commandList ~ to =>
+            case firstCommand ~ from ~ restCommandList ~ to =>
                 val pipeline = new CommandPipeline()
+                pipeline.addCommand(firstCommand)
                 if (!from.isEmpty) {
                     pipeline.setInputVariable(from.get)
                 }
                 if (!to.isEmpty) {
                     pipeline.setOutputVariable(to.get)
                 }
-                pipeline.addCommands(commandList)
+                if (!restCommandList.isEmpty) {
+                    pipeline.addCommands(restCommandList.get)
+                }
                 pipeline
         }
         

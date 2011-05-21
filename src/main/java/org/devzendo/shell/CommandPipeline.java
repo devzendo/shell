@@ -50,4 +50,8 @@ public final class CommandPipeline {
             commands.add(command);
         }
     }
+
+    public void addCommand(final Command commandToAdd) {
+        commands.add(commandToAdd);
+    }
 }
