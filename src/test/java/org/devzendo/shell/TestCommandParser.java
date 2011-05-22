@@ -127,6 +127,7 @@ public class TestCommandParser {
         assertThat(((Boolean)cmd3args.get(2)), equalTo(false));
     }
 
+    @SuppressWarnings("unused")
     private void dumpArgs(final List<Object> args) {
         for (int i = 0; i < args.size(); i++) {
             final Object arg = args.get(i);
