@@ -15,19 +15,5 @@
  */
 package org.devzendo.shell;
 
-import java.util.ArrayList;
-import java.util.List;
-
-public class CommandHandlerWirer {
-    private final CommandRegistry mCommandRegistry;
-    private final VariableRegistry mVariableRegistry;
-
-    public CommandHandlerWirer(final CommandRegistry commandRegistry, final VariableRegistry variableRegistry) {
-        mCommandRegistry = commandRegistry;
-        mVariableRegistry = variableRegistry;
-    }
-
-    public List<CommandHandler> wire(final CommandPipeline commands) {
-        return new ArrayList<CommandHandler>();
-    }
+public class VariableRegistry {
 }

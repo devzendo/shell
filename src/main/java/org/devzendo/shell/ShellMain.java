@@ -60,23 +60,26 @@ public class ShellMain {
         }
         
         try {
+            final VariableRegistry variableRegistry = new VariableRegistry();
             final CommandRegistry commandRegistry = mPluginRegistrar.loadAndRegisterPluginMethods(
                     new InternalShellPlugin()
                 );
             
             final CommandParser parser = new CommandParser();
-            final CommandHandlerWirer wirer = new CommandHandlerWirer(commandRegistry);
+            final CommandHandlerWirer wirer = new CommandHandlerWirer(commandRegistry, variableRegistry);
             final BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
             try {
                 while (!quit) {
+                    // may switch to jline here...
                     System.out.print("] ");
                     System.out.flush();
                     final String input = br.readLine();
                     LOGGER.info("[" + input + "]");
                     try {
                         final CommandPipeline commandPipeline = parser.parse(input.trim());
-                        final List<CommandHandler> executors = wirer.wire(commandPipeline);
-                        // not sure how to execute at the moment...
+                        final List<CommandHandler> commandHandlers = wirer.wire(commandPipeline);
+                        final ExecutionContainer executionContainer = new ExecutionContainer(commandHandlers);
+                        executionContainer.execute();
                     } catch (CommandParserException cpe) {
                         LOGGER.warn(cpe.getMessage());
                     }

@@ -20,6 +20,27 @@ import java.util.List;
 import org.devzendo.shell.pipe.InputPipe;
 import org.devzendo.shell.pipe.OutputPipe;
 
-public interface CommandHandler {
-    OutputPipe processCommand(List<Object> args, InputPipe inputObjects);
+public final class CommandHandler {
+    final InputPipe mInputPipe;
+    final OutputPipe mOutputPipe;
+    final List<Object> mArgs;
+    Thread mThread;
+    
+    public CommandHandler(List<Object> args, InputPipe inputPipe, OutputPipe outputPipe) {
+        mArgs = args;
+        mInputPipe = inputPipe;
+        mOutputPipe = outputPipe;
+    }
+
+    public final InputPipe getInputPipe() {
+        return mInputPipe;
+    }
+
+    public final OutputPipe getOutputPipe() {
+        return mOutputPipe;
+    }
+
+    public final List<Object> getArgs() {
+        return mArgs;
+    }
 }

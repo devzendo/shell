@@ -15,19 +15,18 @@
  */
 package org.devzendo.shell;
 
-import java.util.ArrayList;
 import java.util.List;
 
-public class CommandHandlerWirer {
-    private final CommandRegistry mCommandRegistry;
-    private final VariableRegistry mVariableRegistry;
+public class ExecutionContainer {
 
-    public CommandHandlerWirer(final CommandRegistry commandRegistry, final VariableRegistry variableRegistry) {
-        mCommandRegistry = commandRegistry;
-        mVariableRegistry = variableRegistry;
+    private final List<CommandHandler> mCommandHandlers;
+
+    public ExecutionContainer(List<CommandHandler> commandHandlers) {
+        mCommandHandlers = commandHandlers;
     }
 
-    public List<CommandHandler> wire(final CommandPipeline commands) {
-        return new ArrayList<CommandHandler>();
+    public void execute() {
+        // TODO Auto-generated method stub
+        
     }
 }
