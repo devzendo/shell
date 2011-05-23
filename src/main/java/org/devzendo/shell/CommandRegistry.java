@@ -15,15 +15,60 @@
  */
 package org.devzendo.shell;
 
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.HashMap;
+import java.util.Map;
 
 public class CommandRegistry {
-    public void registerCommand(final String name, final ShellPlugin plugin, final Method method) {
-        // TODO Auto-generated method stub
+    private class PluginMethod {
+        private final ShellPlugin mShellPlugin;
+        private final Method mMethod;
+
+        public PluginMethod(final ShellPlugin plugin, final Method method) {
+            mShellPlugin = plugin;
+            mMethod = method;
+        }
+
+        public final ShellPlugin getShellPlugin() {
+            return mShellPlugin;
+        }
+
+        public final Method getMethod() {
+            return mMethod;
+        }
+    }
+    private final Map<String, PluginMethod> nameToPluginMethod = new HashMap<String, PluginMethod>();
+    
+    public void registerCommand(final String name, final ShellPlugin plugin, final Method method) throws DuplicateCommandException {
+        final PluginMethod pluginMethod = nameToPluginMethod.get(name);
+        if (pluginMethod != null) {
+            throw new DuplicateCommandException("Command '" + name + "' from plugin '"
+                + plugin.getName() + "' is duplicated; initially declared in plugin '" 
+                + pluginMethod.getShellPlugin().getName() + "'");
+
+        }
+        nameToPluginMethod.put(name, new PluginMethod(plugin, method));
     }
 
-    public CommandHandler getHandler(final String name) {
-        // TODO Auto-generated method stub
-        return null;
+    public CommandHandler getHandler(final String name) throws CommandNotFoundException {
+        final PluginMethod pluginMethod = nameToPluginMethod.get(name);
+        if (pluginMethod == null) {
+            throw new CommandNotFoundException("'" + name + "' not found");
+        }
+        return new CommandHandler(name) {
+            @Override
+            public void execute() throws CommandExecutionException {
+                try {
+                    pluginMethod.getMethod().invoke(pluginMethod.getShellPlugin(), getArgs());
+                } catch (final IllegalArgumentException e) {
+                    throw new CommandExecutionException("Illegal arguments: " + e.getMessage());
+                } catch (final IllegalAccessException e) {
+                    throw new CommandExecutionException("Illegal acces: " + e.getMessage());
+                } catch (final InvocationTargetException e) {
+                    throw new CommandExecutionException("Invocation target exception: " + e.getMessage());
+                }
+            }
+        };
     }
 }
