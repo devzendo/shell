@@ -41,7 +41,11 @@ public class PluginRegistrar {
             shellPlugin.processCommandLine(mArgList);
             final Map<String, Method> nameMethodMap = mPluginMethodScanner.scanPluginMethods(shellPlugin);
             for (final Entry<String, Method> entry : nameMethodMap.entrySet()) {
-                mCommandRegistry.registerCommand(entry.getKey(), shellPlugin, entry.getValue());
+                try {
+                    mCommandRegistry.registerCommand(entry.getKey(), shellPlugin, entry.getValue());
+                } catch (DuplicateCommandException e) {
+                    throw new ShellPluginException(e.getMessage());
+                }
             }
         }
         return mCommandRegistry;
