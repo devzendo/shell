@@ -39,4 +39,10 @@ public class VariableRegistry {
             return var;
         }
     }
+
+    public void setVariable(VariableReference varRef, Variable var) {
+        synchronized (vars) {
+            vars.put(varRef.variableName(), var);
+        }        
+    }
 }
