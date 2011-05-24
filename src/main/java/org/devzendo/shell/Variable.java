@@ -17,6 +17,24 @@ package org.devzendo.shell;
 
 import java.util.ArrayList;
 
-@SuppressWarnings("serial")
-public class Variable extends ArrayList<Object> {
+public final class Variable {
+    final ArrayList<Object> mStore = new ArrayList<Object>();
+
+    public int size() {
+        synchronized (mStore) {
+            return mStore.size();
+        }
+    }
+    
+    public void add(final Object obj) {
+        synchronized (mStore) {
+            mStore.add(obj);
+        }
+    }
+    
+    public Object get(int index) {
+        synchronized (mStore) {
+            return mStore.get(index);
+        }
+    }
 }
