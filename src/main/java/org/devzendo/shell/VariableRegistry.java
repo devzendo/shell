@@ -15,5 +15,28 @@
  */
 package org.devzendo.shell;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class VariableRegistry {
+    private Map<String, Variable> vars = new HashMap<String, Variable>();
+    
+    public boolean exists(VariableReference varRef) {
+        synchronized (vars) {
+            return vars.containsKey(varRef.variableName());
+        }
+    }
+
+    public Variable getVariable(VariableReference varRef) {
+        synchronized (vars) {
+            final String varName = varRef.variableName();
+            final Variable var = vars.get(varName);
+            if (var == null) {
+                final Variable newVar = new Variable();
+                vars.put(varName, newVar);
+                return newVar;
+            }
+            return var;
+        }
+    }
 }
