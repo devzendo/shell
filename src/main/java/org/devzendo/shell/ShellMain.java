@@ -80,8 +80,10 @@ public class ShellMain {
                         final List<CommandHandler> commandHandlers = wirer.wire(commandPipeline);
                         final ExecutionContainer executionContainer = new ExecutionContainer(commandHandlers);
                         executionContainer.execute();
-                    } catch (CommandParserException cpe) {
+                    } catch (final CommandParserException cpe) {
                         LOGGER.warn(cpe.getMessage());
+                    } catch (final CommandNotFoundException cnfe) {
+                        LOGGER.warn(cnfe.getMessage());
                     }
                 }
             } catch (final IOException ioe) {

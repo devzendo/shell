@@ -20,16 +20,33 @@ import java.util.List;
 import org.devzendo.shell.pipe.InputPipe;
 import org.devzendo.shell.pipe.OutputPipe;
 
-public final class CommandHandler {
-    final InputPipe mInputPipe;
-    final OutputPipe mOutputPipe;
-    final List<Object> mArgs;
-    Thread mThread;
+public abstract class CommandHandler {
+    private InputPipe mInputPipe;
+    private OutputPipe mOutputPipe;
+    private List<Object> mArgs;
+    private final String mName;
     
-    public CommandHandler(List<Object> args, InputPipe inputPipe, OutputPipe outputPipe) {
-        mArgs = args;
+    /**
+     * @param name the command name that this handler will execute
+     */
+    public CommandHandler(String name) {
+        mName = name;
+    }
+
+    public final String getName() {
+        return mName;
+    }
+
+    public final void setInputPipe(InputPipe inputPipe) {
         mInputPipe = inputPipe;
+    }
+
+    public final void setOutputPipe(OutputPipe outputPipe) {
         mOutputPipe = outputPipe;
+    }
+
+    public final void setArgs(List<Object> args) {
+        mArgs = args;
     }
 
     public final InputPipe getInputPipe() {
@@ -43,4 +60,6 @@ public final class CommandHandler {
     public final List<Object> getArgs() {
         return mArgs;
     }
+    
+    public abstract void execute() throws CommandExecutionException;
 }
