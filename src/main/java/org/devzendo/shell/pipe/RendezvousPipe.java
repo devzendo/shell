@@ -15,6 +15,29 @@
  */
 package org.devzendo.shell.pipe;
 
-public interface OutputPipe extends Pipe {
-    void push(Object object);
+public class RendezvousPipe implements InputPipe, OutputPipe {
+
+    @Override
+    public void setTerminated() {
+        // TODO Auto-generated method stub
+        
+    }
+
+    @Override
+    public void push(Object object) {
+        // TODO Auto-generated method stub
+        
+    }
+
+    @Override
+    public boolean hasNext() {
+        // TODO Auto-generated method stub
+        return false;
+    }
+
+    @Override
+    public Object getNext() {
+        // TODO Auto-generated method stub
+        return null;
+    }
 }

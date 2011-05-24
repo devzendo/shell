@@ -15,6 +15,6 @@
  */
 package org.devzendo.shell.pipe;
 
-public interface OutputPipe extends Pipe {
-    void push(Object object);
+
+public class TestRendezvousPipe {
 }

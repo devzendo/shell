@@ -15,6 +15,24 @@
  */
 package org.devzendo.shell.pipe;
 
-public interface OutputPipe extends Pipe {
-    void push(Object object);
+/**
+ * An input pipe that's immediately empty.
+ * @author matt
+ *
+ */
+public class NullInputPipe implements InputPipe {
+    @Override
+    public boolean hasNext() {
+        return false;
+    }
+
+    @Override
+    public Object getNext() {
+        throw new IllegalStateException("Cannot get the next object from a NullInputPipe");
+    }
+
+    @Override
+    public void setTerminated() {
+        // do nothing
+    }
 }

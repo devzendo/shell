@@ -15,6 +15,24 @@
  */
 package org.devzendo.shell.pipe;
 
-public interface OutputPipe extends Pipe {
-    void push(Object object);
+import org.apache.log4j.Logger;
+
+/**
+ * Outputs to the log, at info level.
+ * @author matt
+ *
+ */
+public class LogInfoOutputPipe implements OutputPipe {
+    private static final Logger LOGGER = Logger
+            .getLogger(LogInfoOutputPipe.class);
+    
+    @Override
+    public void push(Object object) {
+        LOGGER.info(object);
+    }
+    
+    @Override
+    public void setTerminated() {
+        // do nothing        
+    }
 }

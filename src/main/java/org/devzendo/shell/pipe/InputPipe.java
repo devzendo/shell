@@ -15,7 +15,7 @@
  */
 package org.devzendo.shell.pipe;
 
-public interface InputPipe {
+public interface InputPipe extends Pipe {
     boolean hasNext();
     Object getNext();
 }

@@ -15,7 +15,6 @@
  */
 package org.devzendo.shell.pipe;
 
-public interface ObjectPipe {
-    InputPipe getInputPipe();
-    OutputPipe getOutputPipe();
+public interface Pipe {
+    void setTerminated();
 }
