@@ -15,6 +15,8 @@
  */
 package org.devzendo.shell.pipe;
 
+import scala.Option;
+
 /**
  * An input pipe that's immediately empty.
  * @author matt
@@ -22,17 +24,12 @@ package org.devzendo.shell.pipe;
  */
 public class NullInputPipe implements InputPipe {
     @Override
-    public boolean hasNext() {
-        return false;
-    }
-
-    @Override
-    public Object getNext() {
-        throw new IllegalStateException("Cannot get the next object from a NullInputPipe");
-    }
-
-    @Override
     public void setTerminated() {
         // do nothing
+    }
+
+    @Override
+    public Option<Object> next() {
+        return scala.Option.apply(null); // a.k.a. None
     }
 }

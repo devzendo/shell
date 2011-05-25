@@ -17,6 +17,8 @@ package org.devzendo.shell.pipe;
 
 import org.devzendo.shell.Variable;
 
+import scala.Option;
+
 public class VariableInputPipe implements InputPipe {
     private final Variable mVariable;
     private int mIndex;
@@ -27,17 +29,15 @@ public class VariableInputPipe implements InputPipe {
     }
 
     @Override
-    public void setTerminated() {
+    public synchronized void setTerminated() {
         mIndex = mVariable.size();
     }
 
     @Override
-    public boolean hasNext() {
-        return mIndex < mVariable.size();
-    }
-
-    @Override
-    public Object getNext() {
-        return mVariable.get(mIndex++);
+    public synchronized Option<Object> next() {
+        if (mIndex < mVariable.size()) {
+            return scala.Option.apply(mVariable.get(mIndex++));
+        }
+        return scala.Option.apply(null); // a.k.a. None
     }
 }

@@ -15,6 +15,8 @@
  */
 package org.devzendo.shell.pipe;
 
+import scala.Option;
+
 public class RendezvousPipe implements InputPipe, OutputPipe {
 
     @Override
@@ -30,14 +32,7 @@ public class RendezvousPipe implements InputPipe, OutputPipe {
     }
 
     @Override
-    public boolean hasNext() {
-        // TODO Auto-generated method stub
-        return false;
-    }
-
-    @Override
-    public Object getNext() {
-        // TODO Auto-generated method stub
-        return null;
+    public Option<Object> next() {
+        return scala.Option.apply(null); // a.k.a. None
     }
 }

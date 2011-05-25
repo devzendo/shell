@@ -15,12 +15,11 @@
  */
 package org.devzendo.shell.pipe;
 
+import static org.devzendo.shell.pipe.OptionMatcher.isSome;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.equalTo;
 
 import org.devzendo.shell.Variable;
 import org.junit.Test;
-
 
 public class TestVariableInputPipe {
     private Variable mVar = new Variable();
@@ -31,48 +30,26 @@ public class TestVariableInputPipe {
         mVar.add("world");
         
         final VariableInputPipe pipe = new VariableInputPipe(mVar);
-        
-        assertThat(pipe.hasNext(), equalTo(true));
-        assertThat(pipe.getNext().toString(), equalTo("hello"));
-        assertThat(pipe.hasNext(), equalTo(true));
-        assertThat(pipe.getNext().toString(), equalTo("world"));
-        assertThat(pipe.hasNext(), equalTo(false));
+        assertThat(pipe.next(), isSome((Object)"hello"));
+        assertThat(pipe.next(), isSome((Object)"world"));
+        assertThat(pipe.next(), OptionMatcher.isNone());
     }
 
     @Test
     public void variableInputPipeGivesEmptinesOnEmptyVariable() {
         final VariableInputPipe pipe = new VariableInputPipe(mVar);
         
-        assertThat(pipe.hasNext(), equalTo(false));
+        assertThat(pipe.next(), OptionMatcher.isNone());
     }
 
-    @Test(expected = IndexOutOfBoundsException.class)
-    public void cannotGetNextWhenThereIsNone() {
-        final VariableInputPipe pipe = new VariableInputPipe(mVar);
-        pipe.getNext();
-    }
-    
     @Test
     public void nothingReturnedWhenTerminated() {
         mVar.add("hello");
         mVar.add("world");
         final VariableInputPipe pipe = new VariableInputPipe(mVar);
-        assertThat(pipe.hasNext(), equalTo(true));
         
         pipe.setTerminated();
         
-        assertThat(pipe.hasNext(), equalTo(false));
-    }
-    
-    @Test(expected = IndexOutOfBoundsException.class)
-    public void cannotGetNextWhenTerminated() {
-        mVar.add("hello");
-        mVar.add("world");
-        final VariableInputPipe pipe = new VariableInputPipe(mVar);
-        assertThat(pipe.hasNext(), equalTo(true));
-        
-        pipe.setTerminated();
-
-        pipe.getNext();
+        assertThat(pipe.next(), OptionMatcher.isNone());
     }
 }
