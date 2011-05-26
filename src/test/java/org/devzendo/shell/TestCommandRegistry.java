@@ -22,9 +22,9 @@ import static org.junit.Assert.fail;
 
 import java.lang.reflect.Method;
 import java.util.List;
+import java.util.Set;
 
 import org.junit.Test;
-
 
 public class TestCommandRegistry {
     final CommandRegistry registry = new CommandRegistry();
@@ -89,4 +89,16 @@ public class TestCommandRegistry {
                 equalTo("Command 'foo' from plugin 'plugin two' is duplicated; initially declared in plugin 'plugin one'"));
         }
     }
+
+    @Test
+    public void getPlugins() throws SecurityException, NoSuchMethodException, DuplicateCommandException {
+        final Method method = this.getClass().getMethod("getPlugins");    
+        registry.registerCommand("one", shellPluginOne, method);
+        registry.registerCommand("foo", shellPluginTwo, method);
+        final Set<ShellPlugin> plugins = registry.getPlugins();
+        assertThat(plugins.size(), equalTo(2));
+        assertThat(plugins.contains(shellPluginOne), equalTo(true));
+        assertThat(plugins.contains(shellPluginTwo), equalTo(true));
+    }
+
 }
