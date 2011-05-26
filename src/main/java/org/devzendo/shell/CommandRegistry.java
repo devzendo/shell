@@ -18,9 +18,7 @@ package org.devzendo.shell;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 
 public class CommandRegistry {
     private class PluginMethod {
@@ -41,10 +39,8 @@ public class CommandRegistry {
         }
     }
     private final Map<String, PluginMethod> nameToPluginMethod = new HashMap<String, PluginMethod>();
-    private final Set<ShellPlugin> plugins = new HashSet<ShellPlugin>();
     
     public void registerCommand(final String name, final ShellPlugin plugin, final Method method) throws DuplicateCommandException {
-        plugins.add(plugin);
         final PluginMethod pluginMethod = nameToPluginMethod.get(name);
         if (pluginMethod != null) {
             throw new DuplicateCommandException("Command '" + name + "' from plugin '"
@@ -74,9 +70,5 @@ public class CommandRegistry {
                 }
             }
         };
-    }
-
-    public Set<ShellPlugin> getPlugins() {
-        return plugins;
     }
 }
