@@ -18,15 +18,18 @@ package org.devzendo.shell;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 
 public class PluginRegistrar {
     public List<String> mArgList;
     private final PluginMethodScanner mPluginMethodScanner;
     private final CommandRegistry mCommandRegistry;
     private final String mPropertiesResourcePath;
+    private Set<ShellPlugin> mPlugins = new HashSet<ShellPlugin>();
 
     public PluginRegistrar(final String propertiesResourcePath, final List<String> argList) {
         mArgList = argList;
@@ -38,6 +41,7 @@ public class PluginRegistrar {
     public CommandRegistry loadAndRegisterPluginMethods(final ShellPlugin ... staticPlugins) throws ShellPluginException {
         final ArrayList<ShellPlugin> allPlugins = loadAllPlugins(staticPlugins);
         for (final ShellPlugin shellPlugin : allPlugins) {
+            mPlugins.add(shellPlugin);
             shellPlugin.processCommandLine(mArgList);
             final Map<String, Method> nameMethodMap = mPluginMethodScanner.scanPluginMethods(shellPlugin);
             for (final Entry<String, Method> entry : nameMethodMap.entrySet()) {
@@ -57,5 +61,9 @@ public class PluginRegistrar {
         allPlugins.addAll(Arrays.asList(staticPlugins));
         allPlugins.addAll(pluginsFromClasspath);
         return allPlugins;
+    }
+
+    public final Set<ShellPlugin> getPlugins() {
+        return mPlugins;
     }
 }
