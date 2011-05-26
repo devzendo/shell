@@ -84,6 +84,8 @@ public class ShellMain {
                         LOGGER.warn(cpe.getMessage());
                     } catch (final CommandNotFoundException cnfe) {
                         LOGGER.warn(cnfe.getMessage());
+                    } catch (final CommandExecutionException cee) {
+                        LOGGER.warn(cee.getMessage());
                     }
                 }
             } catch (final IOException ioe) {
