@@ -80,7 +80,6 @@ public class TestPluginMethodScanner {
         gotFunk(scanner.scanPluginMethods(new VoidReturnListIteratorArgs()));
     }
 
-    // TODO all the above, but with iterator return types
     private static class IteratorReturnNoArgs extends AbstractShellPlugin {
         @SuppressWarnings("unused")
         public Iterator<Object> funk() {
@@ -127,4 +126,3 @@ public class TestPluginMethodScanner {
         assertThat(it.next(), equalTo("funk"));
     }
 }
-
