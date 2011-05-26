@@ -15,6 +15,7 @@
  */
 package org.devzendo.shell;
 
+@SuppressWarnings("serial")
 public class CommandParserException extends Exception {
     public CommandParserException(final String warning) {
         super(warning);
