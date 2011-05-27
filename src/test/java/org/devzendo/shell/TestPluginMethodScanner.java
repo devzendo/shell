@@ -28,12 +28,14 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 public class TestPluginMethodScanner {
+    
     @BeforeClass
     public static void setUpLogging() {
         LoggingUnittestHelper.setupLogging();
     }
     
     final PluginMethodScanner scanner = new PluginMethodScanner();
+    
     private abstract static class AbstractShellPlugin implements ShellPlugin {
         @Override
         public void initialise(final ExecutionEnvironment env) {
@@ -46,6 +48,8 @@ public class TestPluginMethodScanner {
         }
     }
 
+    // -------------------------------------------------------------------------
+    
     private static class VoidReturnNoArgsBadPluginMethodsNotScanned extends AbstractShellPlugin {
         @SuppressWarnings("unused")
         public void funk() {
@@ -63,6 +67,8 @@ public class TestPluginMethodScanner {
         gotFunk(scanner.scanPluginMethods(new VoidReturnNoArgsBadPluginMethodsNotScanned()));
     }
 
+    // -------------------------------------------------------------------------
+
     private static class VoidReturnNoArgs extends AbstractShellPlugin {
         @SuppressWarnings("unused")
         public void funk() {
@@ -74,6 +80,8 @@ public class TestPluginMethodScanner {
     public void voidReturnNoArgsOk() {
         gotFunk(scanner.scanPluginMethods(new VoidReturnNoArgs()));
     }
+
+    // -------------------------------------------------------------------------
 
     private static class VoidReturnListArgs extends AbstractShellPlugin {
         @SuppressWarnings("unused")
@@ -87,6 +95,8 @@ public class TestPluginMethodScanner {
         gotFunk(scanner.scanPluginMethods(new VoidReturnListArgs()));
     }
 
+    // -------------------------------------------------------------------------
+
     private static class VoidReturnListIteratorArgs extends AbstractShellPlugin {
         @SuppressWarnings("unused")
         public void funk(final List<String> args, final Iterator<Object> input) {
@@ -98,6 +108,8 @@ public class TestPluginMethodScanner {
     public void voidReturnListIteratorArgsOk() {
         gotFunk(scanner.scanPluginMethods(new VoidReturnListIteratorArgs()));
     }
+
+    // -------------------------------------------------------------------------
 
     private static class IteratorReturnNoArgs extends AbstractShellPlugin {
         @SuppressWarnings("unused")
@@ -112,6 +124,8 @@ public class TestPluginMethodScanner {
         gotFunk(scanner.scanPluginMethods(new IteratorReturnNoArgs()));
     }
 
+    // -------------------------------------------------------------------------
+
     private static class IteratorReturnListArgs extends AbstractShellPlugin {
         @SuppressWarnings("unused")
         public Iterator<Object> funk(final List<String> args) {
@@ -125,6 +139,8 @@ public class TestPluginMethodScanner {
         gotFunk(scanner.scanPluginMethods(new IteratorReturnListArgs()));
     }
 
+    // -------------------------------------------------------------------------
+
     private static class IteratorReturnListIteratorArgs extends AbstractShellPlugin {
         @SuppressWarnings("unused")
         public Iterator<Object> funk(final List<String> args, final Iterator<Object> input) {
@@ -137,6 +153,8 @@ public class TestPluginMethodScanner {
     public void iteratorReturnListIteratorArgsOk() {
         gotFunk(scanner.scanPluginMethods(new IteratorReturnListIteratorArgs()));
     }
+
+    // -------------------------------------------------------------------------
 
     private void gotFunk(final Map<String, Method> map) {
         assertThat(map.size(), equalTo(1));
