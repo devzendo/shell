@@ -35,7 +35,8 @@ public class ShellMain {
 
     public ShellMain(final List<String> argList) {
         mArgList = argList;
-        mPluginRegistrar = new PluginRegistrar(SHELLPLUGIN_PROPERTIES, argList);
+        final CommandRegistry commandRegistry = new CommandRegistry();
+        mPluginRegistrar = new PluginRegistrar(SHELLPLUGIN_PROPERTIES, commandRegistry, argList);
     }
 
 

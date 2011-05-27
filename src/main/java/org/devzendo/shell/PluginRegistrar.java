@@ -31,10 +31,10 @@ public class PluginRegistrar {
     private final String mPropertiesResourcePath;
     private Set<ShellPlugin> mPlugins = new HashSet<ShellPlugin>();
 
-    public PluginRegistrar(final String propertiesResourcePath, final List<String> argList) {
+    public PluginRegistrar(final String propertiesResourcePath, final CommandRegistry commandRegistry, final List<String> argList) {
         mArgList = argList;
         mPluginMethodScanner = new PluginMethodScanner();
-        mCommandRegistry = new CommandRegistry();
+        mCommandRegistry = commandRegistry;
         mPropertiesResourcePath = propertiesResourcePath;
     }
 
