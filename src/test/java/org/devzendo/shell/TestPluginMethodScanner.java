@@ -46,6 +46,23 @@ public class TestPluginMethodScanner {
         }
     }
 
+    private static class VoidReturnNoArgsBadPluginMethodsNotScanned extends AbstractShellPlugin {
+        @SuppressWarnings("unused")
+        public void funk() {
+            // do nothing
+        }
+        
+        @SuppressWarnings("unused")
+        public void initialise() {
+            // do nothing
+        }
+    }
+    
+    @Test
+    public void voidReturnNoArgsOkBadInitialiseNotScanned() {
+        gotFunk(scanner.scanPluginMethods(new VoidReturnNoArgsBadPluginMethodsNotScanned()));
+    }
+
     private static class VoidReturnNoArgs extends AbstractShellPlugin {
         @SuppressWarnings("unused")
         public void funk() {

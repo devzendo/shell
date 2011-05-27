@@ -34,11 +34,16 @@ public class PluginMethodScanner {
         for (final Method method : methods) {
             // Ignore Object methods
             final String name = method.getName();
-            if (name.equals("processCommandLine") || name.equals("notify") ||
-                    name.equals("notifyAll") || name.equals("wait")) {
+            if (name.equals("notify") ||
+                name.equals("notifyAll") || name.equals("wait")) {
                 continue;
             }
-            
+
+            // Ignore ShellPlugin methods
+            if (name.equals("initialise")) {
+                continue;
+            }
+
             LOGGER.debug("Considering method " + method);
             final Class<?> returnType = method.getReturnType();
             final Class<?>[] parameterTypes = method.getParameterTypes();
