@@ -38,7 +38,7 @@ public class PluginRegistrar {
         mPropertiesResourcePath = propertiesResourcePath;
     }
 
-    public CommandRegistry loadAndRegisterPluginMethods(final ShellPlugin ... staticPlugins) throws ShellPluginException {
+    public void loadAndRegisterPluginMethods(final ShellPlugin ... staticPlugins) throws ShellPluginException {
         final ArrayList<ShellPlugin> allPlugins = loadAllPlugins(staticPlugins);
         for (final ShellPlugin shellPlugin : allPlugins) {
             mPlugins.add(shellPlugin);
@@ -52,7 +52,6 @@ public class PluginRegistrar {
                 }
             }
         }
-        return mCommandRegistry;
     }
 
     private ArrayList<ShellPlugin> loadAllPlugins(final ShellPlugin ... staticPlugins) throws ShellPluginException {
