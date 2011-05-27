@@ -15,15 +15,14 @@
  */
 package org.devzendo.shell;
 
-import java.util.List;
 
 public class GoodTestPlugin implements ShellPlugin {
-    public void processCommandLine(List<String> args) {
-        // TODO Auto-generated method stub
+    @Override
+    public String getName() {
+        return null;
     }
 
-    public String getName() {
-        // TODO Auto-generated method stub
-        return null;
+    @Override
+    public void initialise(ExecutionEnvironment env) {
     }
 }

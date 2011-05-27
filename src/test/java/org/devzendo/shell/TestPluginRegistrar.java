@@ -20,7 +20,6 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.fail;
 
 import java.util.Arrays;
-import java.util.List;
 import java.util.Set;
 
 import org.devzendo.commoncode.logging.LoggingUnittestHelper;
@@ -37,10 +36,6 @@ public class TestPluginRegistrar {
     }
 
     final ShellPlugin shellPluginOne = new ShellPlugin() {
-        @Override
-        public void processCommandLine(List<String> args) {
-        }
-        
         @SuppressWarnings("unused")
         public void foo() {
         }
@@ -49,13 +44,13 @@ public class TestPluginRegistrar {
         public String getName() {
             return "plugin one";
         }
+
+        @Override
+        public void initialise(final ExecutionEnvironment env) {
+        }
     };
 
     final ShellPlugin shellPluginTwo = new ShellPlugin() {
-        @Override
-        public void processCommandLine(List<String> args) {
-        }
-        
         @SuppressWarnings("unused")
         public void foo() {
         }
@@ -63,6 +58,10 @@ public class TestPluginRegistrar {
         @Override
         public String getName() {
             return "plugin two";
+        }
+
+        @Override
+        public void initialise(final ExecutionEnvironment env) {
         }
     };
 
@@ -73,8 +72,8 @@ public class TestPluginRegistrar {
         final Set<ShellPlugin> plugins = pluginRegistrar.getPlugins();
         assertThat(plugins.size(), equalTo(1));
         final RecordingShellPlugin recordingPlugin = (RecordingShellPlugin) plugins.iterator().next();
-//        assertThat(recordingPlugin.getVariableRegistry(), equalTo(variableRegistry));
-//        assertThat(recordingPlugin.getCommandRegistry(), equalTo(commandRegistry));
+        assertThat(recordingPlugin.getCommandRegistry(), equalTo(mCommandRegistry));
+        assertThat(recordingPlugin.getVariableRegistry(), equalTo(mVariableRegistry));
         assertThat(recordingPlugin.getArgs().size(), equalTo(2));
         assertThat(recordingPlugin.getArgs().get(0), equalTo("one"));
         assertThat(recordingPlugin.getArgs().get(1), equalTo("two"));

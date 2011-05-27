@@ -44,16 +44,18 @@ public class ShellMain {
 
 
     public class InternalShellPlugin implements ShellPlugin {
-        public void processCommandLine(final List<String> args) {
-            // do nothing
-        }
-
+        @Override
         public String getName() {
             return "Internal";
         }
         
         public void quit() {
             quit = true;
+        }
+
+        @Override
+        public void initialise(ExecutionEnvironment env) {
+            // do nothing
         }
     }
 

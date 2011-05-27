@@ -15,9 +15,7 @@
  */
 package org.devzendo.shell;
 
-import java.util.List;
-
 public interface ShellPlugin {
-    void processCommandLine(List<String> args);
+    void initialise(ExecutionEnvironment env);
     String getName();
 }

@@ -19,10 +19,8 @@ import java.util.List;
 
 public class RecordingShellPlugin implements ShellPlugin {
     private List<String> mArgs;
-
-    public void processCommandLine(List<String> args) {
-        mArgs = args;
-    }
+    private VariableRegistry mVariableRegistry;
+    private CommandRegistry mCommandRegistry;
 
     public final List<String> getArgs() {
         return mArgs;
@@ -30,5 +28,20 @@ public class RecordingShellPlugin implements ShellPlugin {
 
     public String getName() {
         return "Recording";
+    }
+
+    public CommandRegistry getCommandRegistry() {
+        return mCommandRegistry;
+    }
+
+    public VariableRegistry getVariableRegistry() {
+        return mVariableRegistry;
+    }
+
+    @Override
+    public void initialise(final ExecutionEnvironment env) {
+        mArgs = env.getArgList();
+        mCommandRegistry = env.getCommandRegistry();
+        mVariableRegistry = env.getVariableRegistry();
     }
 }

@@ -21,7 +21,6 @@ import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.fail;
 
 import java.lang.reflect.Method;
-import java.util.List;
 
 import org.junit.Test;
 
@@ -30,23 +29,23 @@ public class TestCommandRegistry {
 
     final ShellPlugin shellPluginOne = new ShellPlugin() {
         @Override
-        public void processCommandLine(List<String> args) {
+        public String getName() {
+            return "plugin one";
         }
 
         @Override
-        public String getName() {
-            return "plugin one";
+        public void initialise(final ExecutionEnvironment env) {
         }
     };
 
     final ShellPlugin shellPluginTwo = new ShellPlugin() {
         @Override
-        public void processCommandLine(List<String> args) {
+        public String getName() {
+            return "plugin two";
         }
 
         @Override
-        public String getName() {
-            return "plugin two";
+        public void initialise(final ExecutionEnvironment env) {
         }
     };
 

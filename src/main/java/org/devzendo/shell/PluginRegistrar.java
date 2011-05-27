@@ -45,10 +45,11 @@ public class PluginRegistrar {
     }
 
     public void loadAndRegisterPluginMethods(final ShellPlugin ... staticPlugins) throws ShellPluginException {
+        final ExecutionEnvironment env = new ExecutionEnvironment(mArgList, mCommandRegistry, mVariableRegistry);
         final ArrayList<ShellPlugin> allPlugins = loadAllPlugins(staticPlugins);
         for (final ShellPlugin shellPlugin : allPlugins) {
             mPlugins.add(shellPlugin);
-            shellPlugin.processCommandLine(mArgList);
+            shellPlugin.initialise(env);
             final Map<String, Method> nameMethodMap = mPluginMethodScanner.scanPluginMethods(shellPlugin);
             for (final Entry<String, Method> entry : nameMethodMap.entrySet()) {
                 try {

@@ -15,5 +15,31 @@
  */
 package org.devzendo.shell;
 
+import java.util.List;
+
 public class ExecutionEnvironment {
+    private final List<String> mArgList;
+    private final CommandRegistry mCommandRegistry;
+    private final VariableRegistry mVariableRegistry;
+
+    public ExecutionEnvironment(
+            final List<String> argList,
+            final CommandRegistry commandRegistry, 
+            final VariableRegistry variableRegistry) {
+                mArgList = argList;
+                mCommandRegistry = commandRegistry;
+                mVariableRegistry = variableRegistry;
+    }
+
+    public final List<String> getArgList() {
+        return mArgList;
+    }
+
+    public final CommandRegistry getCommandRegistry() {
+        return mCommandRegistry;
+    }
+
+    public final VariableRegistry getVariableRegistry() {
+        return mVariableRegistry;
+    }
 }

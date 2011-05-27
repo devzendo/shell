@@ -35,10 +35,12 @@ public class TestPluginMethodScanner {
     
     final PluginMethodScanner scanner = new PluginMethodScanner();
     private abstract static class AbstractShellPlugin implements ShellPlugin {
-        public void processCommandLine(final List<String> args) {
+        @Override
+        public void initialise(final ExecutionEnvironment env) {
             // do nothing
         }
 
+        @Override
         public String getName() {
             return "test";
         }
