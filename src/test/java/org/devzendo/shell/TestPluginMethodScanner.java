@@ -144,7 +144,7 @@ public class TestPluginMethodScanner {
 
     private static class VoidReturnListArgs extends AbstractShellPlugin {
         @SuppressWarnings("unused")
-        public void funk(final List<String> args) {
+        public void funk(final List<Object> args) {
             // do nothing
         }
     }
@@ -158,7 +158,7 @@ public class TestPluginMethodScanner {
 
     private static class VoidReturnListArgsInputPipe extends AbstractShellPlugin {
         @SuppressWarnings("unused")
-        public void funk(final List<String> args, final InputPipe input) {
+        public void funk(final List<Object> args, final InputPipe input) {
             // do nothing
         }
     }
@@ -173,7 +173,7 @@ public class TestPluginMethodScanner {
 
     private static class VoidReturnListArgsOutputPipe extends AbstractShellPlugin {
         @SuppressWarnings("unused")
-        public void funk(final List<String> args, final OutputPipe output) {
+        public void funk(final List<Object> args, final OutputPipe output) {
             // do nothing
         }
     }
@@ -187,7 +187,7 @@ public class TestPluginMethodScanner {
     
     private static class VoidReturnListArgsInputPipeOutputPipe extends AbstractShellPlugin {
         @SuppressWarnings("unused")
-        public void funk(final List<String> args, final InputPipe input, final OutputPipe output) {
+        public void funk(final List<Object> args, final InputPipe input, final OutputPipe output) {
             // do nothing
         }
     }
@@ -201,7 +201,7 @@ public class TestPluginMethodScanner {
 
     private static class VoidReturnListArgsOutputPipeInputPipe extends AbstractShellPlugin {
         @SuppressWarnings("unused")
-        public void funk(final List<String> args, final OutputPipe output, final InputPipe input) {
+        public void funk(final List<Object> args, final OutputPipe output, final InputPipe input) {
             // do nothing
         }
     }
