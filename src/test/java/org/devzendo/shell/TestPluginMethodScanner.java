@@ -39,6 +39,12 @@ public class TestPluginMethodScanner {
     final PluginMethodScanner scanner = new PluginMethodScanner();
     
     private abstract static class AbstractShellPlugin implements ShellPlugin {
+        protected boolean mExecuted = false;
+        
+        public final boolean isExecuted() {
+            return mExecuted;
+        }
+
         @Override
         public void initialise(final ExecutionEnvironment env) {
             // do nothing
@@ -55,7 +61,7 @@ public class TestPluginMethodScanner {
     private static class VoidReturnNoArgsBadPluginMethodsNotScanned extends AbstractShellPlugin {
         @SuppressWarnings("unused")
         public void funk() {
-            // do nothing
+            mExecuted = true;
         }
         
         @SuppressWarnings("unused")
@@ -74,7 +80,7 @@ public class TestPluginMethodScanner {
     private static class VoidReturnNoArgs extends AbstractShellPlugin {
         @SuppressWarnings("unused")
         public void funk() {
-            // do nothing
+            mExecuted = true;
         }
     }
     
@@ -88,7 +94,7 @@ public class TestPluginMethodScanner {
     private static class VoidReturnNoArgsInputPipe extends AbstractShellPlugin {
         @SuppressWarnings("unused")
         public void funk(final InputPipe input) {
-            // do nothing
+            mExecuted = true;
         }
     }
     
@@ -102,7 +108,7 @@ public class TestPluginMethodScanner {
     private static class VoidReturnNoArgsOutputPipe extends AbstractShellPlugin {
         @SuppressWarnings("unused")
         public void funk(final OutputPipe output) {
-            // do nothing
+            mExecuted = true;
         }
     }
     
@@ -116,7 +122,7 @@ public class TestPluginMethodScanner {
     private static class VoidReturnNoArgsOutputPipeInputPipe extends AbstractShellPlugin {
         @SuppressWarnings("unused")
         public void funk(final OutputPipe output, final InputPipe input) {
-            // do nothing
+            mExecuted = true;
         }
     }
     
@@ -131,7 +137,7 @@ public class TestPluginMethodScanner {
     private static class VoidReturnNoArgsInputPipeOutputPipe extends AbstractShellPlugin {
         @SuppressWarnings("unused")
         public void funk(final InputPipe input, final OutputPipe output) {
-            // do nothing
+            mExecuted = true;
         }
     }
     
@@ -145,7 +151,7 @@ public class TestPluginMethodScanner {
     private static class VoidReturnListArgs extends AbstractShellPlugin {
         @SuppressWarnings("unused")
         public void funk(final List<Object> args) {
-            // do nothing
+            mExecuted = true;
         }
     }
     
@@ -159,7 +165,7 @@ public class TestPluginMethodScanner {
     private static class VoidReturnListArgsInputPipe extends AbstractShellPlugin {
         @SuppressWarnings("unused")
         public void funk(final List<Object> args, final InputPipe input) {
-            // do nothing
+            mExecuted = true;
         }
     }
     
@@ -174,7 +180,7 @@ public class TestPluginMethodScanner {
     private static class VoidReturnListArgsOutputPipe extends AbstractShellPlugin {
         @SuppressWarnings("unused")
         public void funk(final List<Object> args, final OutputPipe output) {
-            // do nothing
+            mExecuted = true;
         }
     }
     
@@ -188,7 +194,7 @@ public class TestPluginMethodScanner {
     private static class VoidReturnListArgsInputPipeOutputPipe extends AbstractShellPlugin {
         @SuppressWarnings("unused")
         public void funk(final List<Object> args, final InputPipe input, final OutputPipe output) {
-            // do nothing
+            mExecuted = true;
         }
     }
     
@@ -202,7 +208,7 @@ public class TestPluginMethodScanner {
     private static class VoidReturnListArgsOutputPipeInputPipe extends AbstractShellPlugin {
         @SuppressWarnings("unused")
         public void funk(final List<Object> args, final OutputPipe output, final InputPipe input) {
-            // do nothing
+            mExecuted = true;
         }
     }
     
