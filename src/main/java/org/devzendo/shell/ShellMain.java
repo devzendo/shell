@@ -32,12 +32,14 @@ public class ShellMain {
 
     private final List<String> mArgList;
     private final PluginRegistrar mPluginRegistrar;
-    private CommandRegistry mCommandRegistry;
+    private final CommandRegistry mCommandRegistry;
+    private final VariableRegistry mVariableRegistry;
 
     public ShellMain(final List<String> argList) {
         mArgList = argList;
         mCommandRegistry = new CommandRegistry();
-        mPluginRegistrar = new PluginRegistrar(SHELLPLUGIN_PROPERTIES, mCommandRegistry, argList);
+        mVariableRegistry = new VariableRegistry();
+        mPluginRegistrar = new PluginRegistrar(SHELLPLUGIN_PROPERTIES, mCommandRegistry, mVariableRegistry, argList);
     }
 
 
@@ -62,13 +64,12 @@ public class ShellMain {
         }
         
         try {
-            final VariableRegistry variableRegistry = new VariableRegistry();
             mPluginRegistrar.loadAndRegisterPluginMethods(
                     new InternalShellPlugin()
                 );
             
             final CommandParser parser = new CommandParser();
-            final CommandHandlerWirer wirer = new CommandHandlerWirer(mCommandRegistry, variableRegistry);
+            final CommandHandlerWirer wirer = new CommandHandlerWirer(mCommandRegistry, mVariableRegistry);
             final BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
             try {
                 while (!quit) {
