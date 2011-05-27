@@ -17,11 +17,12 @@ package org.devzendo.shell;
 
 import java.lang.reflect.Method;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
+import org.devzendo.shell.pipe.InputPipe;
+import org.devzendo.shell.pipe.OutputPipe;
 
 public class PluginMethodScanner {
     private static final Logger LOGGER = Logger
@@ -47,10 +48,20 @@ public class PluginMethodScanner {
             LOGGER.debug("Considering method " + method);
             final Class<?> returnType = method.getReturnType();
             final Class<?>[] parameterTypes = method.getParameterTypes();
-            if ((voidness(returnType) || iterator(returnType)) && 
-                   ((parameterTypes.length == 0) || 
+            if (voidness(returnType) && 
+                   ((parameterTypes.length == 0) ||
+                           
+                    (parameterTypes.length == 1 && input(parameterTypes[0])) ||
+                    (parameterTypes.length == 1 && output(parameterTypes[0])) ||
+                    (parameterTypes.length == 2 && (input(parameterTypes[0]) && output(parameterTypes[1]))) ||
+                    (parameterTypes.length == 2 && (output(parameterTypes[0]) && input(parameterTypes[1]))) ||
+                    
                     (parameterTypes.length == 1 && list(parameterTypes[0])) ||
-                    (parameterTypes.length == 2 && list(parameterTypes[0]) && iterator(parameterTypes[1])))) {
+                    (parameterTypes.length == 2 && list(parameterTypes[0]) && input(parameterTypes[1])) ||
+                    (parameterTypes.length == 2 && list(parameterTypes[0]) && output(parameterTypes[1])) ||
+                    (parameterTypes.length == 3 && list(parameterTypes[0]) && (input(parameterTypes[1]) && output(parameterTypes[2]))) ||
+                    (parameterTypes.length == 3 && list(parameterTypes[0]) && (output(parameterTypes[1]) && input(parameterTypes[2])))
+                   )) {
                 LOGGER.debug("Registering method " + method);
                 returnMethods.put(name, method);
             }
@@ -62,8 +73,12 @@ public class PluginMethodScanner {
         return klass.toString().equals("void"); // no other way to detect this? 
     }
 
-    private boolean iterator(final Class<?> klass) {
-        return klass.isAssignableFrom(Iterator.class);
+    private boolean input(final Class<?> klass) {
+        return klass.isAssignableFrom(InputPipe.class);
+    }
+
+    private boolean output(final Class<?> klass) {
+        return klass.isAssignableFrom(OutputPipe.class);
     }
 
     private boolean list(final Class<?> klass) {
