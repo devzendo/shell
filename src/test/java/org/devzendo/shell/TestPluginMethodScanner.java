@@ -20,12 +20,20 @@ import static org.hamcrest.Matchers.equalTo;
 
 import java.lang.reflect.Method;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 
 import org.devzendo.commoncode.logging.LoggingUnittestHelper;
-import org.devzendo.shell.pipe.InputPipe;
-import org.devzendo.shell.pipe.OutputPipe;
+import org.devzendo.shell.PluginVariations.VoidReturnListArgs;
+import org.devzendo.shell.PluginVariations.VoidReturnListArgsInputPipe;
+import org.devzendo.shell.PluginVariations.VoidReturnListArgsInputPipeOutputPipe;
+import org.devzendo.shell.PluginVariations.VoidReturnListArgsOutputPipe;
+import org.devzendo.shell.PluginVariations.VoidReturnListArgsOutputPipeInputPipe;
+import org.devzendo.shell.PluginVariations.VoidReturnNoArgs;
+import org.devzendo.shell.PluginVariations.VoidReturnNoArgsBadPluginMethodsNotScanned;
+import org.devzendo.shell.PluginVariations.VoidReturnNoArgsInputPipe;
+import org.devzendo.shell.PluginVariations.VoidReturnNoArgsInputPipeOutputPipe;
+import org.devzendo.shell.PluginVariations.VoidReturnNoArgsOutputPipe;
+import org.devzendo.shell.PluginVariations.VoidReturnNoArgsOutputPipeInputPipe;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -38,164 +46,49 @@ public class TestPluginMethodScanner {
     
     final PluginMethodScanner scanner = new PluginMethodScanner();
     
-    private abstract static class AbstractShellPlugin implements ShellPlugin {
-        protected boolean mExecuted = false;
-        
-        public final boolean isExecuted() {
-            return mExecuted;
-        }
-
-        @Override
-        public void initialise(final ExecutionEnvironment env) {
-            // do nothing
-        }
-
-        @Override
-        public String getName() {
-            return "test";
-        }
-    }
-
-    // -------------------------------------------------------------------------
-    
-    private static class VoidReturnNoArgsBadPluginMethodsNotScanned extends AbstractShellPlugin {
-        @SuppressWarnings("unused")
-        public void funk() {
-            mExecuted = true;
-        }
-        
-        @SuppressWarnings("unused")
-        public void initialise() {
-            // do nothing
-        }
-    }
-    
     @Test
     public void voidReturnNoArgsOkBadInitialiseNotScanned() {
         gotFunk(scanner.scanPluginMethods(new VoidReturnNoArgsBadPluginMethodsNotScanned()));
     }
 
-    // -------------------------------------------------------------------------
-
-    private static class VoidReturnNoArgs extends AbstractShellPlugin {
-        @SuppressWarnings("unused")
-        public void funk() {
-            mExecuted = true;
-        }
-    }
-    
     @Test
     public void voidReturnNoArgsOk() {
         gotFunk(scanner.scanPluginMethods(new VoidReturnNoArgs()));
     }
 
-    // -------------------------------------------------------------------------
-
-    private static class VoidReturnNoArgsInputPipe extends AbstractShellPlugin {
-        @SuppressWarnings("unused")
-        public void funk(final InputPipe input) {
-            mExecuted = true;
-        }
-    }
-    
     @Test
     public void voidReturnNoArgsInputPipeOk() {
         gotFunk(scanner.scanPluginMethods(new VoidReturnNoArgsInputPipe()));
     }
 
-    // -------------------------------------------------------------------------
-
-    private static class VoidReturnNoArgsOutputPipe extends AbstractShellPlugin {
-        @SuppressWarnings("unused")
-        public void funk(final OutputPipe output) {
-            mExecuted = true;
-        }
-    }
-    
     @Test
     public void voidReturnNoArgsOutputPipeOk() {
         gotFunk(scanner.scanPluginMethods(new VoidReturnNoArgsOutputPipe()));
     }
 
-    // -------------------------------------------------------------------------
-
-    private static class VoidReturnNoArgsOutputPipeInputPipe extends AbstractShellPlugin {
-        @SuppressWarnings("unused")
-        public void funk(final OutputPipe output, final InputPipe input) {
-            mExecuted = true;
-        }
-    }
-    
     @Test
     public void voidReturnNoArgsOutputPipeInputPipeOk() {
         gotFunk(scanner.scanPluginMethods(new VoidReturnNoArgsOutputPipeInputPipe()));
     }
 
-
-    // -------------------------------------------------------------------------
-
-    private static class VoidReturnNoArgsInputPipeOutputPipe extends AbstractShellPlugin {
-        @SuppressWarnings("unused")
-        public void funk(final InputPipe input, final OutputPipe output) {
-            mExecuted = true;
-        }
-    }
-    
     @Test
     public void voidReturnNoArgsInputPipeOutputPipeOk() {
         gotFunk(scanner.scanPluginMethods(new VoidReturnNoArgsInputPipeOutputPipe()));
     }
 
-    // -------------------------------------------------------------------------
-
-    private static class VoidReturnListArgs extends AbstractShellPlugin {
-        @SuppressWarnings("unused")
-        public void funk(final List<Object> args) {
-            mExecuted = true;
-        }
-    }
-    
     @Test
     public void voidReturnListArgsOk() {
         gotFunk(scanner.scanPluginMethods(new VoidReturnListArgs()));
     }
 
-    // -------------------------------------------------------------------------
-
-    private static class VoidReturnListArgsInputPipe extends AbstractShellPlugin {
-        @SuppressWarnings("unused")
-        public void funk(final List<Object> args, final InputPipe input) {
-            mExecuted = true;
-        }
-    }
-    
     @Test
     public void voidReturnListArgsInputPipeOk() {
         gotFunk(scanner.scanPluginMethods(new VoidReturnListArgsInputPipe()));
     }
 
-
-    // -------------------------------------------------------------------------
-
-    private static class VoidReturnListArgsOutputPipe extends AbstractShellPlugin {
-        @SuppressWarnings("unused")
-        public void funk(final List<Object> args, final OutputPipe output) {
-            mExecuted = true;
-        }
-    }
-    
     @Test
     public void voidReturnListArgsOutputPipeOk() {
         gotFunk(scanner.scanPluginMethods(new VoidReturnListArgsOutputPipe()));
-    }
-
-    // -------------------------------------------------------------------------
-    
-    private static class VoidReturnListArgsInputPipeOutputPipe extends AbstractShellPlugin {
-        @SuppressWarnings("unused")
-        public void funk(final List<Object> args, final InputPipe input, final OutputPipe output) {
-            mExecuted = true;
-        }
     }
     
     @Test
@@ -203,21 +96,10 @@ public class TestPluginMethodScanner {
         gotFunk(scanner.scanPluginMethods(new VoidReturnListArgsInputPipeOutputPipe()));
     }
 
-    // -------------------------------------------------------------------------
-
-    private static class VoidReturnListArgsOutputPipeInputPipe extends AbstractShellPlugin {
-        @SuppressWarnings("unused")
-        public void funk(final List<Object> args, final OutputPipe output, final InputPipe input) {
-            mExecuted = true;
-        }
-    }
-    
     @Test
     public void voidReturnListArgsOutputPipeInputPipeOk() {
         gotFunk(scanner.scanPluginMethods(new VoidReturnListArgsOutputPipeInputPipe()));
     }
-
-    // -------------------------------------------------------------------------
 
     private void gotFunk(final Map<String, Method> map) {
         assertThat(map.size(), equalTo(1));
