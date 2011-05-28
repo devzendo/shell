@@ -35,6 +35,21 @@ public class PluginVariations {
 
     public static abstract class AbstractShellPlugin implements ShellPlugin {
         protected boolean mExecuted = false;
+        protected InputPipe mInputPipe = null;
+        protected OutputPipe mOutputPipe = null;
+        protected List<Object> mArgs = null;
+        
+        public final List<Object> getArgs() {
+            return mArgs;
+        }
+
+        public final InputPipe getInputPipe() {
+            return mInputPipe;
+        }
+
+        public final OutputPipe getOutputPipe() {
+            return mOutputPipe;
+        }
 
         public final boolean isExecuted() {
             return mExecuted;
@@ -52,51 +67,56 @@ public class PluginVariations {
     }
 
     public static class VoidReturnListArgs extends AbstractShellPlugin {
-        @SuppressWarnings("unused")
         public void funk(final List<Object> args) {
             mExecuted = true;
+            mArgs = args;
         }
     }
 
     public static class VoidReturnListArgsInputPipe extends AbstractShellPlugin {
-        @SuppressWarnings("unused")
         public void funk(final List<Object> args, final InputPipe input) {
             mExecuted = true;
+            mArgs = args;
+            mInputPipe = input;
         }
     }
 
     public static class VoidReturnListArgsInputPipeOutputPipe extends
             AbstractShellPlugin {
-        @SuppressWarnings("unused")
         public void funk(
                 final List<Object> args,
                 final InputPipe input,
                 final OutputPipe output) {
             mExecuted = true;
+            mArgs = args;
+            mInputPipe = input;
+            mOutputPipe = output;
         }
     }
 
     public static class VoidReturnListArgsOutputPipe extends
             AbstractShellPlugin {
-        @SuppressWarnings("unused")
         public void funk(final List<Object> args, final OutputPipe output) {
             mExecuted = true;
+            mArgs = args;
+            mOutputPipe = output;
         }
     }
 
     public static class VoidReturnListArgsOutputPipeInputPipe extends
             AbstractShellPlugin {
-        @SuppressWarnings("unused")
         public void funk(
                 final List<Object> args,
                 final OutputPipe output,
                 final InputPipe input) {
             mExecuted = true;
+            mArgs = args;
+            mInputPipe = input;
+            mOutputPipe = output;
         }
     }
 
     public static class VoidReturnNoArgs extends AbstractShellPlugin {
-        @SuppressWarnings("unused")
         public void funk() {
             mExecuted = true;
         }
@@ -104,44 +124,44 @@ public class PluginVariations {
 
     public static class VoidReturnNoArgsBadPluginMethodsNotScanned extends
             AbstractShellPlugin {
-        @SuppressWarnings("unused")
         public void funk() {
             mExecuted = true;
         }
 
-        @SuppressWarnings("unused")
         public void initialise() {
             // do nothing
         }
     }
 
     public static class VoidReturnNoArgsInputPipe extends AbstractShellPlugin {
-        @SuppressWarnings("unused")
         public void funk(final InputPipe input) {
             mExecuted = true;
+            mInputPipe = input;
         }
     }
 
     public static class VoidReturnNoArgsInputPipeOutputPipe extends
             AbstractShellPlugin {
-        @SuppressWarnings("unused")
         public void funk(final InputPipe input, final OutputPipe output) {
             mExecuted = true;
+            mInputPipe = input;
+            mOutputPipe = output;
         }
     }
 
     public static class VoidReturnNoArgsOutputPipe extends AbstractShellPlugin {
-        @SuppressWarnings("unused")
         public void funk(final OutputPipe output) {
             mExecuted = true;
+            mOutputPipe = output;
         }
     }
 
     public static class VoidReturnNoArgsOutputPipeInputPipe extends
             AbstractShellPlugin {
-        @SuppressWarnings("unused")
         public void funk(final OutputPipe output, final InputPipe input) {
             mExecuted = true;
+            mInputPipe = input;
+            mOutputPipe = output;
         }
     }
 }
