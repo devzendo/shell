@@ -19,6 +19,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 
 import java.lang.reflect.Method;
+import java.util.List;
 import java.util.Map;
 
 import org.devzendo.shell.PluginVariations.AbstractShellPlugin;
@@ -36,6 +37,8 @@ public class TestCommandHandlerFactory {
     private final Mockery context = new JUnit4Mockery();
     private final PluginMethodScanner scanner = new PluginMethodScanner();
     private final CommandHandlerFactory factory = new CommandHandlerFactory();
+    @SuppressWarnings("unchecked")
+    private final List<Object> args = context.mock(List.class);
     private final InputPipe inputPipe = context.mock(InputPipe.class);
     private final OutputPipe outputPipe = context.mock(OutputPipe.class);
     
@@ -44,14 +47,17 @@ public class TestCommandHandlerFactory {
         final AbstractShellPlugin plugin = new VoidReturnNoArgs();
         final Method method = getMethod(plugin);
         final CommandHandler handler = factory.createHandler(plugin, method);
-        assertPipes(plugin, null, null);
+        assertHandlerContains(plugin, null, null, null);
         handler.execute();
-        assertPipes(plugin, null, null);
+        assertHandlerContains(plugin, null, null, null);
     }
+    // TODO do the remaining PluginVariation plugins....
 
-    private void assertPipes(final AbstractShellPlugin plugin,
+    private void assertHandlerContains(final AbstractShellPlugin plugin,
+            final List<Object> expectedArgs,
             final InputPipe expectedInputPipe,
             final OutputPipe expectedOutputPipe) {
+        assertThat(plugin.getArgs(), equalTo(expectedArgs));
         assertThat(plugin.getInputPipe(), equalTo(expectedInputPipe));
         assertThat(plugin.getOutputPipe(), equalTo(expectedOutputPipe));
     }
