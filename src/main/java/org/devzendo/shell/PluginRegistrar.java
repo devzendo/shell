@@ -15,7 +15,6 @@
  */
 package org.devzendo.shell;
 
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -23,6 +22,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+
+import org.devzendo.shell.PluginMethodScanner.AnalysedMethod;
 
 public class PluginRegistrar {
     private final String mPropertiesResourcePath;
@@ -50,10 +51,10 @@ public class PluginRegistrar {
         for (final ShellPlugin shellPlugin : allPlugins) {
             mPlugins.add(shellPlugin);
             shellPlugin.initialise(env);
-            final Map<String, Method> nameMethodMap = mPluginMethodScanner.scanPluginMethods(shellPlugin);
-            for (final Entry<String, Method> entry : nameMethodMap.entrySet()) {
+            final Map<String, AnalysedMethod> nameMethodMap = mPluginMethodScanner.scanPluginMethods(shellPlugin);
+            for (final Entry<String, AnalysedMethod> entry : nameMethodMap.entrySet()) {
                 try {
-                    mCommandRegistry.registerCommand(entry.getKey(), shellPlugin, entry.getValue());
+                    mCommandRegistry.registerCommand(entry.getKey(), shellPlugin, entry.getValue().getMethod());
                 } catch (DuplicateCommandException e) {
                     throw new ShellPluginException(e.getMessage());
                 }

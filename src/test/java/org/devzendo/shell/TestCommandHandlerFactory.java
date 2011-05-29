@@ -22,13 +22,16 @@ import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Map;
 
+import org.devzendo.shell.PluginMethodScanner.AnalysedMethod;
 import org.devzendo.shell.PluginVariations.AbstractShellPlugin;
+import org.devzendo.shell.PluginVariations.VoidReturnListArgs;
 import org.devzendo.shell.PluginVariations.VoidReturnNoArgs;
 import org.devzendo.shell.pipe.InputPipe;
 import org.devzendo.shell.pipe.OutputPipe;
 import org.jmock.Mockery;
 import org.jmock.integration.junit4.JMock;
 import org.jmock.integration.junit4.JUnit4Mockery;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -51,8 +54,19 @@ public class TestCommandHandlerFactory {
         handler.execute();
         assertHandlerContains(plugin, null, null, null);
     }
+    
+    @Test
+    @Ignore
+    public void voidReturnListArgs() throws CommandExecutionException {
+        final AbstractShellPlugin plugin = new VoidReturnListArgs();
+        final Method method = getMethod(plugin);
+        final CommandHandler handler = factory.createHandler(plugin, method);
+        assertHandlerContains(plugin, null, null, null);
+        handler.execute();
+        assertHandlerContains(plugin, args, null, null);
+    }
     // TODO do the remaining PluginVariation plugins....
-
+    
     private void assertHandlerContains(final AbstractShellPlugin plugin,
             final List<Object> expectedArgs,
             final InputPipe expectedInputPipe,
@@ -63,8 +77,8 @@ public class TestCommandHandlerFactory {
     }
 
     private Method getMethod(ShellPlugin plugin) {
-        final Map<String, Method> methods = scanner.scanPluginMethods(plugin);
+        final Map<String, AnalysedMethod> methods = scanner.scanPluginMethods(plugin);
         assertThat(methods.size(), equalTo(1));
-        return methods.values().iterator().next();
+        return methods.values().iterator().next().getMethod();
     }
 }

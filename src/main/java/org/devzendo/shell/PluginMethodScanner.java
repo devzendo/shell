@@ -27,9 +27,42 @@ import org.devzendo.shell.pipe.OutputPipe;
 public class PluginMethodScanner {
     private static final Logger LOGGER = Logger
             .getLogger(PluginMethodScanner.class);
+    private static final scala.Option<Integer> none = scala.Option.apply(null);
     
-    public Map<String, Method> scanPluginMethods(final ShellPlugin shellPlugin) {
-        final Map<String, Method> returnMethods = new HashMap<String, Method>();
+    public static class AnalysedMethod {
+        private final Method method;
+        private scala.Option<Integer> argumentsPosition = none;
+        private scala.Option<Integer> inputPipePosition = none;
+        private scala.Option<Integer> outputPipePosition = none;
+        
+        public AnalysedMethod(Method method) {
+            this.method = method;
+        }
+        public final Method getMethod() {
+            return method;
+        }
+        public final scala.Option<Integer> getArgumentsPosition() {
+            return argumentsPosition;
+        }
+        public final void setArgumentsPosition(scala.Option<Integer> argumentsPosition) {
+            this.argumentsPosition = argumentsPosition;
+        }
+        public final scala.Option<Integer> getInputPipePosition() {
+            return inputPipePosition;
+        }
+        public final void setInputPipePosition(scala.Option<Integer> inputPipePosition) {
+            this.inputPipePosition = inputPipePosition;
+        }
+        public final scala.Option<Integer> getOutputPipePosition() {
+            return outputPipePosition;
+        }
+        public final void setOutputPipePosition(scala.Option<Integer> outputPipePosition) {
+            this.outputPipePosition = outputPipePosition;
+        }
+    }
+    
+    public Map<String, AnalysedMethod> scanPluginMethods(final ShellPlugin shellPlugin) {
+        final Map<String, AnalysedMethod> returnMethods = new HashMap<String, AnalysedMethod>();
         final Method[] methods = shellPlugin.getClass().getMethods();
         LOGGER.debug("Scanning " + methods.length + " method(s) from class " + shellPlugin.getClass().getSimpleName());
         for (final Method method : methods) {
@@ -48,6 +81,7 @@ public class PluginMethodScanner {
             LOGGER.debug("Considering method " + method);
             final Class<?> returnType = method.getReturnType();
             final Class<?>[] parameterTypes = method.getParameterTypes();
+            final AnalysedMethod analysedMethod = new AnalysedMethod(method);
             if (voidness(returnType) && 
                    ((parameterTypes.length == 0) ||
                            
@@ -63,7 +97,7 @@ public class PluginMethodScanner {
                     (parameterTypes.length == 3 && list(parameterTypes[0]) && (output(parameterTypes[1]) && input(parameterTypes[2])))
                    )) {
                 LOGGER.debug("Registering method " + method);
-                returnMethods.put(name, method);
+                returnMethods.put(name, analysedMethod);
             }
         }
         return returnMethods;

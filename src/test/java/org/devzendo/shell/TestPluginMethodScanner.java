@@ -18,11 +18,11 @@ package org.devzendo.shell;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 
-import java.lang.reflect.Method;
 import java.util.Iterator;
 import java.util.Map;
 
 import org.devzendo.commoncode.logging.LoggingUnittestHelper;
+import org.devzendo.shell.PluginMethodScanner.AnalysedMethod;
 import org.devzendo.shell.PluginVariations.VoidReturnListArgs;
 import org.devzendo.shell.PluginVariations.VoidReturnListArgsInputPipe;
 import org.devzendo.shell.PluginVariations.VoidReturnListArgsInputPipeOutputPipe;
@@ -101,7 +101,7 @@ public class TestPluginMethodScanner {
         gotFunk(scanner.scanPluginMethods(new VoidReturnListArgsOutputPipeInputPipe()));
     }
 
-    private void gotFunk(final Map<String, Method> map) {
+    private void gotFunk(final Map<String, AnalysedMethod> map) {
         assertThat(map.size(), equalTo(1));
         final Iterator<String> it = map.keySet().iterator();
         assertThat(it.hasNext(), equalTo(true));
