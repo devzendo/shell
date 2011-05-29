@@ -68,8 +68,10 @@ public class PluginMethodScanner {
         for (final Method method : methods) {
             // Ignore Object methods
             final String name = method.getName();
-            if (name.equals("notify") ||
-                name.equals("notifyAll") || name.equals("wait")) {
+            if (name.equals("getClass") || name.equals("notify") ||
+                name.equals("notifyAll") || name.equals("wait") ||
+                name.equals("equals") || name.equals("hashCode") ||
+                name.equals("toString")) {
                 continue;
             }
 
@@ -82,25 +84,94 @@ public class PluginMethodScanner {
             final Class<?> returnType = method.getReturnType();
             final Class<?>[] parameterTypes = method.getParameterTypes();
             final AnalysedMethod analysedMethod = new AnalysedMethod(method);
-            if (voidness(returnType) && 
+            if (voidness(returnType) && onlyExpectedInputs(parameterTypes) &&
                    ((parameterTypes.length == 0) ||
-                           
-                    (parameterTypes.length == 1 && input(parameterTypes[0])) ||
-                    (parameterTypes.length == 1 && output(parameterTypes[0])) ||
-                    (parameterTypes.length == 2 && (input(parameterTypes[0]) && output(parameterTypes[1]))) ||
-                    (parameterTypes.length == 2 && (output(parameterTypes[0]) && input(parameterTypes[1]))) ||
                     
-                    (parameterTypes.length == 1 && list(parameterTypes[0])) ||
-                    (parameterTypes.length == 2 && list(parameterTypes[0]) && input(parameterTypes[1])) ||
-                    (parameterTypes.length == 2 && list(parameterTypes[0]) && output(parameterTypes[1])) ||
-                    (parameterTypes.length == 3 && list(parameterTypes[0]) && (input(parameterTypes[1]) && output(parameterTypes[2]))) ||
-                    (parameterTypes.length == 3 && list(parameterTypes[0]) && (output(parameterTypes[1]) && input(parameterTypes[2])))
-                   )) {
+                    ((parameterTypes.length >= 1 && parameterTypes.length <= 3) &&
+                            (optionalInput(analysedMethod, parameterTypes) &&
+                             optionalOutput(analysedMethod, parameterTypes) &&
+                             optionalArguments(analysedMethod, parameterTypes)
+                            ))
+                    )) {
                 LOGGER.debug("Registering method " + method);
                 returnMethods.put(name, analysedMethod);
+            } else {
+                LOGGER.debug("Not of the right signature");
             }
         }
+        LOGGER.debug("Plugin scanned");
         return returnMethods;
+    }
+
+    private boolean onlyExpectedInputs(Class<?>[] parameterTypes) {
+        for (Class<?> parameterType : parameterTypes) {
+            if (!parameterType.equals(List.class) && 
+                !parameterType.equals(InputPipe.class) && 
+                !parameterType.equals(OutputPipe.class)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private boolean optionalArguments(
+            AnalysedMethod analysedMethod,
+            Class<?>[] parameterTypes) {
+        final Class searchClass = List.class;
+        int count = 0;
+        scala.Option<Integer> position = none;
+        for (int i = 0; i < parameterTypes.length; i++) {
+            Class<?> parameterType = parameterTypes[i];
+            if (parameterType.equals(searchClass)) {
+                position = scala.Option.apply(i);
+                count++;
+            }
+        }
+        if (count == 0 || count == 1) {
+            analysedMethod.setArgumentsPosition(position);
+            return true;
+        }
+        return false;
+    }
+
+    private boolean optionalOutput(
+            AnalysedMethod analysedMethod,
+            Class<?>[] parameterTypes) {
+        final Class searchClass = OutputPipe.class;
+        int count = 0;
+        scala.Option<Integer> position = none;
+        for (int i = 0; i < parameterTypes.length; i++) {
+            Class<?> parameterType = parameterTypes[i];
+            if (parameterType.equals(searchClass)) {
+                position = scala.Option.apply(i);
+                count++;
+            }
+        }
+        if (count == 0 || count == 1) {
+            analysedMethod.setOutputPipePosition(position);
+            return true;
+        }
+        return false;
+    }
+
+    private boolean optionalInput(
+            AnalysedMethod analysedMethod,
+            Class<?>[] parameterTypes) {
+        final Class searchClass = InputPipe.class;
+        int count = 0;
+        scala.Option<Integer> position = none;
+        for (int i = 0; i < parameterTypes.length; i++) {
+            Class<?> parameterType = parameterTypes[i];
+            if (parameterType.equals(searchClass)) {
+                position = scala.Option.apply(i);
+                count++;
+            }
+        }
+        if (count == 0 || count == 1) {
+            analysedMethod.setInputPipePosition(position);
+            return true;
+        }
+        return false;
     }
 
     private boolean voidness(final Class<?> klass) {
