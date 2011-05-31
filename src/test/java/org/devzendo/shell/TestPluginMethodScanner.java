@@ -22,6 +22,7 @@ import java.util.Iterator;
 import java.util.Map;
 
 import org.devzendo.commoncode.logging.LoggingUnittestHelper;
+import org.devzendo.shell.PluginVariations.VoidReturnArrayListArgs;
 import org.devzendo.shell.PluginVariations.VoidReturnListArgs;
 import org.devzendo.shell.PluginVariations.VoidReturnListArgsInputPipe;
 import org.devzendo.shell.PluginVariations.VoidReturnListArgsInputPipeOutputPipe;
@@ -94,6 +95,12 @@ public class TestPluginMethodScanner {
             scala.Option.apply(0), none, none);
     }
 
+    @Test
+    public void voidReturnArrayListArgsOk() {
+        gotFunk(scanner.scanPluginMethods(new VoidReturnArrayListArgs()),
+            scala.Option.apply(0), none, none);
+    }
+    
     @Test
     public void voidReturnListArgsInputPipeOk() {
         gotFunk(scanner.scanPluginMethods(new VoidReturnListArgsInputPipe()),

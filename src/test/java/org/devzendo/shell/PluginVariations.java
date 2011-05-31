@@ -15,6 +15,7 @@
  */
 package org.devzendo.shell;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.devzendo.shell.pipe.InputPipe;
@@ -28,7 +29,9 @@ public class PluginVariations {
             VoidReturnNoArgsOutputPipe.class,
             VoidReturnNoArgsOutputPipeInputPipe.class,
             VoidReturnNoArgsInputPipeOutputPipe.class,
-            VoidReturnListArgs.class, VoidReturnListArgsInputPipe.class,
+            VoidReturnListArgs.class,
+            VoidReturnArrayListArgs.class,
+            VoidReturnListArgsInputPipe.class,
             VoidReturnListArgsOutputPipe.class,
             VoidReturnListArgsInputPipeOutputPipe.class,
             VoidReturnListArgsOutputPipeInputPipe.class,};
@@ -71,6 +74,13 @@ public class PluginVariations {
 
     public static class VoidReturnListArgs extends AbstractShellPlugin {
         public void funk(final List<Object> args) {
+            mExecuted = true;
+            mArgs = args;
+        }
+    }
+
+    public static class VoidReturnArrayListArgs extends AbstractShellPlugin {
+        public void funk(final ArrayList<Object> args) {
             mExecuted = true;
             mArgs = args;
         }

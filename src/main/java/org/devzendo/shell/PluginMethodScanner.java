@@ -73,9 +73,9 @@ public class PluginMethodScanner {
 
     private boolean onlyExpectedInputs(Class<?>[] parameterTypes) {
         for (Class<?> parameterType : parameterTypes) {
-            if (!parameterType.equals(List.class) && 
-                !parameterType.equals(InputPipe.class) && 
-                !parameterType.equals(OutputPipe.class)) {
+            if (!List.class.isAssignableFrom(parameterType) && 
+                !InputPipe.class.isAssignableFrom(parameterType) && 
+                !OutputPipe.class.isAssignableFrom(parameterType)) {
                 return false;
             }
         }
@@ -85,12 +85,12 @@ public class PluginMethodScanner {
     private boolean optionalArguments(
             AnalysedMethod analysedMethod,
             Class<?>[] parameterTypes) {
-        final Class searchClass = List.class;
+        final Class<?> searchClass = List.class;
         int count = 0;
         scala.Option<Integer> position = none;
         for (int i = 0; i < parameterTypes.length; i++) {
             Class<?> parameterType = parameterTypes[i];
-            if (parameterType.equals(searchClass)) {
+            if (searchClass.isAssignableFrom(parameterType)) {
                 position = scala.Option.apply(i);
                 count++;
             }
@@ -105,12 +105,12 @@ public class PluginMethodScanner {
     private boolean optionalOutput(
             AnalysedMethod analysedMethod,
             Class<?>[] parameterTypes) {
-        final Class searchClass = OutputPipe.class;
+        final Class<?> searchClass = OutputPipe.class;
         int count = 0;
         scala.Option<Integer> position = none;
         for (int i = 0; i < parameterTypes.length; i++) {
             Class<?> parameterType = parameterTypes[i];
-            if (parameterType.equals(searchClass)) {
+            if (searchClass.isAssignableFrom(parameterType)) {
                 position = scala.Option.apply(i);
                 count++;
             }
@@ -125,12 +125,12 @@ public class PluginMethodScanner {
     private boolean optionalInput(
             AnalysedMethod analysedMethod,
             Class<?>[] parameterTypes) {
-        final Class searchClass = InputPipe.class;
+        final Class<?> searchClass = InputPipe.class;
         int count = 0;
         scala.Option<Integer> position = none;
         for (int i = 0; i < parameterTypes.length; i++) {
             Class<?> parameterType = parameterTypes[i];
-            if (parameterType.equals(searchClass)) {
+            if (searchClass.isAssignableFrom(parameterType)) {
                 position = scala.Option.apply(i);
                 count++;
             }
@@ -144,17 +144,5 @@ public class PluginMethodScanner {
 
     private boolean voidness(final Class<?> klass) {
         return klass.toString().equals("void"); // no other way to detect this? 
-    }
-
-    private boolean input(final Class<?> klass) {
-        return klass.isAssignableFrom(InputPipe.class);
-    }
-
-    private boolean output(final Class<?> klass) {
-        return klass.isAssignableFrom(OutputPipe.class);
-    }
-
-    private boolean list(final Class<?> klass) {
-        return klass.isAssignableFrom(List.class);
     }
 }
