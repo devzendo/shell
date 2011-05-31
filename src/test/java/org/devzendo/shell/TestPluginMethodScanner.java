@@ -22,7 +22,6 @@ import java.util.Iterator;
 import java.util.Map;
 
 import org.devzendo.commoncode.logging.LoggingUnittestHelper;
-import org.devzendo.shell.PluginMethodScanner.AnalysedMethod;
 import org.devzendo.shell.PluginVariations.VoidReturnListArgs;
 import org.devzendo.shell.PluginVariations.VoidReturnListArgsInputPipe;
 import org.devzendo.shell.PluginVariations.VoidReturnListArgsInputPipeOutputPipe;

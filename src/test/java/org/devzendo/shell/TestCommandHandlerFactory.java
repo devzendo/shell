@@ -22,7 +22,6 @@ import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Map;
 
-import org.devzendo.shell.PluginMethodScanner.AnalysedMethod;
 import org.devzendo.shell.PluginVariations.AbstractShellPlugin;
 import org.devzendo.shell.PluginVariations.VoidReturnListArgs;
 import org.devzendo.shell.PluginVariations.VoidReturnNoArgs;

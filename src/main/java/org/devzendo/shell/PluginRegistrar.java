@@ -23,7 +23,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
-import org.devzendo.shell.PluginMethodScanner.AnalysedMethod;
 
 public class PluginRegistrar {
     private final String mPropertiesResourcePath;

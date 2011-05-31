@@ -29,38 +29,6 @@ public class PluginMethodScanner {
             .getLogger(PluginMethodScanner.class);
     private static final scala.Option<Integer> none = scala.Option.apply(null);
     
-    public static class AnalysedMethod {
-        private final Method method;
-        private scala.Option<Integer> argumentsPosition = none;
-        private scala.Option<Integer> inputPipePosition = none;
-        private scala.Option<Integer> outputPipePosition = none;
-        
-        public AnalysedMethod(Method method) {
-            this.method = method;
-        }
-        public final Method getMethod() {
-            return method;
-        }
-        public final scala.Option<Integer> getArgumentsPosition() {
-            return argumentsPosition;
-        }
-        public final void setArgumentsPosition(scala.Option<Integer> argumentsPosition) {
-            this.argumentsPosition = argumentsPosition;
-        }
-        public final scala.Option<Integer> getInputPipePosition() {
-            return inputPipePosition;
-        }
-        public final void setInputPipePosition(scala.Option<Integer> inputPipePosition) {
-            this.inputPipePosition = inputPipePosition;
-        }
-        public final scala.Option<Integer> getOutputPipePosition() {
-            return outputPipePosition;
-        }
-        public final void setOutputPipePosition(scala.Option<Integer> outputPipePosition) {
-            this.outputPipePosition = outputPipePosition;
-        }
-    }
-    
     public Map<String, AnalysedMethod> scanPluginMethods(final ShellPlugin shellPlugin) {
         final Map<String, AnalysedMethod> returnMethods = new HashMap<String, AnalysedMethod>();
         final Method[] methods = shellPlugin.getClass().getMethods();
