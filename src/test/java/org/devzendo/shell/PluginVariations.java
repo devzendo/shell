@@ -33,6 +33,9 @@ public class PluginVariations {
             VoidReturnListArgsInputPipeOutputPipe.class,
             VoidReturnListArgsOutputPipeInputPipe.class,};
 
+    // VoidReturnNoArgsBadSignature.class not added since it defines no
+    // plugin methods.
+    
     public static abstract class AbstractShellPlugin implements ShellPlugin {
         protected boolean mExecuted = false;
         protected InputPipe mInputPipe = null;
@@ -130,6 +133,13 @@ public class PluginVariations {
 
         public void initialise() {
             // do nothing
+        }
+    }
+
+    public static class VoidReturnNoArgsBadSignature extends AbstractShellPlugin {
+        public void funk(final OutputPipe output, final Integer notValid) {
+            mExecuted = true;
+            mOutputPipe = output;
         }
     }
 

@@ -30,11 +30,11 @@ import org.devzendo.shell.PluginVariations.VoidReturnListArgsOutputPipe;
 import org.devzendo.shell.PluginVariations.VoidReturnListArgsOutputPipeInputPipe;
 import org.devzendo.shell.PluginVariations.VoidReturnNoArgs;
 import org.devzendo.shell.PluginVariations.VoidReturnNoArgsBadPluginMethodsNotScanned;
+import org.devzendo.shell.PluginVariations.VoidReturnNoArgsBadSignature;
 import org.devzendo.shell.PluginVariations.VoidReturnNoArgsInputPipe;
 import org.devzendo.shell.PluginVariations.VoidReturnNoArgsInputPipeOutputPipe;
 import org.devzendo.shell.PluginVariations.VoidReturnNoArgsOutputPipe;
 import org.devzendo.shell.PluginVariations.VoidReturnNoArgsOutputPipeInputPipe;
-import org.hamcrest.Matchers;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -53,7 +53,12 @@ public class TestPluginMethodScanner {
         gotFunk(scanner.scanPluginMethods(new VoidReturnNoArgsBadPluginMethodsNotScanned()),
             none, none, none);
     }
-
+    
+    @Test
+    public void voidReturnNoArgsBadSignature() {
+        noMethods(scanner.scanPluginMethods(new VoidReturnNoArgsBadSignature()));
+    }
+    
     @Test
     public void voidReturnNoArgsOk() {
         gotFunk(scanner.scanPluginMethods(new VoidReturnNoArgs()),
@@ -126,5 +131,9 @@ public class TestPluginMethodScanner {
         assertThat(analysedMethod.getArgumentsPosition(), equalTo(argPos));
         assertThat(analysedMethod.getInputPipePosition(), equalTo(inputPipePos));
         assertThat(analysedMethod.getOutputPipePosition(), equalTo(outputPipePos));
+    }
+
+    private void noMethods(Map<String, AnalysedMethod> map) {
+        assertThat(map.size(), equalTo(0));
     }
 }
