@@ -99,8 +99,7 @@ class PluginMethodScannerS {
         var count = 0
         var position: Option[Integer] = None
         for (i <- 0 until parameterTypes.length) {
-            val parameterType = parameterTypes(i)
-            if (searchClass.isAssignableFrom(parameterType)) {
+            if (searchClass.isAssignableFrom(parameterTypes(i))) {
                 position = Option(i)
                 count = count + 1
             }
