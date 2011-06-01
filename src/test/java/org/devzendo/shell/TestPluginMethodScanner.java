@@ -46,7 +46,7 @@ public class TestPluginMethodScanner {
         LoggingUnittestHelper.setupLogging();
     }
     
-    final PluginMethodScannerS scanner = new PluginMethodScannerS();
+    final PluginMethodScanner scanner = new PluginMethodScanner();
     
     @Test
     public void voidReturnNoArgsOkBadInitialiseNotScanned() {
