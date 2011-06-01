@@ -25,6 +25,9 @@ import org.devzendo.shell.pipe.{InputPipe, OutputPipe}
 
 object PluginMethodScannerS {
     private val LOGGER = Logger.getLogger(classOf[PluginMethodScannerS])
+    private val objectMethodNames = Set("getClass", "notify", "notifyAll",
+        "wait", "equals", "hashCode", "toString")
+    private val shellPluginMethodNames = Set("initialise")
 }
 class PluginMethodScannerS {
 
@@ -32,7 +35,7 @@ class PluginMethodScannerS {
         val returnMethods = new HashMap[String, AnalysedMethod]()
         val methods = shellPlugin.getClass.getMethods()
         PluginMethodScannerS.LOGGER.debug("Scanning " + methods.length + " method(s) from class " + shellPlugin.getClass().getSimpleName());
-        val possiblePluginMethods = methods filter validNames filter voidReturn filter validParameterTypes
+        val possiblePluginMethods = methods filter notObjectOrShellPluginMethodNames filter voidReturn filter validParameterTypes
         possiblePluginMethods.foreach ( m => {
             PluginMethodScannerS.LOGGER.debug("Considering method " + m)
             val analysedMethod = new AnalysedMethod(m)
@@ -54,22 +57,10 @@ class PluginMethodScannerS {
         return returnMethods;
     }
     
-    private def validNames(method: Method): Boolean = {
-        // Ignore Object methods
+    private def notObjectOrShellPluginMethodNames(method: Method): Boolean = {
         val name = method.getName()
-        if (name.equals("getClass") || name.equals("notify") ||
-            name.equals("notifyAll") || name.equals("wait") ||
-            name.equals("equals") || name.equals("hashCode") ||
-            name.equals("toString")) {
-            return false
-        }
-
-        // Ignore ShellPlugin methods
-        if (name.equals("initialise")) {
-            return false
-        }
-
-        return true
+        ! (PluginMethodScannerS.objectMethodNames.contains(name) ||
+            PluginMethodScannerS.shellPluginMethodNames.contains(name))
     }
 
     private def voidReturn(method: Method): Boolean = {
