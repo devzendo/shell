@@ -36,10 +36,10 @@ class PluginMethodScannerS {
         val methods = shellPlugin.getClass.getMethods()
         PluginMethodScannerS.LOGGER.debug("Scanning " + methods.length + " method(s) from class " + shellPlugin.getClass().getSimpleName());
         val possiblePluginMethods = methods filter notObjectOrShellPluginMethodNames filter voidReturn filter validParameterTypes
-        possiblePluginMethods.foreach ( m => {
-            PluginMethodScannerS.LOGGER.debug("Considering method " + m)
-            val analysedMethod = new AnalysedMethod(m)
-            val parameterTypes = m.getParameterTypes
+        possiblePluginMethods.foreach(method => {
+            PluginMethodScannerS.LOGGER.debug("Considering method " + method)
+            val analysedMethod = new AnalysedMethod(method)
+            val parameterTypes = method.getParameterTypes
             if (parameterTypes.length == 0 ||
                     
                 (parameterTypes.length >= 1 && parameterTypes.length <= 3 &&
@@ -47,8 +47,8 @@ class PluginMethodScannerS {
                   optionalOutput(analysedMethod, parameterTypes) &&
                   optionalArguments(analysedMethod, parameterTypes)
                  ))) {
-                PluginMethodScannerS.LOGGER.debug("Registering method " + m)
-                returnMethods.put(m.getName, analysedMethod);
+                PluginMethodScannerS.LOGGER.debug("Registering method " + method)
+                returnMethods.put(method.getName, analysedMethod);
             } else {
                 PluginMethodScannerS.LOGGER.debug("Not of the right signature");
             }
