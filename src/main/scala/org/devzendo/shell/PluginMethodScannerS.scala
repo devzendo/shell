@@ -86,45 +86,25 @@ class PluginMethodScannerS {
 
     private def optionalArguments(analysedMethod: AnalysedMethod,
             parameterTypes: Array[Class[_]]): Boolean = {
-        val searchClass = classOf[List[_]]
-        var count = 0
-        var position: Option[Integer] = None
-        for (i <- 0 until parameterTypes.length) {
-            val parameterType = parameterTypes(i)
-            if (searchClass.isAssignableFrom(parameterType)) {
-                position = Option(i)
-                count = count + 1
-            }
-        }
-        if (count == 0 || count == 1) {
-            analysedMethod.setArgumentsPosition(position)
-            return true
-        }
-        return false
+        optionalParameter(parameterTypes, classOf[List[_]], 
+            (o: Option[Integer]) => analysedMethod.setArgumentsPosition(o))
     }
     
     private def optionalOutput(analysedMethod: AnalysedMethod,
             parameterTypes: Array[Class[_]]): Boolean = {
-        val searchClass = classOf[OutputPipe]
-        var count = 0
-        var position: Option[Integer] = None
-        for (i <- 0 until parameterTypes.length) {
-            val parameterType = parameterTypes(i)
-            if (searchClass.isAssignableFrom(parameterType)) {
-                position = Option(i)
-                count = count + 1
-            }
-        }
-        if (count == 0 || count == 1) {
-            analysedMethod.setOutputPipePosition(position)
-            return true
-        }
-        return false
+        optionalParameter(parameterTypes, classOf[OutputPipe], 
+            (o: Option[Integer]) => analysedMethod.setOutputPipePosition(o))
     }
 
     private def optionalInput(analysedMethod: AnalysedMethod,
             parameterTypes: Array[Class[_]]): Boolean = {
-        val searchClass = classOf[InputPipe]
+        optionalParameter(parameterTypes, classOf[InputPipe], 
+            (o: Option[Integer]) => analysedMethod.setInputPipePosition(o))
+    }
+    
+    private def optionalParameter(parameterTypes: Array[Class[_]],
+            searchClass: Class[_],
+            storePosition: (Option[Integer]) => Unit): Boolean = {
         var count = 0
         var position: Option[Integer] = None
         for (i <- 0 until parameterTypes.length) {
@@ -135,7 +115,7 @@ class PluginMethodScannerS {
             }
         }
         if (count == 0 || count == 1) {
-            analysedMethod.setInputPipePosition(position)
+            storePosition(position)
             return true
         }
         return false
