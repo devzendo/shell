@@ -129,6 +129,19 @@ public class PluginVariations {
         }
     }
 
+    public static class VoidReturnInputPipeOutputPipeListArgs extends
+            AbstractShellPlugin {
+        public void funk(
+                final InputPipe input,
+                final OutputPipe output,
+                final List<Object> args) {
+            mExecuted = true;
+            mInputPipe = input;
+            mOutputPipe = output;
+            mArgs = args;
+        }
+    }
+
     public static class VoidReturnNoArgs extends AbstractShellPlugin {
         public void funk() {
             mExecuted = true;

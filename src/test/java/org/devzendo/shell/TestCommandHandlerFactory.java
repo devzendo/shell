@@ -23,6 +23,7 @@ import java.util.Map;
 
 import org.devzendo.commoncode.logging.LoggingUnittestHelper;
 import org.devzendo.shell.PluginVariations.AbstractShellPlugin;
+import org.devzendo.shell.PluginVariations.VoidReturnInputPipeOutputPipeListArgs;
 import org.devzendo.shell.PluginVariations.VoidReturnListArgs;
 import org.devzendo.shell.PluginVariations.VoidReturnListArgsInputPipe;
 import org.devzendo.shell.PluginVariations.VoidReturnListArgsInputPipeOutputPipe;
@@ -125,6 +126,13 @@ public class TestCommandHandlerFactory {
         final AbstractShellPlugin plugin = new VoidReturnNoArgsOutputPipeInputPipe();
         setupAndExecuteHandler(plugin);
         assertPluginHasBeenPassed(plugin, null, inputPipe, outputPipe);
+    }
+    
+    @Test
+    public void voidReturnInputPipeOutputPipeListArgs() throws CommandExecutionException {
+        final AbstractShellPlugin plugin = new VoidReturnInputPipeOutputPipeListArgs();
+        setupAndExecuteHandler(plugin);
+        assertPluginHasBeenPassed(plugin, args, inputPipe, outputPipe);
     }
 
     private void setupAndExecuteHandler(final AbstractShellPlugin plugin)

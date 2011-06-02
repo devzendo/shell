@@ -23,6 +23,7 @@ import java.util.Map;
 
 import org.devzendo.commoncode.logging.LoggingUnittestHelper;
 import org.devzendo.shell.PluginVariations.VoidReturnArrayListArgs;
+import org.devzendo.shell.PluginVariations.VoidReturnInputPipeOutputPipeListArgs;
 import org.devzendo.shell.PluginVariations.VoidReturnListArgs;
 import org.devzendo.shell.PluginVariations.VoidReturnListArgsInputPipe;
 import org.devzendo.shell.PluginVariations.VoidReturnListArgsInputPipeOutputPipe;
@@ -122,6 +123,12 @@ public class TestPluginMethodScanner {
     public void voidReturnListArgsOutputPipeInputPipeOk() {
         gotFunk(scanner.scanPluginMethods(new VoidReturnListArgsOutputPipeInputPipe()),
             scala.Option.apply(0), scala.Option.apply(2), scala.Option.apply(1));
+    }
+
+    @Test
+    public void voidReturnInputPipeOutputPipeListArgsOk() {
+        gotFunk(scanner.scanPluginMethods(new VoidReturnInputPipeOutputPipeListArgs()),
+            scala.Option.apply(2), scala.Option.apply(0), scala.Option.apply(1));
     }
 
     private void gotFunk(final Map<String, AnalysedMethod> map,
