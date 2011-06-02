@@ -18,19 +18,27 @@ package org.devzendo.shell;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 
-import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Map;
 
+import org.devzendo.commoncode.logging.LoggingUnittestHelper;
 import org.devzendo.shell.PluginVariations.AbstractShellPlugin;
 import org.devzendo.shell.PluginVariations.VoidReturnListArgs;
+import org.devzendo.shell.PluginVariations.VoidReturnListArgsInputPipe;
+import org.devzendo.shell.PluginVariations.VoidReturnListArgsInputPipeOutputPipe;
+import org.devzendo.shell.PluginVariations.VoidReturnListArgsOutputPipe;
+import org.devzendo.shell.PluginVariations.VoidReturnListArgsOutputPipeInputPipe;
 import org.devzendo.shell.PluginVariations.VoidReturnNoArgs;
+import org.devzendo.shell.PluginVariations.VoidReturnNoArgsInputPipe;
+import org.devzendo.shell.PluginVariations.VoidReturnNoArgsInputPipeOutputPipe;
+import org.devzendo.shell.PluginVariations.VoidReturnNoArgsOutputPipe;
+import org.devzendo.shell.PluginVariations.VoidReturnNoArgsOutputPipeInputPipe;
 import org.devzendo.shell.pipe.InputPipe;
 import org.devzendo.shell.pipe.OutputPipe;
 import org.jmock.Mockery;
 import org.jmock.integration.junit4.JMock;
 import org.jmock.integration.junit4.JUnit4Mockery;
-import org.junit.Ignore;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -44,40 +52,100 @@ public class TestCommandHandlerFactory {
     private final InputPipe inputPipe = context.mock(InputPipe.class);
     private final OutputPipe outputPipe = context.mock(OutputPipe.class);
     
+    @BeforeClass
+    public static void setupLogging() {
+        LoggingUnittestHelper.setupLogging();
+    }
+    
+    @Test
+    public void voidReturnListArgs() throws CommandExecutionException {
+        final AbstractShellPlugin plugin = new VoidReturnListArgs();
+        setupAndExecuteHandler(plugin);
+        assertPluginHasBeenPassed(plugin, args, null, null);
+    }
+    
+    @Test
+    public void voidReturnListArgsInputPipe() throws CommandExecutionException {
+        final AbstractShellPlugin plugin = new VoidReturnListArgsInputPipe();
+        setupAndExecuteHandler(plugin);
+        assertPluginHasBeenPassed(plugin, args, inputPipe, null);
+    }
+
+    @Test
+    public void voidReturnListArgsInputPipeOutputPipe() throws CommandExecutionException {
+        final AbstractShellPlugin plugin = new VoidReturnListArgsInputPipeOutputPipe();
+        setupAndExecuteHandler(plugin);
+        assertPluginHasBeenPassed(plugin, args, inputPipe, outputPipe);
+    }
+
+    @Test
+    public void voidReturnListArgsOutputPipe() throws CommandExecutionException {
+        final AbstractShellPlugin plugin = new VoidReturnListArgsOutputPipe();
+        setupAndExecuteHandler(plugin);
+        assertPluginHasBeenPassed(plugin, args, null, outputPipe);
+    }
+
+    @Test
+    public void voidReturnListArgsOutputPipeInputPipe() throws CommandExecutionException {
+        final AbstractShellPlugin plugin = new VoidReturnListArgsOutputPipeInputPipe();
+        setupAndExecuteHandler(plugin);
+        assertPluginHasBeenPassed(plugin, args, inputPipe, outputPipe);
+    }
+
     @Test
     public void voidReturnNoArgs() throws CommandExecutionException {
         final AbstractShellPlugin plugin = new VoidReturnNoArgs();
-        final Method method = getMethod(plugin);
-        final CommandHandler handler = factory.createHandler(plugin, method);
-        assertHandlerContains(plugin, null, null, null);
-        handler.execute();
-        assertHandlerContains(plugin, null, null, null);
+        setupAndExecuteHandler(plugin);
+        assertPluginHasBeenPassed(plugin, null, null, null);
     }
-    
+
     @Test
-    @Ignore
-    public void voidReturnListArgs() throws CommandExecutionException {
-        final AbstractShellPlugin plugin = new VoidReturnListArgs();
-        final Method method = getMethod(plugin);
-        final CommandHandler handler = factory.createHandler(plugin, method);
-        assertHandlerContains(plugin, null, null, null);
-        handler.execute();
-        assertHandlerContains(plugin, args, null, null);
+    public void voidReturnNoArgsInputPipe() throws CommandExecutionException {
+        final AbstractShellPlugin plugin = new VoidReturnNoArgsInputPipe();
+        setupAndExecuteHandler(plugin);
+        assertPluginHasBeenPassed(plugin, null, inputPipe, null);
     }
-    // TODO do the remaining PluginVariation plugins....
+
+    @Test
+    public void voidReturnNoArgsInputPipeOutputPipe() throws CommandExecutionException {
+        final AbstractShellPlugin plugin = new VoidReturnNoArgsInputPipeOutputPipe();
+        setupAndExecuteHandler(plugin);
+        assertPluginHasBeenPassed(plugin, null, inputPipe, outputPipe);
+    }
+
+    @Test
+    public void voidReturnNoArgsOutputPipe() throws CommandExecutionException {
+        final AbstractShellPlugin plugin = new VoidReturnNoArgsOutputPipe();
+        setupAndExecuteHandler(plugin);
+        assertPluginHasBeenPassed(plugin, null, null, outputPipe);
+    }
+
+    @Test
+    public void voidReturnNoArgsOutputPipeInputPipe() throws CommandExecutionException {
+        final AbstractShellPlugin plugin = new VoidReturnNoArgsOutputPipeInputPipe();
+        setupAndExecuteHandler(plugin);
+        assertPluginHasBeenPassed(plugin, null, inputPipe, outputPipe);
+    }
+
+    private void setupAndExecuteHandler(final AbstractShellPlugin plugin)
+            throws CommandExecutionException {
+        final Map<String, AnalysedMethod> methods = scanner.scanPluginMethods(plugin);
+        assertThat(methods.size(), equalTo(1));
+        final AnalysedMethod analysedMethod = methods.values().iterator().next();
+        final CommandHandler handler = factory.createHandler(plugin, analysedMethod);
+        handler.setArgs(args);
+        handler.setInputPipe(inputPipe);
+        handler.setOutputPipe(outputPipe);
+        assertPluginHasBeenPassed(plugin, null, null, null);
+        handler.execute();
+    }
     
-    private void assertHandlerContains(final AbstractShellPlugin plugin,
+    private void assertPluginHasBeenPassed(final AbstractShellPlugin plugin,
             final List<Object> expectedArgs,
             final InputPipe expectedInputPipe,
             final OutputPipe expectedOutputPipe) {
         assertThat(plugin.getArgs(), equalTo(expectedArgs));
         assertThat(plugin.getInputPipe(), equalTo(expectedInputPipe));
         assertThat(plugin.getOutputPipe(), equalTo(expectedOutputPipe));
-    }
-
-    private Method getMethod(ShellPlugin plugin) {
-        final Map<String, AnalysedMethod> methods = scanner.scanPluginMethods(plugin);
-        assertThat(methods.size(), equalTo(1));
-        return methods.values().iterator().next().getMethod();
     }
 }
