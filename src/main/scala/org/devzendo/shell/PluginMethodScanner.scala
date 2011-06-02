@@ -69,9 +69,9 @@ class PluginMethodScanner {
 
     private def validParameterTypes(method: Method): Boolean = {
         method.getParameterTypes forall(c => {
-            classOf[List[_]].isAssignableFrom(c) ||
-            classOf[InputPipe].isAssignableFrom(c) ||
-            classOf[OutputPipe].isAssignableFrom(c)
+            c == classOf[List[_]] ||
+            c == classOf[InputPipe] ||
+            c == classOf[OutputPipe]
         })
     }
 

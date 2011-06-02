@@ -96,9 +96,8 @@ public class TestPluginMethodScanner {
     }
 
     @Test
-    public void voidReturnArrayListArgsOk() {
-        gotFunk(scanner.scanPluginMethods(new VoidReturnArrayListArgs()),
-            scala.Option.apply(0), none, none);
+    public void voidReturnArrayListArgsNotOk() { // Must be exactly a List
+        noMethods(scanner.scanPluginMethods(new VoidReturnArrayListArgs()));
     }
     
     @Test
