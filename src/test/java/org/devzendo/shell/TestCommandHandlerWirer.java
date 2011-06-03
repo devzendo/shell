@@ -117,26 +117,64 @@ public class TestCommandHandlerWirer {
         assertThat(commandHandler.getOutputPipe(), instanceOf(VariableOutputPipe.class));
     }
     
+    public void rightNoInputPipe(final OutputPipe outputPipe) {
+        // do nothing
+    }
+
     /**
      * left | right
      * right has no input pipe in its command method, so can't receive left's
      * output. Therefore, left's output must be discarded.
+     * @throws DuplicateCommandException 
+     * @throws CommandNotFoundException 
      */
     @Test
-    @Ignore
-    public void rightCommandWithNoInputConnectedToLeftCommandViaDiscardPipe() {
-        Assert.fail("unimplemented");
+    public void rightCommandWithNoInputConnectedToLeftCommandViaDiscardPipe() throws DuplicateCommandException, CommandNotFoundException {
+        registerMethodAsCommandAndAddToPipeline("commandHandlerWithBothPipes");
+        registerMethodAsCommandAndAddToPipeline("rightNoInputPipe");
+        
+        List<CommandHandler> handlers = wirer.wire(pipeline);
+        assertThat(handlers.size(), equalTo(2));
+
+        CommandHandler fooCommandHandler = handlers.get(0);
+        assertThat(fooCommandHandler.getInputPipe(), instanceOf(NullInputPipe.class));
+        assertThat(fooCommandHandler.getOutputPipe(), instanceOf(OutputPipe.class));
+        assertThat(fooCommandHandler.getOutputPipe(), instanceOf(RendezvousPipe.class));
+        
+        CommandHandler barCommandHandler = handlers.get(1);
+        assertThat(barCommandHandler.getInputPipe(), instanceOf(InputPipe.class));
+        assertThat(barCommandHandler.getInputPipe(), instanceOf(RendezvousPipe.class));
+        assertThat(barCommandHandler.getOutputPipe(), instanceOf(LogInfoOutputPipe.class));
+    }
+
+    public void leftNoOutputPipe(final InputPipe inputPipe) {
+        // do nothing
     }
 
     /**
      * left | right
      * left has no output pipe in its command method, so can't send left's
      * input. Therefore, right's input must be immediately empty.
+     * @throws DuplicateCommandException 
+     * @throws CommandNotFoundException 
      */
     @Test
-    @Ignore
-    public void leftCommandWithNoOutputConnectedToRightCommandViaEmptyPipe() {
-        Assert.fail("unimplemented");
+    public void leftCommandWithNoOutputConnectedToRightCommandViaEmptyPipe() throws DuplicateCommandException, CommandNotFoundException {
+        registerMethodAsCommandAndAddToPipeline("leftNoOutputPipe");
+        registerMethodAsCommandAndAddToPipeline("commandHandlerWithBothPipes");
+        
+        List<CommandHandler> handlers = wirer.wire(pipeline);
+        assertThat(handlers.size(), equalTo(2));
+
+        CommandHandler fooCommandHandler = handlers.get(0);
+        assertThat(fooCommandHandler.getInputPipe(), instanceOf(NullInputPipe.class));
+        assertThat(fooCommandHandler.getOutputPipe(), instanceOf(OutputPipe.class));
+        assertThat(fooCommandHandler.getOutputPipe(), instanceOf(RendezvousPipe.class));
+        
+        CommandHandler barCommandHandler = handlers.get(1);
+        assertThat(barCommandHandler.getInputPipe(), instanceOf(InputPipe.class));
+        assertThat(barCommandHandler.getInputPipe(), instanceOf(RendezvousPipe.class));
+        assertThat(barCommandHandler.getOutputPipe(), instanceOf(LogInfoOutputPipe.class));
     }
 
     @Test
@@ -173,6 +211,13 @@ public class TestCommandHandlerWirer {
         final Command command = new Command("foo", Collections.EMPTY_LIST);
         pipeline.addCommand(command);
         wirer.wire(pipeline);
+    }
+
+    @SuppressWarnings("unchecked")
+    private void registerMethodAsCommandAndAddToPipeline(final String methodName)
+            throws DuplicateCommandException {
+        commandRegistry.registerCommand(methodName, null, analyseMethodNamed(methodName));
+        pipeline.addCommand(new Command(methodName, Collections.EMPTY_LIST));
     }
 
     private AnalysedMethod analyseMethodNamed(final String methodName) {
