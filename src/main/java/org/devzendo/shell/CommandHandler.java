@@ -20,17 +20,33 @@ import java.util.List;
 import org.devzendo.shell.pipe.InputPipe;
 import org.devzendo.shell.pipe.OutputPipe;
 
+import scala.Option;
+
 public abstract class CommandHandler {
+    private final String mName;
+    private final Option<Integer> mArgumentsPos;
+    private final Option<Integer> mInputPipePos;
+    private final Option<Integer> mOutputPipePos;
+
     private InputPipe mInputPipe;
     private OutputPipe mOutputPipe;
     private List<Object> mArgs;
-    private final String mName;
     
     /**
      * @param name the command name that this handler will execute
+     * @param outputPipePos 
+     * @param inputPipePos 
+     * @param argumentsPos 
      */
-    public CommandHandler(String name) {
+    public CommandHandler(
+            final String name,
+            final Option<Integer> argumentsPos,
+            final Option<Integer> inputPipePos,
+            final Option<Integer> outputPipePos) {
         mName = name;
+        mArgumentsPos = argumentsPos;
+        mInputPipePos = inputPipePos;
+        mOutputPipePos = outputPipePos;
     }
 
     public final String getName() {
@@ -62,4 +78,16 @@ public abstract class CommandHandler {
     }
     
     public abstract void execute() throws CommandExecutionException;
+
+    public final Option<Integer> getArgumentsPos() {
+        return mArgumentsPos;
+    }
+
+    public final Option<Integer> getInputPipePos() {
+        return mInputPipePos;
+    }
+
+    public final Option<Integer> getOutputPipePos() {
+        return mOutputPipePos;
+    }
 }

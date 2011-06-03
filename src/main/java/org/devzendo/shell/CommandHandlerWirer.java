@@ -45,7 +45,7 @@ public class CommandHandlerWirer {
         final ArrayList<CommandHandler> handlers = new ArrayList<CommandHandler>();
         final List<Command> commands = commandPipeline.getCommands();
         assert commands.size() > 0;
-        for (Command command : commands) {
+        for (Command command: commands) {
             CommandHandler handler = mCommandRegistry.getHandler(command.getName());
             handler.setArgs(command.getArgs());
             handlers.add(handler);
@@ -76,9 +76,7 @@ public class CommandHandlerWirer {
         return handlers;
     }
 
-    private void connectByRendezvousPipe(
-            CommandHandler left,
-            CommandHandler right) {
+    private void connectByRendezvousPipe(final CommandHandler left, final CommandHandler right) {
         final RendezvousPipe pipe = new RendezvousPipe();
         left.setOutputPipe(pipe);
         right.setInputPipe(pipe);

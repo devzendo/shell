@@ -31,12 +31,14 @@ import org.junit.Test;
 import scala.Option;
 
 public class TestExecutionContainer {
+    private static final Option<Integer> none = Option.apply(null);
+
     final class TestCommandHandler extends CommandHandler {
         private Thread mCurrentThread;
         private CommandExecutionException mCommandExecutionException;
 
         public TestCommandHandler(String name) {
-            super(name);
+            super(name, none, none, none);
         }
 
         @Override

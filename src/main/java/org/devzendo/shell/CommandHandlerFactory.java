@@ -40,7 +40,11 @@ public class CommandHandlerFactory {
      */
     public CommandHandler createHandler(final ShellPlugin plugin, final AnalysedMethod analysedMethod) {
         final Method method = analysedMethod.getMethod();
-        final CommandHandler handler = new CommandHandler(method.getName()) {
+        final CommandHandler handler = new CommandHandler(
+            method.getName(),
+            analysedMethod.getArgumentsPosition(),
+            analysedMethod.getInputPipePosition(),
+            analysedMethod.getOutputPipePosition()) {
             @Override
             public void execute() throws CommandExecutionException {
                 try {
