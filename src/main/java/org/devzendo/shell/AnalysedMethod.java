@@ -17,13 +17,15 @@ package org.devzendo.shell;
 
 import java.lang.reflect.Method;
 
+import scala.Option;
+
 public class AnalysedMethod {
-    private static final scala.Option<Integer> none = scala.Option.apply(null);
+    private static final Option<Integer> none = Option.apply(null);
 
     private final Method method;
-    private scala.Option<Integer> argumentsPosition = none;
-    private scala.Option<Integer> inputPipePosition = none;
-    private scala.Option<Integer> outputPipePosition = none;
+    private Option<Integer> argumentsPosition = none;
+    private Option<Integer> inputPipePosition = none;
+    private Option<Integer> outputPipePosition = none;
     
     public AnalysedMethod(Method method) {
         this.method = method;
@@ -31,22 +33,22 @@ public class AnalysedMethod {
     public final Method getMethod() {
         return method;
     }
-    public final scala.Option<Integer> getArgumentsPosition() {
+    public final Option<Integer> getArgumentsPosition() {
         return argumentsPosition;
     }
-    public final void setArgumentsPosition(scala.Option<Integer> argumentsPosition) {
+    public final void setArgumentsPosition(Option<Integer> argumentsPosition) {
         this.argumentsPosition = argumentsPosition;
     }
-    public final scala.Option<Integer> getInputPipePosition() {
+    public final Option<Integer> getInputPipePosition() {
         return inputPipePosition;
     }
-    public final void setInputPipePosition(scala.Option<Integer> inputPipePosition) {
+    public final void setInputPipePosition(Option<Integer> inputPipePosition) {
         this.inputPipePosition = inputPipePosition;
     }
-    public final scala.Option<Integer> getOutputPipePosition() {
+    public final Option<Integer> getOutputPipePosition() {
         return outputPipePosition;
     }
-    public final void setOutputPipePosition(scala.Option<Integer> outputPipePosition) {
+    public final void setOutputPipePosition(Option<Integer> outputPipePosition) {
         this.outputPipePosition = outputPipePosition;
     }
 }
