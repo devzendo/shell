@@ -20,9 +20,12 @@ import java.util.List;
 
 import org.devzendo.shell.pipe.LogInfoOutputPipe;
 import org.devzendo.shell.pipe.NullInputPipe;
+import org.devzendo.shell.pipe.NullOutputPipe;
 import org.devzendo.shell.pipe.RendezvousPipe;
 import org.devzendo.shell.pipe.VariableInputPipe;
 import org.devzendo.shell.pipe.VariableOutputPipe;
+
+import scala.Option;
 
 /**
  * Given a command pipeline, create a list of command handlers for each
@@ -33,6 +36,8 @@ import org.devzendo.shell.pipe.VariableOutputPipe;
  *
  */
 public class CommandHandlerWirer {
+    private static final Option<Integer> none = Option.apply(null);
+
     private final CommandRegistry mCommandRegistry;
     private final VariableRegistry mVariableRegistry;
 
@@ -70,8 +75,19 @@ public class CommandHandlerWirer {
             // left | right
             CommandHandler left = handlers.get(i);
             CommandHandler right = handlers.get(i + 1);
-            // In cases where left has output, and right has input:
-            connectByRendezvousPipe(left, right);
+            
+            if (right.getInputPipePos().equals(none)) {
+                left.setOutputPipe(new NullOutputPipe());
+                right.setInputPipe(new NullInputPipe());
+            } else {
+                if (left.getOutputPipePos().equals(none)) {
+                    left.setOutputPipe(new NullOutputPipe());
+                    right.setInputPipe(new NullInputPipe());
+                } else {
+                    // In cases where left has output, and right has input:
+                    connectByRendezvousPipe(left, right);
+                }
+            }
         }
         return handlers;
     }

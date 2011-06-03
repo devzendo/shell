@@ -34,7 +34,6 @@ import org.devzendo.shell.pipe.VariableInputPipe;
 import org.devzendo.shell.pipe.VariableOutputPipe;
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 public class TestCommandHandlerWirer {
@@ -130,7 +129,6 @@ public class TestCommandHandlerWirer {
      * @throws CommandNotFoundException 
      */
     @Test
-    @Ignore
     public void rightCommandWithNoInputConnectedToLeftCommandViaDiscardPipe() throws DuplicateCommandException, CommandNotFoundException {
         registerMethodAsCommandAndAddToPipeline("commandHandlerWithBothPipes");
         registerMethodAsCommandAndAddToPipeline("rightNoInputPipe");
@@ -161,7 +159,6 @@ public class TestCommandHandlerWirer {
      * @throws CommandNotFoundException 
      */
     @Test
-    @Ignore
     public void leftCommandWithNoOutputConnectedToRightCommandViaEmptyPipe() throws DuplicateCommandException, CommandNotFoundException {
         registerMethodAsCommandAndAddToPipeline("leftNoOutputPipe");
         registerMethodAsCommandAndAddToPipeline("commandHandlerWithBothPipes");
