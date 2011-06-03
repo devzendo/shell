@@ -45,11 +45,7 @@ public class TestCommandHandlerWirer {
     
     @Before
     public void setUpAnalysedMethod() throws SecurityException, NoSuchMethodException {
-        for (Method method : this.getClass().getMethods()) {
-            if (method.getName().equals("commandHandlerWithBothPipes")) {
-                mAnalysedMethod = analyseMethod(method);
-            }
-        }
+        mAnalysedMethod = analyseMethodNamed("commandHandlerWithBothPipes");
     }
     
     public void commandHandlerWithBothPipes(final InputPipe inputPipe, final OutputPipe outputPipe) {
@@ -179,6 +175,16 @@ public class TestCommandHandlerWirer {
         wirer.wire(pipeline);
     }
 
+    private AnalysedMethod analyseMethodNamed(final String methodName) {
+        for (Method method : this.getClass().getMethods()) {
+            if (method.getName().equals(methodName)) {
+                return analyseMethod(method);
+            }
+        }
+        Assert.fail("Could not find a command handler method called " + methodName);
+        return null;
+    }
+    
     private AnalysedMethod analyseMethod(Method method) {
         return (AnalysedMethod) new MethodAnalyser().analyseMethod(method).get();
     }
