@@ -76,17 +76,12 @@ public class CommandHandlerWirer {
             CommandHandler left = handlers.get(i);
             CommandHandler right = handlers.get(i + 1);
             
-            if (right.getInputPipePos().equals(none)) {
+            if (right.getInputPipePos().equals(none) || left.getOutputPipePos().equals(none)) {
                 left.setOutputPipe(new NullOutputPipe());
                 right.setInputPipe(new NullInputPipe());
             } else {
-                if (left.getOutputPipePos().equals(none)) {
-                    left.setOutputPipe(new NullOutputPipe());
-                    right.setInputPipe(new NullInputPipe());
-                } else {
-                    // In cases where left has output, and right has input:
-                    connectByRendezvousPipe(left, right);
-                }
+                // In cases where left has output, and right has input:
+                connectByRendezvousPipe(left, right);
             }
         }
         return handlers;
