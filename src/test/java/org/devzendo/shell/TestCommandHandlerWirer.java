@@ -172,11 +172,11 @@ public class TestCommandHandlerWirer {
         CommandHandler leftCommandHandler = handlers.get(0);
         assertThat(leftCommandHandler.getInputPipe(), instanceOf(NullInputPipe.class));
         assertThat(leftCommandHandler.getOutputPipe(), instanceOf(OutputPipe.class));
-        assertThat(leftCommandHandler.getOutputPipe(), instanceOf(RendezvousPipe.class));
+        assertThat(leftCommandHandler.getOutputPipe(), instanceOf(NullOutputPipe.class));
         
         CommandHandler rightCommandHandler = handlers.get(1);
         assertThat(rightCommandHandler.getInputPipe(), instanceOf(InputPipe.class));
-        assertThat(rightCommandHandler.getInputPipe(), instanceOf(RendezvousPipe.class));
+        assertThat(rightCommandHandler.getInputPipe(), instanceOf(NullInputPipe.class));
         assertThat(rightCommandHandler.getOutputPipe(), instanceOf(LogInfoOutputPipe.class));
     }
 
