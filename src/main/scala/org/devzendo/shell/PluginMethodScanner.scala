@@ -38,17 +38,10 @@ class PluginMethodScanner {
         val possiblePluginMethods = methods filter notObjectOrShellPluginMethodNames filter voidReturn filter validParameterTypes
         possiblePluginMethods.foreach(method => {
             PluginMethodScanner.LOGGER.debug("Considering method " + method)
-            val analysedMethod = new AnalysedMethod(method)
-            val parameterTypes = method.getParameterTypes
-            if (parameterTypes.length == 0 ||
-                    
-                (parameterTypes.length >= 1 && parameterTypes.length <= 3 &&
-                 (optionalInput(analysedMethod, parameterTypes) &&
-                  optionalOutput(analysedMethod, parameterTypes) &&
-                  optionalArguments(analysedMethod, parameterTypes)
-                 ))) {
+            val optionalAnalysedMethod = analyseMethod(method)
+            if (optionalAnalysedMethod.isDefined) {
                 PluginMethodScanner.LOGGER.debug("Registering method " + method)
-                returnMethods.put(method.getName, analysedMethod);
+                returnMethods.put(method.getName, optionalAnalysedMethod.get);
             } else {
                 PluginMethodScanner.LOGGER.debug("Not of the right signature");
             }
@@ -57,6 +50,22 @@ class PluginMethodScanner {
         return returnMethods;
     }
     
+    private def analyseMethod(method: Method): Option[AnalysedMethod] = {
+        val analysedMethod = new AnalysedMethod(method)
+        val parameterTypes = method.getParameterTypes
+        if (parameterTypes.length == 0 ||
+                
+            (parameterTypes.length >= 1 && parameterTypes.length <= 3 &&
+             (optionalInput(analysedMethod, parameterTypes) &&
+              optionalOutput(analysedMethod, parameterTypes) &&
+              optionalArguments(analysedMethod, parameterTypes)
+             ))) {
+            Option(analysedMethod)
+        } else {
+            None
+        }
+    }
+        
     private def notObjectOrShellPluginMethodNames(method: Method): Boolean = {
         val name = method.getName()
         ! (PluginMethodScanner.objectMethodNames.contains(name) ||
