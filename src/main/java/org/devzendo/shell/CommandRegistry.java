@@ -21,26 +21,27 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class CommandRegistry {
+
     private class PluginMethod {
         private final ShellPlugin mShellPlugin;
-        private final Method mMethod;
+        private final AnalysedMethod mAnalysedMethod;
 
-        public PluginMethod(final ShellPlugin plugin, final Method method) {
+        public PluginMethod(final ShellPlugin plugin, final AnalysedMethod analysedMethod) {
             mShellPlugin = plugin;
-            mMethod = method;
+            mAnalysedMethod = analysedMethod;
         }
 
         public final ShellPlugin getShellPlugin() {
             return mShellPlugin;
         }
 
-        public final Method getMethod() {
-            return mMethod;
+        public final AnalysedMethod getAnalysedMethod() {
+            return mAnalysedMethod;
         }
     }
     private final Map<String, PluginMethod> nameToPluginMethod = new HashMap<String, PluginMethod>();
     
-    public void registerCommand(final String name, final ShellPlugin plugin, final Method method) throws DuplicateCommandException {
+    public void registerCommand(final String name, final ShellPlugin plugin, final AnalysedMethod analysedMethod) throws DuplicateCommandException {
         final PluginMethod pluginMethod = nameToPluginMethod.get(name);
         if (pluginMethod != null) {
             throw new DuplicateCommandException("Command '" + name + "' from plugin '"
@@ -48,7 +49,7 @@ public class CommandRegistry {
                 + pluginMethod.getShellPlugin().getName() + "'");
 
         }
-        nameToPluginMethod.put(name, new PluginMethod(plugin, method));
+        nameToPluginMethod.put(name, new PluginMethod(plugin, analysedMethod));
     }
 
     public CommandHandler getHandler(final String name) throws CommandNotFoundException {
@@ -60,7 +61,7 @@ public class CommandRegistry {
             @Override
             public void execute() throws CommandExecutionException {
                 try {
-                    pluginMethod.getMethod().invoke(pluginMethod.getShellPlugin(), getArgs());
+                    pluginMethod.getAnalysedMethod().getMethod().invoke(pluginMethod.getShellPlugin(), getArgs());
                 } catch (final IllegalArgumentException e) {
                     throw new CommandExecutionException("Illegal arguments: " + e.getMessage());
                 } catch (final IllegalAccessException e) {
@@ -71,4 +72,6 @@ public class CommandRegistry {
             }
         };
     }
+
+    
 }

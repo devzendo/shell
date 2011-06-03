@@ -61,7 +61,7 @@ public class TestCommandRegistry {
 
     @Test
     public void getRegisteredCommandYieldsHandler() throws SecurityException, NoSuchMethodException, CommandNotFoundException {
-        final Method method = this.getClass().getMethod("getRegisteredCommandYieldsHandler");    
+        final AnalysedMethod method = analyseMethod(this.getClass().getMethod("getRegisteredCommandYieldsHandler"));    
         try {
             registry.registerCommand("foo", shellPluginOne, method);
             CommandHandler handler = registry.getHandler("foo");
@@ -73,7 +73,7 @@ public class TestCommandRegistry {
 
     @Test
     public void duplicateRegistration() throws SecurityException, NoSuchMethodException {
-        final Method method = this.getClass().getMethod("duplicateRegistration");    
+        final AnalysedMethod method = analyseMethod(this.getClass().getMethod("duplicateRegistration"));    
         try {
             registry.registerCommand("foo", shellPluginOne, method);
         } catch (DuplicateCommandException e) {
@@ -86,5 +86,9 @@ public class TestCommandRegistry {
             assertThat(de.getMessage(), 
                 equalTo("Command 'foo' from plugin 'plugin two' is duplicated; initially declared in plugin 'plugin one'"));
         }
+    }
+
+    private AnalysedMethod analyseMethod(Method method) {
+        return (AnalysedMethod) new MethodAnalyser().analyseMethod(method).get();
     }
 }

@@ -53,7 +53,7 @@ public class PluginRegistrar {
             final Map<String, AnalysedMethod> nameMethodMap = mPluginMethodScanner.scanPluginMethods(shellPlugin);
             for (final Entry<String, AnalysedMethod> entry : nameMethodMap.entrySet()) {
                 try {
-                    mCommandRegistry.registerCommand(entry.getKey(), shellPlugin, entry.getValue().getMethod());
+                    mCommandRegistry.registerCommand(entry.getKey(), shellPlugin, entry.getValue());
                 } catch (DuplicateCommandException e) {
                     throw new ShellPluginException(e.getMessage());
                 }
