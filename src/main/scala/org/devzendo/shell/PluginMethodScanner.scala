@@ -30,6 +30,7 @@ object PluginMethodScanner {
     private val shellPluginMethodNames = Set("initialise")
 }
 class PluginMethodScanner {
+    val methodAnalyser = new MethodAnalyser()
 
     def scanPluginMethods(shellPlugin: ShellPlugin): Map[String, AnalysedMethod] = {
         val returnMethods = new HashMap[String, AnalysedMethod]()
@@ -38,7 +39,7 @@ class PluginMethodScanner {
         val possiblePluginMethods = methods filter notObjectOrShellPluginMethodNames filter voidReturn filter validParameterTypes
         possiblePluginMethods.foreach(method => {
             PluginMethodScanner.LOGGER.debug("Considering method " + method)
-            val optionalAnalysedMethod = analyseMethod(method)
+            val optionalAnalysedMethod = methodAnalyser.analyseMethod(method)
             if (optionalAnalysedMethod.isDefined) {
                 PluginMethodScanner.LOGGER.debug("Registering method " + method)
                 returnMethods.put(method.getName, optionalAnalysedMethod.get);
@@ -50,21 +51,6 @@ class PluginMethodScanner {
         return returnMethods;
     }
     
-    private def analyseMethod(method: Method): Option[AnalysedMethod] = {
-        val analysedMethod = new AnalysedMethod(method)
-        val parameterTypes = method.getParameterTypes
-        if (parameterTypes.length == 0 ||
-                
-            (parameterTypes.length >= 1 && parameterTypes.length <= 3 &&
-             (optionalInput(analysedMethod, parameterTypes) &&
-              optionalOutput(analysedMethod, parameterTypes) &&
-              optionalArguments(analysedMethod, parameterTypes)
-             ))) {
-            Option(analysedMethod)
-        } else {
-            None
-        }
-    }
         
     private def notObjectOrShellPluginMethodNames(method: Method): Boolean = {
         val name = method.getName()
@@ -82,6 +68,24 @@ class PluginMethodScanner {
             c == classOf[InputPipe] ||
             c == classOf[OutputPipe]
         })
+    }
+}
+
+class MethodAnalyser {
+    def analyseMethod(method: Method): Option[AnalysedMethod] = {
+        val analysedMethod = new AnalysedMethod(method)
+        val parameterTypes = method.getParameterTypes
+        if (parameterTypes.length == 0 ||
+                
+            (parameterTypes.length >= 1 && parameterTypes.length <= 3 &&
+             (optionalInput(analysedMethod, parameterTypes) &&
+              optionalOutput(analysedMethod, parameterTypes) &&
+              optionalArguments(analysedMethod, parameterTypes)
+             ))) {
+            Option(analysedMethod)
+        } else {
+            None
+        }
     }
 
     private def optionalArguments(analysedMethod: AnalysedMethod,
