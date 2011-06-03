@@ -23,6 +23,8 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.devzendo.commoncode.logging.Logging;
+import org.devzendo.shell.plugin.PluginsShellPlugin;
+import org.devzendo.shell.plugin.VariablesShellPlugin;
 
 public class ShellMain {
     private static final String SHELLPLUGIN_PROPERTIES = "shellplugin.properties";
@@ -41,7 +43,6 @@ public class ShellMain {
         mVariableRegistry = new VariableRegistry();
         mPluginRegistrar = new PluginRegistrar(SHELLPLUGIN_PROPERTIES, mCommandRegistry, mVariableRegistry, argList);
     }
-
 
     public class InternalShellPlugin implements ShellPlugin {
         @Override
@@ -67,7 +68,9 @@ public class ShellMain {
         
         try {
             mPluginRegistrar.loadAndRegisterPluginMethods(
-                    new InternalShellPlugin()
+                    new InternalShellPlugin(),
+                    new VariablesShellPlugin(),
+                    new PluginsShellPlugin()
                 );
             
             final CommandParser parser = new CommandParser();
