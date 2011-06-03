@@ -31,9 +31,10 @@ import org.devzendo.shell.pipe.OutputPipe;
 import org.devzendo.shell.pipe.RendezvousPipe;
 import org.devzendo.shell.pipe.VariableInputPipe;
 import org.devzendo.shell.pipe.VariableOutputPipe;
+import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
-
 
 public class TestCommandHandlerWirer {
     final CommandRegistry commandRegistry = new CommandRegistry();
@@ -44,7 +45,15 @@ public class TestCommandHandlerWirer {
     
     @Before
     public void setUpAnalysedMethod() throws SecurityException, NoSuchMethodException {
-        mAnalysedMethod = analyseMethod(this.getClass().getMethod("setUpAnalysedMethod"));
+        for (Method method : this.getClass().getMethods()) {
+            if (method.getName().equals("commandHandlerWithBothPipes")) {
+                mAnalysedMethod = analyseMethod(method);
+            }
+        }
+    }
+    
+    public void commandHandlerWithBothPipes(final InputPipe inputPipe, final OutputPipe outputPipe) {
+        // do nothing
     }
 
     @Test
@@ -110,6 +119,28 @@ public class TestCommandHandlerWirer {
         final CommandHandler commandHandler = handlers.get(0);
         assertThat(commandHandler.getOutputPipe(), instanceOf(OutputPipe.class));
         assertThat(commandHandler.getOutputPipe(), instanceOf(VariableOutputPipe.class));
+    }
+    
+    /**
+     * left | right
+     * right has no input pipe in its command method, so can't receive left's
+     * output. Therefore, left's output must be discarded.
+     */
+    @Test
+    @Ignore
+    public void rightCommandWithNoInputConnectedToLeftCommandViaDiscardPipe() {
+        Assert.fail("unimplemented");
+    }
+
+    /**
+     * left | right
+     * left has no output pipe in its command method, so can't send left's
+     * input. Therefore, right's input must be immediately empty.
+     */
+    @Test
+    @Ignore
+    public void leftCommandWithNoOutputConnectedToRightCommandViaEmptyPipe() {
+        Assert.fail("unimplemented");
     }
 
     @Test
