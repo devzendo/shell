@@ -80,11 +80,9 @@ public class TestCommandHandlerWirer {
 
         CommandHandler fooCommandHandler = handlers.get(0);
         assertThat(fooCommandHandler.getInputPipe(), instanceOf(NullInputPipe.class));
-        assertThat(fooCommandHandler.getOutputPipe(), instanceOf(OutputPipe.class));
         assertThat(fooCommandHandler.getOutputPipe(), instanceOf(RendezvousPipe.class));
         
         CommandHandler barCommandHandler = handlers.get(1);
-        assertThat(barCommandHandler.getInputPipe(), instanceOf(InputPipe.class));
         assertThat(barCommandHandler.getInputPipe(), instanceOf(RendezvousPipe.class));
         assertThat(barCommandHandler.getOutputPipe(), instanceOf(LogInfoOutputPipe.class));
     }
@@ -99,7 +97,6 @@ public class TestCommandHandlerWirer {
         List<CommandHandler> handlers = wirer.wire(pipeline);
         assertThat(handlers.size(), equalTo(1));
         CommandHandler commandHandler = handlers.get(0);
-        assertThat(commandHandler.getInputPipe(), instanceOf(InputPipe.class));
         assertThat(commandHandler.getInputPipe(), instanceOf(VariableInputPipe.class));
     }
 
@@ -113,7 +110,6 @@ public class TestCommandHandlerWirer {
         final List<CommandHandler> handlers = wirer.wire(pipeline);
         assertThat(handlers.size(), equalTo(1));
         final CommandHandler commandHandler = handlers.get(0);
-        assertThat(commandHandler.getOutputPipe(), instanceOf(OutputPipe.class));
         assertThat(commandHandler.getOutputPipe(), instanceOf(VariableOutputPipe.class));
     }
     
@@ -138,11 +134,9 @@ public class TestCommandHandlerWirer {
 
         CommandHandler leftCommandHandler = handlers.get(0);
         assertThat(leftCommandHandler.getInputPipe(), instanceOf(NullInputPipe.class));
-        assertThat(leftCommandHandler.getOutputPipe(), instanceOf(OutputPipe.class));
         assertThat(leftCommandHandler.getOutputPipe(), instanceOf(NullOutputPipe.class));
         
         CommandHandler rightCommandHandler = handlers.get(1);
-        assertThat(rightCommandHandler.getInputPipe(), instanceOf(InputPipe.class));
         assertThat(rightCommandHandler.getInputPipe(), instanceOf(NullInputPipe.class));
         assertThat(rightCommandHandler.getOutputPipe(), instanceOf(LogInfoOutputPipe.class));
     }
@@ -168,11 +162,9 @@ public class TestCommandHandlerWirer {
 
         CommandHandler leftCommandHandler = handlers.get(0);
         assertThat(leftCommandHandler.getInputPipe(), instanceOf(NullInputPipe.class));
-        assertThat(leftCommandHandler.getOutputPipe(), instanceOf(OutputPipe.class));
         assertThat(leftCommandHandler.getOutputPipe(), instanceOf(NullOutputPipe.class));
         
         CommandHandler rightCommandHandler = handlers.get(1);
-        assertThat(rightCommandHandler.getInputPipe(), instanceOf(InputPipe.class));
         assertThat(rightCommandHandler.getInputPipe(), instanceOf(NullInputPipe.class));
         assertThat(rightCommandHandler.getOutputPipe(), instanceOf(LogInfoOutputPipe.class));
     }
