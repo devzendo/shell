@@ -20,6 +20,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.instanceOf;
 
+import java.lang.reflect.Method;
 import java.util.Collections;
 import java.util.List;
 
@@ -30,6 +31,7 @@ import org.devzendo.shell.pipe.OutputPipe;
 import org.devzendo.shell.pipe.RendezvousPipe;
 import org.devzendo.shell.pipe.VariableInputPipe;
 import org.devzendo.shell.pipe.VariableOutputPipe;
+import org.junit.Before;
 import org.junit.Test;
 
 
@@ -38,10 +40,16 @@ public class TestCommandHandlerWirer {
     final VariableRegistry variableRegistry = new VariableRegistry();
     final CommandHandlerWirer wirer = new CommandHandlerWirer(commandRegistry, variableRegistry);
     final CommandPipeline pipeline = new CommandPipeline();
+    private AnalysedMethod mAnalysedMethod;
+    
+    @Before
+    public void setUpAnalysedMethod() throws SecurityException, NoSuchMethodException {
+        mAnalysedMethod = analyseMethod(this.getClass().getMethod("setUpAnalysedMethod"));
+    }
 
     @Test
     public void noPipelineInputOrOutput() throws DuplicateCommandException, CommandNotFoundException {
-        commandRegistry.registerCommand("foo", null, null);
+        commandRegistry.registerCommand("foo", null, mAnalysedMethod);
         @SuppressWarnings("unchecked")
         final Command command = new Command("foo", Collections.EMPTY_LIST);
         pipeline.addCommand(command);
@@ -52,13 +60,11 @@ public class TestCommandHandlerWirer {
         assertThat(commandHandler.getOutputPipe(), instanceOf(LogInfoOutputPipe.class));
     }
 
-
-
     @SuppressWarnings("unchecked")
     @Test
-    public void pipeBetweenCommandHandlers() throws SecurityException, NoSuchMethodException, DuplicateCommandException, CommandNotFoundException {
-        commandRegistry.registerCommand("foo", null, null);
-        commandRegistry.registerCommand("bar", null, null);
+    public void pipeBetweenCommandHandlers() throws DuplicateCommandException, CommandNotFoundException {
+        commandRegistry.registerCommand("foo", null, mAnalysedMethod);
+        commandRegistry.registerCommand("bar", null, mAnalysedMethod);
 
         final Command fooCommand = new Command("foo", Collections.EMPTY_LIST);
         pipeline.addCommand(fooCommand);
@@ -80,7 +86,7 @@ public class TestCommandHandlerWirer {
     
     @Test
     public void inputToPipelineFromVariable() throws DuplicateCommandException, CommandNotFoundException {
-        commandRegistry.registerCommand("foo", null, null);
+        commandRegistry.registerCommand("foo", null, mAnalysedMethod);
         @SuppressWarnings("unchecked")
         final Command command = new Command("foo", Collections.EMPTY_LIST);
         pipeline.addCommand(command);
@@ -94,7 +100,7 @@ public class TestCommandHandlerWirer {
 
     @Test
     public void outputFromPipelineToVariable() throws CommandNotFoundException, DuplicateCommandException {
-        commandRegistry.registerCommand("foo", null, null);
+        commandRegistry.registerCommand("foo", null, mAnalysedMethod);
         @SuppressWarnings("unchecked")
         final Command command = new Command("foo", Collections.EMPTY_LIST);
         pipeline.addCommand(command);
@@ -108,7 +114,7 @@ public class TestCommandHandlerWirer {
 
     @Test
     public void noArgsInCommandYieldsEmptyListPassedToCommandHandlers() throws CommandNotFoundException, DuplicateCommandException {
-        commandRegistry.registerCommand("foo", null, null);
+        commandRegistry.registerCommand("foo", null, mAnalysedMethod);
         @SuppressWarnings("unchecked")
         final Command command = new Command("foo", Collections.EMPTY_LIST);
         pipeline.addCommand(command);
@@ -121,7 +127,7 @@ public class TestCommandHandlerWirer {
     
     @Test
     public void argsPassedToCommandHandlers() throws CommandNotFoundException, DuplicateCommandException {
-        commandRegistry.registerCommand("foo", null, null);
+        commandRegistry.registerCommand("foo", null, mAnalysedMethod);
         final List<Object> inputArgs = asList(new Object[] { (Integer)5, "hello"});
         final Command command = new Command("foo", inputArgs);
         pipeline.addCommand(command);
@@ -140,5 +146,9 @@ public class TestCommandHandlerWirer {
         final Command command = new Command("foo", Collections.EMPTY_LIST);
         pipeline.addCommand(command);
         wirer.wire(pipeline);
+    }
+
+    private AnalysedMethod analyseMethod(Method method) {
+        return (AnalysedMethod) new MethodAnalyser().analyseMethod(method).get();
     }
 }

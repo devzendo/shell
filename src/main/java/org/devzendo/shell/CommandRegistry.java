@@ -15,12 +15,11 @@
  */
 package org.devzendo.shell;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
 
 public class CommandRegistry {
+    private final CommandHandlerFactory mCommandHandlerFactory = new CommandHandlerFactory();
 
     private class PluginMethod {
         private final ShellPlugin mShellPlugin;
@@ -57,21 +56,6 @@ public class CommandRegistry {
         if (pluginMethod == null) {
             throw new CommandNotFoundException("'" + name + "' not found");
         }
-        return new CommandHandler(name) {
-            @Override
-            public void execute() throws CommandExecutionException {
-                try {
-                    pluginMethod.getAnalysedMethod().getMethod().invoke(pluginMethod.getShellPlugin(), getArgs());
-                } catch (final IllegalArgumentException e) {
-                    throw new CommandExecutionException("Illegal arguments: " + e.getMessage());
-                } catch (final IllegalAccessException e) {
-                    throw new CommandExecutionException("Illegal acces: " + e.getMessage());
-                } catch (final InvocationTargetException e) {
-                    throw new CommandExecutionException("Invocation target exception: " + e.getMessage());
-                }
-            }
-        };
+        return mCommandHandlerFactory.createHandler(pluginMethod.getShellPlugin(), pluginMethod.getAnalysedMethod());
     }
-
-    
 }
