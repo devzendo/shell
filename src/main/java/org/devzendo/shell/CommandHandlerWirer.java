@@ -70,10 +70,17 @@ public class CommandHandlerWirer {
             // left | right
             CommandHandler left = handlers.get(i);
             CommandHandler right = handlers.get(i + 1);
-            RendezvousPipe pipe = new RendezvousPipe();
-            left.setOutputPipe(pipe);
-            right.setInputPipe(pipe);
+            // In cases where left has output, and right has input:
+            connectByRendezvousPipe(left, right);
         }
         return handlers;
+    }
+
+    private void connectByRendezvousPipe(
+            CommandHandler left,
+            CommandHandler right) {
+        final RendezvousPipe pipe = new RendezvousPipe();
+        left.setOutputPipe(pipe);
+        right.setInputPipe(pipe);
     }
 }
