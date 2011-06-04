@@ -33,7 +33,7 @@ public class ShellMain {
     public boolean quit;
 
     private final List<String> mArgList;
-    private final PluginRegistrar mPluginRegistrar;
+    private final PluginRegistry mPluginRegistrar;
     private final CommandRegistry mCommandRegistry;
     private final VariableRegistry mVariableRegistry;
 
@@ -41,7 +41,7 @@ public class ShellMain {
         mArgList = argList;
         mCommandRegistry = new CommandRegistry();
         mVariableRegistry = new VariableRegistry();
-        mPluginRegistrar = new PluginRegistrar(SHELLPLUGIN_PROPERTIES, mCommandRegistry, mVariableRegistry, argList);
+        mPluginRegistrar = new PluginRegistry(SHELLPLUGIN_PROPERTIES, mCommandRegistry, mVariableRegistry, argList);
     }
 
     public class InternalShellPlugin implements ShellPlugin {

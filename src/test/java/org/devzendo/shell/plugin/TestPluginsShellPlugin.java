@@ -17,7 +17,7 @@ package org.devzendo.shell.plugin;
 
 import java.util.Collections;
 
-import org.devzendo.shell.PluginRegistrar;
+import org.devzendo.shell.PluginRegistry;
 import org.devzendo.shell.ShellPluginException;
 import org.junit.Test;
 
@@ -25,7 +25,7 @@ public class TestPluginsShellPlugin {
     @Test
     public void listPluginsListsPlugins() throws ShellPluginException {
         final PluginsShellPlugin plugin = new PluginsShellPlugin();
-        final PluginRegistrar pluginRegistry = new PluginRegistrar("irrelevant", null, null, Collections.EMPTY_LIST);
+        final PluginRegistry pluginRegistry = new PluginRegistry("irrelevant", null, null, Collections.EMPTY_LIST);
         pluginRegistry.loadAndRegisterPluginMethods(plugin);
         // to be continued.....
     }

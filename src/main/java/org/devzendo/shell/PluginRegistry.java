@@ -24,7 +24,7 @@ import java.util.Map.Entry;
 import java.util.Set;
 
 
-public class PluginRegistrar {
+public class PluginRegistry {
     private final String mPropertiesResourcePath;
     private final CommandRegistry mCommandRegistry;
     private final VariableRegistry mVariableRegistry;
@@ -32,7 +32,7 @@ public class PluginRegistrar {
     private final PluginMethodScanner mPluginMethodScanner;
     private Set<ShellPlugin> mPlugins = new HashSet<ShellPlugin>();
 
-    public PluginRegistrar(
+    public PluginRegistry(
             final String propertiesResourcePath, 
             final CommandRegistry commandRegistry, 
             final VariableRegistry variableRegistry, 
