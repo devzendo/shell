@@ -17,16 +17,31 @@ package org.devzendo.shell.plugin;
 
 import java.util.Collections;
 
+import org.devzendo.shell.CommandRegistry;
 import org.devzendo.shell.PluginRegistry;
 import org.devzendo.shell.ShellPluginException;
+import org.devzendo.shell.pipe.OutputPipe;
+import org.jmock.Expectations;
+import org.jmock.Mockery;
+import org.jmock.integration.junit4.JMock;
+import org.jmock.integration.junit4.JUnit4Mockery;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 
+@RunWith(JMock.class)
 public class TestPluginsShellPlugin {
+    private final Mockery context = new JUnit4Mockery();
     @Test
     public void listPluginsListsPlugins() throws ShellPluginException {
         final PluginsShellPlugin plugin = new PluginsShellPlugin();
-        final PluginRegistry pluginRegistry = new PluginRegistry("irrelevant", null, null, Collections.EMPTY_LIST);
+        final PluginRegistry pluginRegistry = new PluginRegistry("irrelevant", new CommandRegistry(), null, Collections.EMPTY_LIST);
         pluginRegistry.loadAndRegisterPluginMethods(plugin);
-        // to be continued.....
+
+        final OutputPipe outputPipe = context.mock(OutputPipe.class);
+        context.checking(new Expectations() { {
+            oneOf(outputPipe).push("Plugins");
+        } });
+
+        plugin.listPlugins(outputPipe);
     }
 }
