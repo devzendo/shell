@@ -34,6 +34,7 @@ public class TestPluginsShellPlugin {
     @Test
     public void listPluginsListsPlugins() throws ShellPluginException {
         final PluginsShellPlugin plugin = new PluginsShellPlugin();
+        @SuppressWarnings("unchecked")
         final PluginRegistry pluginRegistry = new PluginRegistry("irrelevant", new CommandRegistry(), null, Collections.EMPTY_LIST);
         pluginRegistry.loadAndRegisterPluginMethods(plugin);
 
