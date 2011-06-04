@@ -45,7 +45,7 @@ public class PluginRegistrar {
     }
 
     public void loadAndRegisterPluginMethods(final ShellPlugin ... staticPlugins) throws ShellPluginException {
-        final ExecutionEnvironment env = new ExecutionEnvironment(mArgList, mCommandRegistry, mVariableRegistry);
+        final ExecutionEnvironment env = new ExecutionEnvironment(mArgList, mCommandRegistry, mVariableRegistry, this);
         final ArrayList<ShellPlugin> allPlugins = loadAllPlugins(staticPlugins);
         for (final ShellPlugin shellPlugin : allPlugins) {
             mPlugins.add(shellPlugin);
