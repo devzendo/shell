@@ -37,7 +37,7 @@ class LoggingShellPlugin extends AbstractShellPlugin {
     
     // InputPipe is defined in Java as:
     // Option<Object> next();
-    // Essentially, log every this coming down the pipe until it's empty.
+    // So: log every object coming down the pipe until it's empty (None).
     // Later, I want to do other arbitrary things to the pipe contents until
     // exhausted.
     def logInfo(inputPipe: InputPipe) = {
