@@ -28,7 +28,7 @@ import org.devzendo.shell.plugin.VariablesShellPlugin;
 
 public class ShellMain {
     private static final String SHELLPLUGIN_PROPERTIES = "shellplugin.properties";
-    private static final Logger LOGGER = Logger.getLogger(ShellMain.class);
+    public static final Logger LOGGER = Logger.getLogger(ShellMain.class);
 
     public boolean quit;
 
