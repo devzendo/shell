@@ -23,6 +23,7 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.devzendo.commoncode.logging.Logging;
+import org.devzendo.shell.plugin.LoggingShellPlugin;
 import org.devzendo.shell.plugin.PluginsShellPlugin;
 import org.devzendo.shell.plugin.VariablesShellPlugin;
 
@@ -70,7 +71,8 @@ public class ShellMain {
             mPluginRegistry.loadAndRegisterPluginMethods(
                     new InternalShellPlugin(),
                     new VariablesShellPlugin(),
-                    new PluginsShellPlugin()
+                    new PluginsShellPlugin(),
+                    new LoggingShellPlugin()
                 );
             
             final CommandParser parser = new CommandParser();
