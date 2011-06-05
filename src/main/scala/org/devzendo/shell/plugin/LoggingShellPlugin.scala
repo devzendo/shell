@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2008-2010 Matt Gumbley, DevZendo.org <http://devzendo.org>
+ * Copyright (C) 2008-2011 Matt Gumbley, DevZendo.org <http://devzendo.org>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,7 +25,9 @@ class LoggingShellPlugin extends AbstractShellPlugin {
         "Logging"
     }
     
-    def processStreamOfFunctionCallsReturningOptionUntilNone(producer: => Option[Object], processor: (Object) => Unit) {
+    def processStreamOfFunctionCallsReturningOptionUntilNone(
+            producer: => Option[Object], processor: (Object) => Unit) {
+        // There has to be a more idiomatic way of doing this...
         var obj: Option[Object] = None
         do {
             obj = producer
@@ -33,7 +35,14 @@ class LoggingShellPlugin extends AbstractShellPlugin {
         } while (obj.isDefined)
     }
     
+    // InputPipe is defined in Java as:
+    // Option<Object> next();
+    // Essentially, log every this coming down the pipe until it's empty.
+    // Later, I want to do other arbitrary things to the pipe contents until
+    // exhausted.
     def logInfo(inputPipe: InputPipe) = {
-        processStreamOfFunctionCallsReturningOptionUntilNone(inputPipe.next(), (a: Object) => LOGGER.info(a))
+        processStreamOfFunctionCallsReturningOptionUntilNone(
+            inputPipe.next(), 
+            (a: Object) => LOGGER.info(a))
     }
 }
