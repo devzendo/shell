@@ -29,13 +29,11 @@ class LoggingShellPlugin extends AbstractShellPlugin {
         var obj: Option[Object] = None
         do {
             obj = producer
-            if (obj.isDefined) {
-                processor(obj.get.asInstanceOf[Object])
-            }
+            obj.map(processor(_))
         } while (obj.isDefined)
     }
     
     def logInfo(inputPipe: InputPipe) = {
-        processStreamOfFunctionCallsReturningOptionUntilNone(inputPipe.next(), (a: Any) => LOGGER.info(a))
+        processStreamOfFunctionCallsReturningOptionUntilNone(inputPipe.next(), (a: Object) => LOGGER.info(a))
     }
 }
