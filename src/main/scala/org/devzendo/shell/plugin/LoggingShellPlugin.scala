@@ -21,15 +21,11 @@ import org.devzendo.shell.pipe.{InputPipe, OutputPipe}
 import org.devzendo.shell.ShellMain.LOGGER
 import scala.Option
 
-class LoggingShellPlugin extends AbstractShellPlugin {
+class LoggingShellPlugin extends AbstractShellPlugin with PluginHelper {
     def getName() = {
         "Logging"
     }
     
-    private def streamMap(producer: => Option[Object], processor: (Object) => Unit) {
-        Stream.continually(producer).takeWhile(_.isDefined).flatten.foreach(processor)
-    }
-
     private def logInputPipeAtLevel(inputPipe: InputPipe, level: Level) = {
         streamMap(inputPipe.next(), (a: Object) => LOGGER.log(level, a))
     }
