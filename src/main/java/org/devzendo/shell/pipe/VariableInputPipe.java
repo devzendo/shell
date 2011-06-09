@@ -40,4 +40,8 @@ public class VariableInputPipe implements InputPipe {
         }
         return scala.Option.apply(null); // a.k.a. None
     }
+
+    public final Variable getVariable() {
+        return mVariable;
+    }
 }

@@ -23,6 +23,10 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.devzendo.commoncode.logging.Logging;
+import org.devzendo.shell.pipe.InputPipe;
+import org.devzendo.shell.pipe.OutputPipe;
+import org.devzendo.shell.pipe.VariableInputPipe;
+import org.devzendo.shell.pipe.VariableOutputPipe;
 import org.devzendo.shell.plugin.LoggingShellPlugin;
 import org.devzendo.shell.plugin.PluginsShellPlugin;
 import org.devzendo.shell.plugin.VariablesShellPlugin;
@@ -84,11 +88,14 @@ public class ShellMain {
                     System.out.print("] ");
                     System.out.flush();
                     final String input = br.readLine();
-                    LOGGER.info("[" + input + "]");
+                    LOGGER.debug("input: [" + input + "]");
                     try {
                         final CommandPipeline commandPipeline = parser.parse(input.trim());
                         if (!commandPipeline.isEmpty()) {
                             final List<CommandHandler> commandHandlers = wirer.wire(commandPipeline);
+                            if (LOGGER.isDebugEnabled()) {
+                                dumpHandlers(commandHandlers);
+                            }
                             final ExecutionContainer executionContainer = new ExecutionContainer(commandHandlers);
                             executionContainer.execute();
                         }
@@ -106,6 +113,37 @@ public class ShellMain {
         } catch (final ShellPluginException e) {
             LOGGER.fatal("Can't continue: " + e.getMessage());
         }
+    }
+
+    private void dumpHandlers(List<CommandHandler> commandHandlers) {
+        final StringBuilder sb = new StringBuilder();
+        for (CommandHandler handler: commandHandlers) {
+            sb.append("<");
+            final InputPipe inputPipe = handler.getInputPipe();
+            sb.append(inputPipe.getClass().getSimpleName());
+            if (inputPipe instanceof VariableInputPipe) {
+                sb.append("(");
+                sb.append(((VariableInputPipe)inputPipe).getVariable());
+                sb.append(")");
+            }
+            
+            sb.append(" [");
+            
+            sb.append(handler.getName());
+            
+            sb.append("] >");
+            final OutputPipe outputPipe = handler.getOutputPipe();
+            sb.append(outputPipe.getClass().getSimpleName());
+            if (outputPipe instanceof VariableOutputPipe) {
+                sb.append("(");
+                sb.append(((VariableOutputPipe)outputPipe).getVariable());
+                sb.append(")");
+            }
+            
+            sb.append(" ");
+        }
+        sb.deleteCharAt(sb.length() -1);
+        LOGGER.debug("pipeline: " + sb.toString());
     }
 
     public static void main(final String[] args) {

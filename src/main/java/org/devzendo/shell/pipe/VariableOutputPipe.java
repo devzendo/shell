@@ -38,4 +38,8 @@ public class VariableOutputPipe implements OutputPipe {
         }
         mVariable.add(object);
     }
+
+    public final Variable getVariable() {
+        return mVariable;
+    }
 }
