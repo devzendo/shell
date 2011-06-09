@@ -16,7 +16,8 @@
  
 package org.devzendo.shell.plugin
 
-import org.devzendo.shell.pipe.InputPipe
+import org.apache.log4j.Level
+import org.devzendo.shell.pipe.{InputPipe, OutputPipe}
 import org.devzendo.shell.ShellMain.LOGGER
 import scala.Option
 
@@ -25,24 +26,34 @@ class LoggingShellPlugin extends AbstractShellPlugin {
         "Logging"
     }
     
-    def processStreamOfFunctionCallsReturningOptionUntilNone(
-            producer: => Option[Object], processor: (Object) => Unit) {
-        // There has to be a more idiomatic way of doing this...
-        var obj: Option[Object] = None
-        do {
-            obj = producer
-            obj.map(processor(_))
-        } while (obj.isDefined)
+    private def streamMap(producer: => Option[Object], processor: (Object) => Unit) {
+        Stream.continually(producer).takeWhile(_.isDefined).flatten.foreach(processor)
+    }
+
+    private def logInputPipeAtLevel(inputPipe: InputPipe, level: Level) = {
+        streamMap(inputPipe.next(), (a: Object) => LOGGER.log(level, a))
+    }
+
+    // Log each InputPipe object at various levels...
+    def logDebug(inputPipe: InputPipe) = {
+        logInputPipeAtLevel(inputPipe, Level.DEBUG)
+    }
+    def logInfo(inputPipe: InputPipe) = {
+        logInputPipeAtLevel(inputPipe, Level.INFO)
+    }
+    def logWarn(inputPipe: InputPipe) = {
+        logInputPipeAtLevel(inputPipe, Level.WARN)
+    }
+    def logError(inputPipe: InputPipe) = {
+        logInputPipeAtLevel(inputPipe, Level.ERROR)
+    }
+    def logFatal(inputPipe: InputPipe) = {
+        logInputPipeAtLevel(inputPipe, Level.FATAL)
     }
     
-    // InputPipe is defined in Java as:
-    // Option<Object> next();
-    // So: log every object coming down the pipe until it's empty (None).
-    // Later, I want to do other arbitrary things to the pipe contents until
-    // exhausted.
-    def logInfo(inputPipe: InputPipe) = {
-        processStreamOfFunctionCallsReturningOptionUntilNone(
-            inputPipe.next(), 
-            (a: Object) => LOGGER.info(a))
+    def count(outputPipe: OutputPipe, args: java.util.List[Object]) = {
+        val first = Integer.parseInt(args.get(0).toString)
+        val last = Integer.parseInt(args.get(1).toString)
+        first to last foreach(outputPipe.push(_))
     }
 }
