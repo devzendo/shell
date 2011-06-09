@@ -35,7 +35,7 @@ public class RendezvousPipe implements InputPipe, OutputPipe {
             terminated = true;
             LOGGER.debug("Terminating the RendezvousPipe");
             if (threadCallingNext == null) {
-                LOGGER.warn("No thread is calling next() when the RendezvousPipe is terminated");
+                LOGGER.debug("No thread is calling next() when the RendezvousPipe is terminated");
             } else {
                 threadCallingNext.interrupt();
             }
