@@ -20,8 +20,10 @@ import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 
-public class ExecutionContainer {
+import org.apache.log4j.Logger;
 
+public class ExecutionContainer {
+    private static final Logger LOGGER = Logger.getLogger(ExecutionContainer.class);
     private final List<CommandHandler> mCommandHandlers;
 
     public ExecutionContainer(List<CommandHandler> commandHandlers) {
@@ -38,6 +40,7 @@ public class ExecutionContainer {
     }
 
     private void terminatePipes() {
+        LOGGER.debug("terminating pipes");
         for (CommandHandler handler: mCommandHandlers) {
             if (handler.getInputPipe() != null) {
                 handler.getInputPipe().setTerminated();
@@ -46,6 +49,7 @@ public class ExecutionContainer {
                 handler.getOutputPipe().setTerminated();
             }
         }
+        LOGGER.debug("pipes terminated");
     }
 
     private void executeOnMultipleThreads() throws CommandExecutionException {
@@ -56,6 +60,7 @@ public class ExecutionContainer {
             final Thread thread = new Thread(new Runnable() {
                 @Override
                 public void run() {
+                    LOGGER.debug("executing...");
                     try {
                         finalHandler.execute();
                     } catch (CommandExecutionException e) {
@@ -63,15 +68,18 @@ public class ExecutionContainer {
                     } finally {
                         latch.countDown();
                     }
+                    LOGGER.debug("...executed");
                 }});
             thread.setName(handler.getName());
             thread.start();
         }
+        LOGGER.debug("waiting for execution to end");
         try {
             latch.await();
         } catch (final InterruptedException e) {
             throw new CommandExecutionException("Wait for commands to finish executing was interrupted: " + e.getMessage());
         }
+        LOGGER.debug("execution has ended");
         
         if (exceptions.size() == 0) {
             return;
