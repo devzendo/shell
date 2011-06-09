@@ -34,6 +34,7 @@ public class TestCommandParser {
         final CommandPipeline pipeline = parser.parse(null);
         final List<Command> cmds = pipeline.getCommands();
         assertThat(cmds.size(), equalTo(0));
+        assertThat(pipeline.isEmpty(), equalTo(true));
     }
 
     @Test
@@ -41,6 +42,7 @@ public class TestCommandParser {
         final CommandPipeline pipeline = parser.parse("");
         final List<Command> cmds = pipeline.getCommands();
         assertThat(cmds.size(), equalTo(0));
+        assertThat(pipeline.isEmpty(), equalTo(true));
     }
     
     @Test
@@ -51,6 +53,7 @@ public class TestCommandParser {
         final Command cmd = cmds.get(0);
         assertThat(cmd.getName(), equalTo("foo"));
         assertNoArgs(cmd);
+        assertThat(pipeline.isEmpty(), equalTo(false));
     }
 
     @Test

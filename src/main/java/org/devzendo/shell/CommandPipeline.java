@@ -54,4 +54,8 @@ public final class CommandPipeline {
     public void addCommand(final Command commandToAdd) {
         commands.add(commandToAdd);
     }
+
+    public boolean isEmpty() {
+        return commands.isEmpty();
+    }
 }

@@ -87,9 +87,11 @@ public class ShellMain {
                     LOGGER.info("[" + input + "]");
                     try {
                         final CommandPipeline commandPipeline = parser.parse(input.trim());
-                        final List<CommandHandler> commandHandlers = wirer.wire(commandPipeline);
-                        final ExecutionContainer executionContainer = new ExecutionContainer(commandHandlers);
-                        executionContainer.execute();
+                        if (!commandPipeline.isEmpty()) {
+                            final List<CommandHandler> commandHandlers = wirer.wire(commandPipeline);
+                            final ExecutionContainer executionContainer = new ExecutionContainer(commandHandlers);
+                            executionContainer.execute();
+                        }
                     } catch (final CommandParserException cpe) {
                         LOGGER.warn(cpe.getMessage());
                     } catch (final CommandNotFoundException cnfe) {
