@@ -36,18 +36,15 @@ public class ExecutionContainer {
         } else {
             executeOnMultipleThreads();
         }
-        terminatePipes();
     }
 
-    private void terminatePipes() {
+    private void terminatePipes(CommandHandler handler) {
         LOGGER.debug("terminating pipes");
-        for (CommandHandler handler: mCommandHandlers) {
-            if (handler.getInputPipe() != null) {
-                handler.getInputPipe().setTerminated();
-            }
-            if (handler.getOutputPipe() != null) {
-                handler.getOutputPipe().setTerminated();
-            }
+        if (handler.getInputPipe() != null) {
+            handler.getInputPipe().setTerminated();
+        }
+        if (handler.getOutputPipe() != null) {
+            handler.getOutputPipe().setTerminated();
         }
         LOGGER.debug("pipes terminated");
     }
@@ -66,6 +63,7 @@ public class ExecutionContainer {
                     } catch (CommandExecutionException e) {
                         exceptions.add(e);
                     } finally {
+                        terminatePipes(finalHandler);
                         latch.countDown();
                     }
                     LOGGER.debug("...executed");
@@ -97,6 +95,10 @@ public class ExecutionContainer {
     }
 
     private void executeOnCurrentThread() throws CommandExecutionException {
-        mCommandHandlers.get(0).execute();
+        try {
+            mCommandHandlers.get(0).execute();
+        } finally {
+            terminatePipes(mCommandHandlers.get(0));
+        }
     }
 }
