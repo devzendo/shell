@@ -33,7 +33,7 @@ public class PluginLoader {
 
     public List<ShellPlugin> loadPluginsFromClasspath(
             final String propertiesResourcePath) throws ShellPluginException {
-        LOGGER.info("Loading plugins from properties at "
+        LOGGER.debug("Loading plugins from properties at "
                 + propertiesResourcePath);
         try {
             final Enumeration<URL> propertiesURLs = getPluginDescriptorURLs(propertiesResourcePath);
@@ -43,7 +43,7 @@ public class PluginLoader {
                 final Properties properties = loadProperties(propertiesURL);
                 plugins.addAll(loadPlugins(properties));
             }
-            LOGGER.info("Returning " + plugins.size() + " plugin(s)");
+            LOGGER.debug("Returning " + plugins.size() + " plugin(s)");
             return plugins;
         } catch (final IOException e) {
             final String warning = "Failure loading plugins: " + e.getMessage();
