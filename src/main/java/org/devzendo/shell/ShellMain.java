@@ -30,6 +30,7 @@ import org.devzendo.shell.pipe.VariableOutputPipe;
 import org.devzendo.shell.plugin.LoggingShellPlugin;
 import org.devzendo.shell.plugin.PluginsShellPlugin;
 import org.devzendo.shell.plugin.VariablesShellPlugin;
+import org.devzendo.shell.plugin.ExperimentalShellPlugin;
 
 public class ShellMain {
     private static final String SHELLPLUGIN_PROPERTIES = "shellplugin.properties";
@@ -76,7 +77,8 @@ public class ShellMain {
                     new InternalShellPlugin(),
                     new VariablesShellPlugin(),
                     new PluginsShellPlugin(),
-                    new LoggingShellPlugin()
+                    new LoggingShellPlugin(),
+                    new ExperimentalShellPlugin()
                 );
             
             final CommandParser parser = new CommandParser();

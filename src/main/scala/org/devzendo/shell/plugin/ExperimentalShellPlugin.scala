@@ -21,29 +21,14 @@ import org.devzendo.shell.pipe.{InputPipe, OutputPipe}
 import org.devzendo.shell.ShellMain.LOGGER
 import scala.Option
 
-class LoggingShellPlugin extends AbstractShellPlugin with PluginHelper {
+class ExperimentalShellPlugin extends AbstractShellPlugin with PluginHelper {
     def getName() = {
-        "Logging"
+        "Experimental"
     }
     
-    private def logInputPipeAtLevel(inputPipe: InputPipe, level: Level) = {
-        streamMap(inputPipe.next(), (a: Object) => LOGGER.log(level, a))
-    }
-
-    // Log each InputPipe object at various levels...
-    def logDebug(inputPipe: InputPipe) = {
-        logInputPipeAtLevel(inputPipe, Level.DEBUG)
-    }
-    def logInfo(inputPipe: InputPipe) = {
-        logInputPipeAtLevel(inputPipe, Level.INFO)
-    }
-    def logWarn(inputPipe: InputPipe) = {
-        logInputPipeAtLevel(inputPipe, Level.WARN)
-    }
-    def logError(inputPipe: InputPipe) = {
-        logInputPipeAtLevel(inputPipe, Level.ERROR)
-    }
-    def logFatal(inputPipe: InputPipe) = {
-        logInputPipeAtLevel(inputPipe, Level.FATAL)
+    def count(outputPipe: OutputPipe, args: java.util.List[Object]) = {
+        val first = Integer.parseInt(args.get(0).toString)
+        val last = Integer.parseInt(args.get(1).toString)
+        first to last foreach(outputPipe.push(_))
     }
 }
