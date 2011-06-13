@@ -20,4 +20,6 @@ trait PluginHelper {
     def streamMap(producer: => Option[Object], processor: (Object) => Unit) {
         Stream.continually(producer).takeWhile(_.isDefined).flatten.foreach(processor)
     }
+    
+    def filterString(objects: Seq[Object]):Seq[String] = objects.filter(_.isInstanceOf[String]).asInstanceOf[Seq[String]] 
 }
