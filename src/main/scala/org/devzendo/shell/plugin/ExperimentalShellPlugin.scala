@@ -58,32 +58,29 @@ class ExperimentalShellPlugin extends AbstractShellPlugin with PluginHelper {
     // filterRegex -------------------------------------------------------------
     def filterRegex(inputPipe: InputPipe, outputPipe: OutputPipe, args: java.util.List[Object]) = {
         val patternSeq = filterValidPatterns(args)
-        val filterOutput = new OutputIfMatching(patternSeq, outputPipe)
-        streamMap(inputPipe.next(), (a: Object) => filterOutput.filterOutput(a))
-    }
-    
-    private def filterValidPatterns(possRegexs: java.util.List[Object]): Seq[Pattern] = {
-        filterString(possRegexs).map(validRegex).flatten
-    }
-    
-    private def validRegex(possRegex: String): Option[Pattern] = {
-        try {
-            Some(Pattern.compile(possRegex))
-        } catch {
-            case ex: PatternSyntaxException => {
-                LOGGER.warn("filter: Regex syntax error '" + possRegex + "' : " + ex.getMessage())
-                None
-            }
-        }
-    }
-    
-    private class OutputIfMatching(patterns: Seq[Pattern], outputPipe: OutputPipe) {
         def filterOutput(o: Object) = {
-            val anyFound = patterns.map {
+            val anyFound = patternSeq.map {
                 pattern => pattern.matcher(o.toString).find
             }
             if (anyFound.exists(_ == true)) {
                 outputPipe.push(o.toString)
+            }
+        }
+
+        streamMap(inputPipe.next(), (a: Object) => filterOutput(a))
+    }
+    
+    private def filterValidPatterns(possRegexs: java.util.List[Object]): Seq[Pattern] = {
+        filterString(possRegexs).map(validPattern).flatten
+    }
+    
+    private def validPattern(possRegex: String): Option[Pattern] = {
+        try {
+            Some(Pattern.compile(possRegex))
+        } catch {
+            case ex: PatternSyntaxException => {
+                LOGGER.warn("Regex syntax error: " + ex.getMessage())
+                None
             }
         }
     }
