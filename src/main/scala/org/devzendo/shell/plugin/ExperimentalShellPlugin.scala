@@ -26,10 +26,6 @@ import scala.io.Source
 import scala.Option
 import scala.util.matching.Regex
 
-
-object ExperimentalShellPlugin {
-    private val LOGGER = Logger.getLogger(classOf[ExperimentalShellPlugin])
-}
 class ExperimentalShellPlugin extends AbstractShellPlugin with PluginHelper {
     def getName() = {
         "Experimental"
@@ -59,15 +55,23 @@ class ExperimentalShellPlugin extends AbstractShellPlugin with PluginHelper {
     def filterRegex(inputPipe: InputPipe, outputPipe: OutputPipe, args: java.util.List[Object]) = {
         val patternSeq = filterValidPatterns(args)
         def filterOutput(o: Object) = {
-            val anyFound = patternSeq.map {
-                pattern => pattern.matcher(o.toString).find
-            }
-            if (anyFound.exists(_ == true)) {
-                outputPipe.push(o.toString)
+            patternSeq.find { (pattern: Pattern) =>  
+                val objString = o.toString
+                val matcher = pattern.matcher(objString)
+                if (matcher.matches) {
+                    outputPipe.push(new MatchContext(objString, (1 to matcher.groupCount) map matcher.group))
+                    true
+                } else {
+                    false
+                }
             }
         }
 
-        streamMap(inputPipe.next(), (a: Object) => filterOutput(a))
+        streamForeach(inputPipe.next(), (a: Object) => filterOutput(a))
+    }
+    
+    private class MatchContext(val inputString: String, val captureGroups: Seq[String]) {
+        override def toString: String = inputString
     }
     
     private def filterValidPatterns(possRegexs: java.util.List[Object]): Seq[Pattern] = {
@@ -83,5 +87,18 @@ class ExperimentalShellPlugin extends AbstractShellPlugin with PluginHelper {
                 None
             }
         }
+    }
+
+    // cut ---------------------------------------------------------------------
+    // cut takes MatchContexts (capture groups) and cuts out specific ones, 
+    // pushing ArrayBuffer of cut capture groups. Indices start at 1.
+    def cut(inputPipe: InputPipe, outputPipe: OutputPipe, args: java.util.List[Object]) = {
+       val captureGroups = filterInt(args)
+       streamForeach(inputPipe.next(), (a: Object) => a match {
+           case mc: MatchContext =>
+               outputPipe.push(for (group <- captureGroups) yield mc.captureGroups(group - 1))
+           case s: String => // in case we got here straight from cat
+               LOGGER.info("Got string '" + s + "' - cut doesn't know what to do with Strings")
+       })
     }
 }

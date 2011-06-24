@@ -17,9 +17,16 @@
 package org.devzendo.shell.plugin
 
 trait PluginHelper {
-    def streamMap(producer: => Option[Object], processor: (Object) => Unit) {
+    def streamForeach(producer: => Option[Object], processor: (Object) => Unit) {
         Stream.continually(producer).takeWhile(_.isDefined).flatten.foreach(processor)
     }
-    
+
+    def streamMap(producer: => Option[Object], processor: (Object) => Object): Stream[Object] = {
+        Stream.continually(producer).takeWhile(_.isDefined).flatten.map(processor)
+    }
+
     def filterString(objects: Seq[Object]):Seq[String] = objects.filter(_.isInstanceOf[String]).asInstanceOf[Seq[String]] 
+
+    def filterInt(objects: Seq[Object]):Seq[Integer] = objects.filter(_.isInstanceOf[Integer]).asInstanceOf[Seq[Integer]] 
+
 }

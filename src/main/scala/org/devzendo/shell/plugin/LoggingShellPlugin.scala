@@ -27,7 +27,7 @@ class LoggingShellPlugin extends AbstractShellPlugin with PluginHelper {
     }
     
     private def logInputPipeAtLevel(inputPipe: InputPipe, level: Level) = {
-        streamMap(inputPipe.next(), (a: Object) => LOGGER.log(level, a))
+        streamForeach(inputPipe.next(), (a: Object) => LOGGER.log(level, a))
     }
 
     // Log each InputPipe object at various levels...
