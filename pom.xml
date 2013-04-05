@@ -5,16 +5,37 @@
     <artifactId>Shell</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <name>DevZendo.org Shell Harness</name>
-    <description>A simple interactive 'shell' for driving test harnesses</description>
+    <description>A simple interactive 'shell' for driving test harnesses.
+    (Apache License v2) 2012 Matt Gumbley, DevZendo.org</description>
+    <url>http://www.devzendo.org/content/shell</url>
+    <licenses>
+        <license>
+            <name>The Apache Software License, Version 2.0</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
+    <scm>
+        <url>http://devzendo-org-shell.googlecode.com/hg/</url>
+        <connection>scm:hg:http://devzendo-org-shell.googlecode.com/hg/</connection>
+        <developerConnection>scm:hg:https://devzendo-org-shell.googlecode.com/hg/</developerConnection>
+    </scm>
+    <developers>
+        <developer>
+            <id>matt.gumbley</id>
+            <name>Matt Gumbley</name>
+            <email>matt.gumbley@devzendo.org</email>
+        </developer>
+    </developers>
 
     <parent>
-        <artifactId>GroupParent</artifactId>
-        <groupId>org.devzendo</groupId>
-        <version>1.0.1</version>
+        <groupId>org.sonatype.oss</groupId>
+        <artifactId>oss-parent</artifactId>
+        <version>7</version>
     </parent>
 
     <properties>
-        <scala.version>2.9.0</scala.version>
+        <scala.version>2.10.1</scala.version>
     </properties>
 
     <dependencies>
@@ -102,11 +123,14 @@
     </dependencies>
 
     <build>
+        <sourceDirectory>src/main/scala</sourceDirectory>
+        <testSourceDirectory>src/test/scala</testSourceDirectory>
+
         <plugins>
             <plugin>
-                <groupId>org.scala-tools</groupId>
-                <artifactId>maven-scala-plugin</artifactId>
-                <version>2.15.2</version>
+                <groupId>net.alchim31.maven</groupId>
+                <artifactId>scala-maven-plugin</artifactId>
+                <version>3.1.3</version>
                 <executions>
                     <execution>
                         <id>default-compile</id>
@@ -121,7 +145,7 @@
                         </configuration>
                     </execution>
                     <execution>
-                        <id>scala-test-compile</id>
+                        <id>default-testCompile</id>
                         <phase>process-test-resources</phase>
                         <goals>
                             <goal>testCompile</goal>
@@ -133,15 +157,44 @@
                     </execution>
                 </executions>
             </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-source-plugin</artifactId>
+                <version>2.2.1</version>
+                <executions>
+                    <execution>
+                        <id>attach-sources</id>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-gpg-plugin</artifactId>
+                <version>1.4</version>
+                <executions>
+                    <execution>
+                        <id>sign-artifacts</id>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>sign</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
         </plugins>
     </build>
 
     <reporting>
         <plugins>
             <plugin>
-                <groupId>org.scala-tools</groupId>
-                <artifactId>maven-scala-plugin</artifactId>
-                <version>2.15.2</version>
+                <groupId>net.alchim31.maven</groupId>
+                <artifactId>scala-maven-plugin</artifactId>
+                <version>3.1.3</version>
                 <configuration>
                     <scalaVersion>${scala.version}</scalaVersion>
                 </configuration>
