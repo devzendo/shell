@@ -15,5 +15,21 @@
  */
 package org.devzendo.shell.plugin;
 
-public class TestVariablesShellPlugin {
+import java.util.Set;
+
+import org.devzendo.shell.ShellPlugin;
+import org.devzendo.shell.pipe.OutputPipe;
+
+public class PluginsShellPlugin extends AbstractShellPlugin {
+    @Override
+    public String getName() {
+        return "Plugins";
+    }
+    
+    public void listPlugins(final OutputPipe outputPipe) {
+        final Set<ShellPlugin> plugins = getExecutionEnvironment().getPluginRegistry().getPlugins();
+        for (ShellPlugin shellPlugin : plugins) {
+            outputPipe.push(shellPlugin.getName());
+        }
+    }
 }
