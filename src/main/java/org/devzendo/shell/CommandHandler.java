@@ -79,6 +79,15 @@ public abstract class CommandHandler {
     
     public abstract void execute() throws CommandExecutionException;
 
+    public final void terminatePipes() {
+        if (getInputPipe() != null) {
+            getInputPipe().setTerminated();
+        }
+        if (getOutputPipe() != null) {
+            getOutputPipe().setTerminated();
+        }
+    }
+
     public final Option<Integer> getArgumentsPos() {
         return mArgumentsPos;
     }
