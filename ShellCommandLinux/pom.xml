@@ -1,0 +1,70 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>org.devzendo</groupId>
+    <artifactId>ShellCommandLinux</artifactId>
+    <version>0.0.1-SNAPSHOT</version>
+    <name>ShellCommandLinux</name>
+    <packaging>pom</packaging>
+    <description>Linux launcher for the Shell command line utility.
+        (Apache License v2) 2013 Matt Gumbley, DevZendo.org
+    </description>
+
+    <parent>
+        <groupId>org.devzendo</groupId>
+        <artifactId>Shell</artifactId>
+        <version>0.0.1-SNAPSHOT</version>
+    </parent>
+
+    <properties>
+        <appName>Shell</appName>
+    </properties>
+
+    <profiles>
+        <profile>
+            <id>linux</id>
+            <activation>
+                <os>
+                    <name>linux</name>
+                </os>
+            </activation>
+            <build>
+                <plugins>
+                    <!--
+                      Create the Linux launcher structure under target/linux.
+                    -->
+                    <plugin>
+                        <groupId>org.devzendo</groupId>
+                        <artifactId>CrossPlatformLauncherPlugin</artifactId>
+                        <version>0.2.1</version>
+                        <configuration>
+                            <os>Linux</os>
+                            <applicationName>${appName}</applicationName>
+                            <mainClassName>org.devzendo.shell.Shell
+                            </mainClassName>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <id>createlauncher</id>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>createlauncher</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        <!--  Linux -->
+    </profiles>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.devzendo</groupId>
+            <artifactId>ShellCommand</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+        </dependency>
+    </dependencies>
+</project>

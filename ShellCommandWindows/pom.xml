@@ -1,0 +1,70 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>org.devzendo</groupId>
+    <artifactId>ShellCommandWindows</artifactId>
+    <version>0.0.1-SNAPSHOT</version>
+    <name>ShellCommandWindows</name>
+    <packaging>pom</packaging>
+    <description>Windows launcher for the Shell command line utility.
+        (Apache License v2) 2012 Matt Gumbley, DevZendo.org
+    </description>
+
+    <parent>
+        <groupId>org.devzendo</groupId>
+        <artifactId>Shell</artifactId>
+        <version>0.0.1-SNAPSHOT</version>
+    </parent>
+
+    <properties>
+        <appName>ShellCmd</appName>
+    </properties>
+
+    <profiles>
+        <profile>
+            <id>windows</id>
+            <activation>
+                <os>
+                    <family>Windows</family>
+                </os>
+            </activation>
+            <build>
+                <plugins>
+                    <!--
+                      Create the Windows launcher structure under target/windows.
+                    -->
+                    <plugin>
+                        <groupId>org.devzendo</groupId>
+                        <artifactId>CrossPlatformLauncherPlugin</artifactId>
+                        <version>0.2.1</version>
+                        <configuration>
+                            <os>Windows</os>
+                            <applicationName>${appName}</applicationName>
+                            <mainClassName>org.devzendo.shell.ShellMain
+                            </mainClassName>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <id>createlauncher</id>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>createlauncher</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        <!--  Windows -->
+    </profiles>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.devzendo</groupId>
+            <artifactId>ShellCommand</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+        </dependency>
+    </dependencies>
+</project>

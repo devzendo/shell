@@ -4,8 +4,9 @@
     <groupId>org.devzendo</groupId>
     <artifactId>Shell</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>DevZendo.org Shell Harness</name>
-    <description>A simple interactive 'shell' for driving test harnesses.
+    <packaging>pom</packaging>
+    <name>DevZendo.org Shell</name>
+    <description>An object pipeline shell language for interactive or script use.
     (Apache License v2) 2012 Matt Gumbley, DevZendo.org</description>
     <url>http://www.devzendo.org/content/shell</url>
     <licenses>
@@ -37,6 +38,13 @@
     <properties>
         <scala.version>2.10.1</scala.version>
     </properties>
+
+    <modules>
+        <module>ShellCommand</module>
+        <module>ShellCommandLinux</module>
+        <module>ShellCommandMacOSX</module>
+        <module>ShellCommandWindows</module>
+    </modules>
 
     <dependencies>
 

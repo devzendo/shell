@@ -1,0 +1,76 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>org.devzendo</groupId>
+    <artifactId>ShellCommandMacOSX</artifactId>
+    <version>0.0.1-SNAPSHOT</version>
+    <name>ShellCommandMacOSX</name>
+    <packaging>pom</packaging>
+    <description>MacOSX launcher for the Shell command line utility.
+        (Apache License v2) 2012 Matt Gumbley, DevZendo.org
+    </description>
+
+    <parent>
+        <groupId>org.devzendo</groupId>
+        <artifactId>Shell</artifactId>
+        <version>0.0.1-SNAPSHOT</version>
+    </parent>
+
+    <properties>
+        <appName>ShellCmd</appName>
+    </properties>
+
+    <profiles>
+        <profile>
+            <id>mac os x</id>
+            <activation>
+                <os>
+                    <name>mac os x</name>
+                </os>
+            </activation>
+            <build>
+                <plugins>
+                    <!--
+                      Create the Mac OS X Feurio command launcher structure under
+                      target/macosx.
+                    -->
+                    <plugin>
+                        <groupId>org.devzendo</groupId>
+                        <artifactId>CrossPlatformLauncherPlugin</artifactId>
+                        <version>0.2.1</version>
+                        <configuration>
+                            <os>MacOSX</os>
+                            <launcherType>Console</launcherType>
+                            <applicationName>${appName}</applicationName>
+                            <mainClassName>org.devzendo.shell.ShellMain
+                            </mainClassName>
+                            <!--
+                              I don't have an assigned creator code
+                              <bundleSignature>BM</bundleSignature>
+                            -->
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <id>createlauncher</id>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>createlauncher</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        <!--  mac os x -->
+    </profiles>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.devzendo</groupId>
+            <artifactId>ShellCommand</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+        </dependency>
+    </dependencies>
+</project>

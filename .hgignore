@@ -4,4 +4,4 @@ syntax: regexp
 syntax: glob
 .cache
 .scala_dependencies
-Shell.iml
+Shell*.iml
