@@ -46,18 +46,13 @@ public class ExecutionContainer {
             final Thread thread = new Thread(new Runnable() {
                 @Override
                 public void run() {
-                    LOGGER.debug("executing...");
                     try {
-                        finalHandler.execute();
+                        finalHandler.executeAndTerminatePipes();
                     } catch (CommandExecutionException e) {
                         exceptions.add(e);
                     } finally {
-                        LOGGER.debug("terminating pipes");
-                        finalHandler.terminatePipes();
-                        LOGGER.debug("pipes terminated");
                         latch.countDown();
                     }
-                    LOGGER.debug("...executed");
                 }});
             thread.setName(handler.getName());
             thread.start();
@@ -86,12 +81,6 @@ public class ExecutionContainer {
     }
 
     private void executeOnCurrentThread() throws CommandExecutionException {
-        try {
-            mCommandHandlers.get(0).execute();
-        } finally {
-            LOGGER.debug("terminating pipes");
-            mCommandHandlers.get(0).terminatePipes();
-            LOGGER.debug("pipes terminated");
-        }
+        mCommandHandlers.get(0).executeAndTerminatePipes();
     }
 }

@@ -17,12 +17,15 @@ package org.devzendo.shell;
 
 import java.util.List;
 
+import org.apache.log4j.Logger;
 import org.devzendo.shell.pipe.InputPipe;
 import org.devzendo.shell.pipe.OutputPipe;
 
 import scala.Option;
 
 public abstract class CommandHandler {
+    private static final Logger LOGGER = Logger.getLogger(CommandHandler.class);
+
     private final String mName;
     private final Option<Integer> mArgumentsPos;
     private final Option<Integer> mInputPipePos;
@@ -79,7 +82,20 @@ public abstract class CommandHandler {
     
     public abstract void execute() throws CommandExecutionException;
 
-    public final void terminatePipes() {
+    public final void executeAndTerminatePipes() throws CommandExecutionException
+    {
+        try {
+            LOGGER.debug("executing...");
+            execute();
+        } finally {
+            LOGGER.debug("terminating pipes");
+            terminatePipes();
+            LOGGER.debug("pipes terminated");
+            LOGGER.debug("...executed");
+        }
+    }
+
+    private final void terminatePipes() {
         if (getInputPipe() != null) {
             getInputPipe().setTerminated();
         }

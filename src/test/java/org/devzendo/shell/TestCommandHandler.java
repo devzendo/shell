@@ -53,6 +53,6 @@ public class TestCommandHandler {
             oneOf(outputPipe).setTerminated();
         } });
 
-        handler.execute();
+        handler.executeAndTerminatePipes();
     }
 }
