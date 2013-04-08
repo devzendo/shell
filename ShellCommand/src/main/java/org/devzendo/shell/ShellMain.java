@@ -15,13 +15,16 @@
  */
 package org.devzendo.shell;
 
-import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.util.Arrays;
 import java.util.List;
 
+import jline.console.ConsoleReader;
+import jline.console.completer.CompletionHandler;
 import org.apache.log4j.Logger;
+import org.devzendo.commonapp.prefs.DefaultPrefsLocation;
+import org.devzendo.commonapp.prefs.PrefsLocation;
 import org.devzendo.commoncode.logging.Logging;
 import org.devzendo.shell.pipe.InputPipe;
 import org.devzendo.shell.pipe.OutputPipe;
@@ -31,6 +34,9 @@ import org.devzendo.shell.plugin.LoggingShellPlugin;
 import org.devzendo.shell.plugin.PluginsShellPlugin;
 import org.devzendo.shell.plugin.VariablesShellPlugin;
 import org.devzendo.shell.plugin.ExperimentalShellPlugin;
+import org.fusesource.jansi.AnsiConsole;
+import org.fusesource.jansi.AnsiRenderer;
+import scala.Option;
 
 public class ShellMain {
     private static final String SHELLPLUGIN_PROPERTIES = "shellplugin.properties";
@@ -71,7 +77,22 @@ public class ShellMain {
         for (final String arg : mArgList) {
             LOGGER.debug("ARG: [" + arg + "]");
         }
-        
+
+        final PrefsLocation prefsLocation = new DefaultPrefsLocation(".shell", "prefs.ini");
+        final File historyFile = new File(prefsLocation.getPrefsDir(), "history.txt");
+
+        // if isatty... {
+        AnsiConsole.systemInstall();
+        banner();
+        // }
+        final CompletionHandler completionHandler = new CompletionHandler() {
+            @Override
+            public boolean complete(final ConsoleReader reader, final List<CharSequence> candidates, final int position) throws IOException {
+                return false;
+            }
+        };
+        final LineReader lineReader = new JLineLineReader(historyFile, completionHandler);
+
         try {
             mPluginRegistry.loadAndRegisterPluginMethods(
                     new InternalShellPlugin(),
@@ -83,16 +104,12 @@ public class ShellMain {
             
             final CommandParser parser = new CommandParser();
             final CommandHandlerWirer wirer = new CommandHandlerWirer(mCommandRegistry, mVariableRegistry);
-            final BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-            try {
-                while (!quit) {
-                    // may switch to jline here...
-                    System.out.print("] ");
-                    System.out.flush();
-                    final String input = br.readLine();
-                    LOGGER.debug("input: [" + input + "]");
+            while (!quit) {
+                final Option<String> input = lineReader.readLine("] ");
+                LOGGER.debug("input: [" + input + "]");
+                if (input.isDefined()) {
                     try {
-                        final CommandPipeline commandPipeline = parser.parse(input.trim());
+                        final CommandPipeline commandPipeline = parser.parse(input.get().trim());
                         if (!commandPipeline.isEmpty()) {
                             final List<CommandHandler> commandHandlers = wirer.wire(commandPipeline);
                             if (LOGGER.isDebugEnabled()) {
@@ -109,11 +126,21 @@ public class ShellMain {
                         LOGGER.warn(cee.getMessage());
                     }
                 }
-            } catch (final IOException ioe) {
-                LOGGER.error(ioe.getMessage());
             }
         } catch (final ShellPluginException e) {
             LOGGER.fatal("Can't continue: " + e.getMessage());
+        }
+    }
+
+    private void banner() {
+        final List<String> banner = Arrays.asList(
+                " __ _          _ _",
+                "/ _\\ |__   ___| | |",
+                "\\ \\| '_ \\ / _ \\ | |",
+                "_\\ \\ | | |  __/ | |",
+                "\\__/_| |_|\\___|_|_|");
+        for (String line : banner) {
+            AnsiConsole.out().println(AnsiRenderer.render("@|bold,blue " + line + "|@"));
         }
     }
 

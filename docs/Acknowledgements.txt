@@ -4,3 +4,4 @@ Shell Acknowledgements
 Thanks to Satish Srinivasan for the suggestion of Stream.continually in
 the plugin hierarchy for processing InputPipe data via functions.
  
+Thanks to sbt's authors (Mark Harrah et al) for the JLine integration.

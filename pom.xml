@@ -7,7 +7,7 @@
     <packaging>pom</packaging>
     <name>DevZendo.org Shell</name>
     <description>An object pipeline shell language for interactive or script use.
-    (Apache License v2) 2012 Matt Gumbley, DevZendo.org</description>
+    (Apache License v2) 2011-2013 Matt Gumbley, DevZendo.org</description>
     <url>http://www.devzendo.org/content/shell</url>
     <licenses>
         <license>
@@ -56,6 +56,43 @@
 
         <dependency>
             <groupId>org.devzendo</groupId>
+            <artifactId>CommonApp</artifactId>
+            <version>0.3.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>log4j</groupId>
+            <artifactId>log4j</artifactId>
+            <version>1.2.16</version>
+        </dependency>
+
+        <dependency>
+            <groupId>jline</groupId>
+            <artifactId>jline</artifactId>
+            <version>2.10</version>
+        </dependency>
+
+        <!-- this is embedded in jline... <dependency>
+            <groupId>org.fusesource.jansi</groupId>
+            <artifactId>jansi</artifactId>
+            <version>1.10</version>
+        </dependency> -->
+
+        <dependency>
+            <groupId>org.fusesource.jansi</groupId>
+            <artifactId>jansi-native</artifactId>
+            <version>1.5</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.scala-lang</groupId>
+            <artifactId>scala-library</artifactId>
+            <version>${scala.version}</version>
+        </dependency>
+
+        <!-- test dependencies -->
+        <dependency>
+            <groupId>org.devzendo</groupId>
             <artifactId>CommonCode</artifactId>
             <version>1.0.1</version>
             <classifier>tests</classifier>
@@ -66,20 +103,8 @@
             <groupId>org.devzendo</groupId>
             <artifactId>CommonApp</artifactId>
             <version>0.3.0</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.devzendo</groupId>
-            <artifactId>CommonApp</artifactId>
-            <version>0.3.0</version>
             <classifier>tests</classifier>
             <scope>test</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>log4j</groupId>
-            <artifactId>log4j</artifactId>
-            <version>1.2.16</version>
         </dependency>
 
         <dependency>
@@ -124,11 +149,6 @@
             <scope>test</scope>
         </dependency>
 
-        <dependency>
-            <groupId>org.scala-lang</groupId>
-            <artifactId>scala-library</artifactId>
-            <version>${scala.version}</version>
-        </dependency>
     </dependencies>
 
     <build>

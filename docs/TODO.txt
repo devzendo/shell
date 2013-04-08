@@ -1,0 +1,6 @@
+Unpack the JAnsi native libraries into the correct launcher tree location on
+Linux and Windows. Done for Mac OSX.
+
+Initialise Quaqua / Looks correctly on the three platforms.
+
+Add a version command; show the version in the fancy banner.
