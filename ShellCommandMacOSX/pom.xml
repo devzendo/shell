@@ -43,7 +43,7 @@
                             <os>MacOSX</os>
                             <launcherType>Console</launcherType>
                             <applicationName>${appName}</applicationName>
-                            <mainClassName>org.devzendo.shell.ShellMain
+                            <mainClassName>org.devzendo.shell.ShellMain2
                             </mainClassName>
                             <!--
                               I don't have an assigned creator code
