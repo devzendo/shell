@@ -26,7 +26,7 @@ import org.devzendo.commoncode.logging.LoggingUnittestHelper;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-public class TestPluginRegistrar {
+public class TestPluginRegistry {
     private CommandRegistry mCommandRegistry = new CommandRegistry();
     private VariableRegistry mVariableRegistry = new VariableRegistry();
     
@@ -65,9 +65,13 @@ public class TestPluginRegistrar {
         }
     };
 
+    private PluginRegistry getPluginRegistry(final String propertiesName) {
+        return new PluginRegistry(propertiesName, mCommandRegistry, mVariableRegistry, Arrays.asList("one", "two"));
+    }
+
     @Test
     public void pluginLoadedAndReceivesExecutionEnvironment() throws ShellPluginException {
-        final PluginRegistry pluginRegistrar = new PluginRegistry("org/devzendo/shell/testpluginregistrar-recording-plugin.properties", mCommandRegistry, mVariableRegistry, Arrays.asList("one", "two"));
+        final PluginRegistry pluginRegistrar = getPluginRegistry("org/devzendo/shell/testpluginregistrar-recording-plugin.properties");
         pluginRegistrar.loadAndRegisterPluginMethods();
         final Set<ShellPlugin> plugins = pluginRegistrar.getPlugins();
         assertThat(plugins.size(), equalTo(1));
@@ -78,10 +82,10 @@ public class TestPluginRegistrar {
         assertThat(recordingPlugin.getArgs().get(0), equalTo("one"));
         assertThat(recordingPlugin.getArgs().get(1), equalTo("two"));
     }
-    
+
     @Test
     public void staticPluginsPopulatedInRegistry() throws ShellPluginException {
-        final PluginRegistry pluginRegistrar = new PluginRegistry("org/devzendo/shell/testpluginregistrar-recording-plugin.properties", mCommandRegistry, mVariableRegistry, Arrays.asList("one", "two"));
+        final PluginRegistry pluginRegistrar = getPluginRegistry("org/devzendo/shell/testpluginregistrar-recording-plugin.properties");
         pluginRegistrar.loadAndRegisterPluginMethods(shellPluginOne);
         final Set<ShellPlugin> plugins = pluginRegistrar.getPlugins();
         assertThat(plugins.size(), equalTo(2));
@@ -89,7 +93,7 @@ public class TestPluginRegistrar {
     
     @Test
     public void duplicateCommandThrows() {
-        final PluginRegistry pluginRegistrar = new PluginRegistry("org/devzendo/shell/testpluginregistrar-no-plugins.properties", mCommandRegistry, mVariableRegistry, Arrays.asList("one", "two"));
+        final PluginRegistry pluginRegistrar = getPluginRegistry("org/devzendo/shell/testpluginregistrar-no-plugins.properties");
         try {
             pluginRegistrar.loadAndRegisterPluginMethods(shellPluginOne, shellPluginTwo);
             fail("Should have thrown a ShellPluginexception registering plugins with duplicate command names");
