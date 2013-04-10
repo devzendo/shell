@@ -29,12 +29,12 @@ import org.devzendo.shell.plugin.{ExperimentalShellPlugin, LoggingShellPlugin, P
 import org.devzendo.shell.pipe.{VariableOutputPipe, VariableInputPipe}
 
 
-class ShellMain2(val argList:java.util.List[String]) {
+class ShellMain(val argList:java.util.List[String]) {
     val commandRegistry = new CommandRegistry()
     val variableRegistry = new VariableRegistry()
     // TODO convert PluginRegistry argList to a scala list, then convert the
     // argList val to a Scala list
-    val pluginRegistry = new PluginRegistry(ShellMain2.SHELLPLUGIN_PROPERTIES, commandRegistry, variableRegistry, argList)
+    val pluginRegistry = new PluginRegistry(ShellMain.SHELLPLUGIN_PROPERTIES, commandRegistry, variableRegistry, argList)
 
     private var quitShell = false
 
@@ -55,8 +55,8 @@ class ShellMain2(val argList:java.util.List[String]) {
     }
 
     def start() {
-        ShellMain2.LOGGER.debug("Starting DevZendo.org shell")
-        argList.foreach( (f: String) => { ShellMain2.LOGGER.debug("ARG: [" + f + "]") } )
+        ShellMain.LOGGER.debug("Starting DevZendo.org shell")
+        argList.foreach( (f: String) => { ShellMain.LOGGER.debug("ARG: [" + f + "]") } )
 
         val prefsLocation: PrefsLocation = new DefaultPrefsLocation(".shell", "prefs.ini")
         val historyFile = new File(prefsLocation.getPrefsDir, "history.txt")
@@ -86,13 +86,13 @@ class ShellMain2(val argList:java.util.List[String]) {
             val wirer = new CommandHandlerWirer(commandRegistry, variableRegistry)
             while (!quitShell) {
                 val input = lineReader.readLine("] ")
-                ShellMain2.LOGGER.debug("input: [" + input + "]")
+                ShellMain.LOGGER.debug("input: [" + input + "]")
                 for (line <- input) {
                     try {
                         val commandPipeline = parser.parse(line.trim())
                         if (!commandPipeline.isEmpty) {
                             val commandHandlers = wirer.wire(commandPipeline)
-                            if (ShellMain2.LOGGER.isDebugEnabled) {
+                            if (ShellMain.LOGGER.isDebugEnabled) {
                                 dumpHandlers(commandHandlers)
                             }
                             val executionContainer = new ExecutionContainer(commandHandlers)
@@ -100,17 +100,17 @@ class ShellMain2(val argList:java.util.List[String]) {
                         }
                     } catch {
                         case cpe: CommandParserException =>
-                            ShellMain2.LOGGER.warn(cpe.getMessage)
+                            ShellMain.LOGGER.warn(cpe.getMessage)
                         case cnfe: CommandNotFoundException =>
-                            ShellMain2.LOGGER.warn(cnfe.getMessage)
+                            ShellMain.LOGGER.warn(cnfe.getMessage)
                         case cee: CommandExecutionException =>
-                            ShellMain2.LOGGER.warn(cee.getMessage)
+                            ShellMain.LOGGER.warn(cee.getMessage)
                     }
                 }
             }
         } catch {
             case e: ShellPluginException =>
-                ShellMain2.LOGGER.fatal("Can't continue: " + e.getMessage)
+                ShellMain.LOGGER.fatal("Can't continue: " + e.getMessage)
         }
     }
 
@@ -120,8 +120,11 @@ class ShellMain2(val argList:java.util.List[String]) {
             "/ _\\ |__   ___| | |",
             "\\ \\| '_ \\ / _ \\ | |",
             "_\\ \\ | | |  __/ | |",
-            "\\__/_| |_|\\___|_|_|")
-        lines.foreach( line => { AnsiConsole.out().println(AnsiRenderer.render("@|bold,blue " + line + "|@")) } )
+            "\\__/_| |_|\\___|_|_|",
+            "DevZendo.org Object Shell")
+        lines.foreach( line => {
+            AnsiConsole.out().println(AnsiRenderer.render("@|bold,blue " + line + "|@"))
+        } )
     }
 
     private[this] def dumpHandlers(commandHandlers: util.List[CommandHandler]) {
@@ -152,13 +155,13 @@ class ShellMain2(val argList:java.util.List[String]) {
             sb.append(" ")
         })
         sb.deleteCharAt(sb.length -1)
-        ShellMain2.LOGGER.debug("pipeline: " + sb.toString())
+        ShellMain.LOGGER.debug("pipeline: " + sb.toString())
     }
 
 }
 
-object ShellMain2 {
-    private val LOGGER = Logger.getLogger(classOf[ShellMain2])
+object ShellMain {
+    val LOGGER = Logger.getLogger(classOf[ShellMain])
     private val SHELLPLUGIN_PROPERTIES = "shellplugin.properties"
 
     /**
@@ -169,7 +172,7 @@ object ShellMain2 {
         val argList: java.util.List[String] = new java.util.ArrayList[String]()
         args.foreach(s => argList.add(s))
         val finalArgList = logging.setupLoggingFromArgs(argList)
-        new ShellMain2(finalArgList).start()
+        new ShellMain(finalArgList).start()
     }
 }
 
