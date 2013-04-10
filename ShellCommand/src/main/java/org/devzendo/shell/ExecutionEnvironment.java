@@ -21,17 +21,17 @@ public class ExecutionEnvironment {
     private final List<String> mArgList;
     private final CommandRegistry mCommandRegistry;
     private final VariableRegistry mVariableRegistry;
-    private final PluginRegistry mPluginRegistry;
+    private final IPluginRegistry mPluginRegistry;
 
     public ExecutionEnvironment(
             final List<String> argList,
             final CommandRegistry commandRegistry, 
             final VariableRegistry variableRegistry,
-            final PluginRegistry pluginRegistrar) {
+            final IPluginRegistry pluginRegistry) {
                 mArgList = argList;
                 mCommandRegistry = commandRegistry;
                 mVariableRegistry = variableRegistry;
-                mPluginRegistry = pluginRegistrar;
+                mPluginRegistry = pluginRegistry;
     }
 
     public final List<String> getArgList() {
@@ -46,7 +46,7 @@ public class ExecutionEnvironment {
         return mVariableRegistry;
     }
 
-    public final PluginRegistry getPluginRegistry() {
+    public final IPluginRegistry getPluginRegistry() {
         return mPluginRegistry;
     }
 }

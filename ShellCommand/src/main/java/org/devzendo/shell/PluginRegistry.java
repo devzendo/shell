@@ -24,7 +24,7 @@ import java.util.Map.Entry;
 import java.util.Set;
 
 
-public class PluginRegistry {
+public class PluginRegistry implements IPluginRegistry {
     private final String mPropertiesResourcePath;
     private final CommandRegistry mCommandRegistry;
     private final VariableRegistry mVariableRegistry;
@@ -44,7 +44,8 @@ public class PluginRegistry {
         mPropertiesResourcePath = propertiesResourcePath;
     }
 
-    public void loadAndRegisterPluginMethods(final ShellPlugin ... staticPlugins) throws ShellPluginException {
+    @Override
+    public void loadAndRegisterPluginMethods(final List<ShellPlugin> staticPlugins) throws ShellPluginException {
         final ExecutionEnvironment env = new ExecutionEnvironment(mArgList, mCommandRegistry, mVariableRegistry, this);
         final ArrayList<ShellPlugin> allPlugins = loadAllPlugins(staticPlugins);
         for (final ShellPlugin shellPlugin : allPlugins) {
@@ -61,14 +62,15 @@ public class PluginRegistry {
         }
     }
 
-    private ArrayList<ShellPlugin> loadAllPlugins(final ShellPlugin ... staticPlugins) throws ShellPluginException {
+    private ArrayList<ShellPlugin> loadAllPlugins(final List<ShellPlugin> staticPlugins) throws ShellPluginException {
         final ArrayList<ShellPlugin> allPlugins = new ArrayList<ShellPlugin>();
         final List<ShellPlugin> pluginsFromClasspath = new PluginLoader().loadPluginsFromClasspath(mPropertiesResourcePath);
-        allPlugins.addAll(Arrays.asList(staticPlugins));
+        allPlugins.addAll(staticPlugins);
         allPlugins.addAll(pluginsFromClasspath);
         return allPlugins;
     }
 
+    @Override
     public final Set<ShellPlugin> getPlugins() {
         return mPlugins;
     }

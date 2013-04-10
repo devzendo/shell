@@ -15,6 +15,7 @@
  */
 package org.devzendo.shell.plugin;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -22,9 +23,7 @@ import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Level;
 import org.apache.log4j.spi.LoggingEvent;
 import org.devzendo.commoncode.logging.CapturingAppender;
-import org.devzendo.shell.CommandRegistry;
-import org.devzendo.shell.PluginRegistry;
-import org.devzendo.shell.ShellPluginException;
+import org.devzendo.shell.*;
 import org.devzendo.shell.pipe.InputPipe;
 import org.jmock.Expectations;
 import org.jmock.Mockery;
@@ -50,10 +49,10 @@ public class TestLoggingShellPlugin {
 
     @Test
     public void logInfoLogsAtInfoLevel() throws ShellPluginException {
-        final LoggingShellPlugin plugin = new LoggingShellPlugin();
+        final ShellPlugin plugin = new LoggingShellPlugin();
         @SuppressWarnings("unchecked")
-        final PluginRegistry pluginRegistry = new PluginRegistry("irrelevant", new CommandRegistry(), null, Collections.EMPTY_LIST);
-        pluginRegistry.loadAndRegisterPluginMethods(plugin);
+        final IPluginRegistry pluginRegistry = new PluginRegistry("irrelevant", new CommandRegistry(), null, Collections.EMPTY_LIST);
+        pluginRegistry.loadAndRegisterPluginMethods(Arrays.asList(plugin));
 
         setupLogging();
         final InputPipe inputPipe = context.mock(InputPipe.class);
@@ -66,7 +65,7 @@ public class TestLoggingShellPlugin {
                 will(returnValue(Option.<Object>apply(null)));
         } });
 
-        plugin.logInfo(inputPipe);
+        ((LoggingShellPlugin)plugin).logInfo(inputPipe);
         
         final List<LoggingEvent> events = mCapturingAppender.getEvents();
         Assert.assertEquals(2, events.size());
