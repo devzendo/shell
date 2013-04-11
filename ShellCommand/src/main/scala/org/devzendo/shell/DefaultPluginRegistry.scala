@@ -21,7 +21,7 @@ import scala.collection.convert.WrapAsScala._
 import collection.JavaConverters._
 import scala.collection.mutable
 
-class PluginRegistry2(val propertiesResourcePath: String, val commandRegistry: CommandRegistry,
+class DefaultPluginRegistry(val propertiesResourcePath: String, val commandRegistry: CommandRegistry,
     val variableRegistry: VariableRegistry,
     val argList: java.util.List[String]) extends IPluginRegistry {
 

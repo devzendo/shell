@@ -32,9 +32,9 @@ import org.devzendo.shell.pipe.{VariableOutputPipe, VariableInputPipe}
 class ShellMain(val argList:java.util.List[String]) {
     val commandRegistry = new CommandRegistry()
     val variableRegistry = new VariableRegistry()
-    // TODO convert PluginRegistry argList to a scala list, then convert the
+    // TODO convert DefaultPluginRegistry argList to a scala list, then convert the
     // argList val to a Scala list
-    val pluginRegistry = new PluginRegistry2(ShellMain.SHELLPLUGIN_PROPERTIES, commandRegistry, variableRegistry, argList)
+    val pluginRegistry = new DefaultPluginRegistry(ShellMain.SHELLPLUGIN_PROPERTIES, commandRegistry, variableRegistry, argList)
 
     private var quitShell = false
 

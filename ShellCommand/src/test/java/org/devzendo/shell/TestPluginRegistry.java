@@ -67,7 +67,7 @@ public class TestPluginRegistry {
     };
 
     private IPluginRegistry getPluginRegistry(final String propertiesName) {
-        return new PluginRegistry2(propertiesName, mCommandRegistry, mVariableRegistry, Arrays.asList("one", "two"));
+        return new DefaultPluginRegistry(propertiesName, mCommandRegistry, mVariableRegistry, Arrays.asList("one", "two"));
     }
 
     @Test
