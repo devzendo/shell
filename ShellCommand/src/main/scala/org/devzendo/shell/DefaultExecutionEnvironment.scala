@@ -17,7 +17,7 @@
 package org.devzendo.shell
 
 case class DefaultExecutionEnvironment(
-    argList: java.util.List[String],
+    argList: List[String],
     commandRegistry: CommandRegistry,
     variableRegistry: VariableRegistry,
     pluginRegistry: PluginRegistry) extends ExecutionEnvironment {

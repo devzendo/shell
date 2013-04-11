@@ -18,11 +18,11 @@ package org.devzendo.shell;
 import java.util.List;
 
 public class RecordingShellPlugin implements ShellPlugin {
-    private List<String> mArgs;
+    private scala.collection.immutable.List<String> mArgs;
     private VariableRegistry mVariableRegistry;
     private CommandRegistry mCommandRegistry;
 
-    public final List<String> getArgs() {
+    public final scala.collection.immutable.List<String> getArgs() {
         return mArgs;
     }
 

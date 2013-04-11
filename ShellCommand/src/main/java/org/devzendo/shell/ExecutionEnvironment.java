@@ -18,7 +18,7 @@ import java.util.List;
  * limitations under the License.
  */
 public interface ExecutionEnvironment {
-    List<String> argList();
+    scala.collection.immutable.List<String> argList();
 
     CommandRegistry commandRegistry();
 
