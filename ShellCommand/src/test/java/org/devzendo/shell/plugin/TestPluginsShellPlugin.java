@@ -34,7 +34,7 @@ public class TestPluginsShellPlugin {
     public void listPluginsListsPlugins() throws ShellPluginException {
         final ShellPlugin plugin = new PluginsShellPlugin();
         @SuppressWarnings("unchecked")
-        final IPluginRegistry pluginRegistry = new PluginRegistry("irrelevant", new CommandRegistry(), null, Collections.EMPTY_LIST);
+        final IPluginRegistry pluginRegistry = new PluginRegistry2("irrelevant", new CommandRegistry(), null, Collections.EMPTY_LIST);
         pluginRegistry.loadAndRegisterPluginMethods(Arrays.asList(plugin));
 
         final OutputPipe outputPipe = context.mock(OutputPipe.class);

@@ -34,7 +34,7 @@ class ShellMain(val argList:java.util.List[String]) {
     val variableRegistry = new VariableRegistry()
     // TODO convert PluginRegistry argList to a scala list, then convert the
     // argList val to a Scala list
-    val pluginRegistry = new PluginRegistry(ShellMain.SHELLPLUGIN_PROPERTIES, commandRegistry, variableRegistry, argList)
+    val pluginRegistry = new PluginRegistry2(ShellMain.SHELLPLUGIN_PROPERTIES, commandRegistry, variableRegistry, argList)
 
     private var quitShell = false
 
