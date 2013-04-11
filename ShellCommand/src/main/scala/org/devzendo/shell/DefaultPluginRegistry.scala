@@ -30,7 +30,7 @@ class DefaultPluginRegistry(val propertiesResourcePath: String, val commandRegis
 
     @throws[ShellPluginException]
     def loadAndRegisterPluginMethods(staticPlugins: java.util.List[ShellPlugin]) {
-        val env: ExecutionEnvironment = new DefaultExecutionEnvironment(argList, commandRegistry, variableRegistry, this)
+        val env: ExecutionEnvironment = new DefaultExecutionEnvironment2(argList, commandRegistry, variableRegistry, this)
         val staticPluginsList = staticPlugins.asScala
         val allPlugins = loadAllPlugins(staticPluginsList)
         for (shellPlugin <- allPlugins) {
