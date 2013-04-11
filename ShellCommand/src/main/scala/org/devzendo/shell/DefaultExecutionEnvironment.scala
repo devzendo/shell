@@ -16,17 +16,9 @@
 
 package org.devzendo.shell
 
-// TODO change to standard access names, not bean-getters
 case class DefaultExecutionEnvironment(
-    @scala.reflect.BeanProperty
     argList: java.util.List[String],
-
-    @scala.reflect.BeanProperty
     commandRegistry: CommandRegistry,
-
-    @scala.reflect.BeanProperty
     variableRegistry: VariableRegistry,
-
-    @scala.reflect.BeanProperty
     pluginRegistry: PluginRegistry) extends ExecutionEnvironment {
 }

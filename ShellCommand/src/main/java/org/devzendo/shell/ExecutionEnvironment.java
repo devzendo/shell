@@ -18,11 +18,11 @@ import java.util.List;
  * limitations under the License.
  */
 public interface ExecutionEnvironment {
-    List<String> getArgList();
+    List<String> argList();
 
-    CommandRegistry getCommandRegistry();
+    CommandRegistry commandRegistry();
 
-    VariableRegistry getVariableRegistry();
+    VariableRegistry variableRegistry();
 
-    PluginRegistry getPluginRegistry();
+    PluginRegistry pluginRegistry();
 }

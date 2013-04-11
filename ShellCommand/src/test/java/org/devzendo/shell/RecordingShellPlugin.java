@@ -40,8 +40,8 @@ public class RecordingShellPlugin implements ShellPlugin {
 
     @Override
     public void initialise(final ExecutionEnvironment env) {
-        mArgs = env.getArgList();
-        mCommandRegistry = env.getCommandRegistry();
-        mVariableRegistry = env.getVariableRegistry();
+        mArgs = env.argList();
+        mCommandRegistry = env.commandRegistry();
+        mVariableRegistry = env.variableRegistry();
     }
 }
