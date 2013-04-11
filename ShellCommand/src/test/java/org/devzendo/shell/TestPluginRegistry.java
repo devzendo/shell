@@ -26,7 +26,6 @@ import java.util.Set;
 import org.devzendo.commoncode.logging.LoggingUnittestHelper;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import scala.collection.immutable.List;
 
 public class TestPluginRegistry {
     private CommandRegistry mCommandRegistry = new CommandRegistry();
