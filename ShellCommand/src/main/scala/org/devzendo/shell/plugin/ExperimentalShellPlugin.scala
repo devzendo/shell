@@ -31,6 +31,12 @@ class ExperimentalShellPlugin extends AbstractShellPlugin with PluginHelper {
         "Experimental"
     }
 
+    // envargs -----------------------------------------------------------------
+    def envargs(outputPipe: OutputPipe, args: java.util.List[Object]) = {
+        val envArgs = getExecutionEnvironment().argList()
+        envArgs.foreach(outputPipe.push)
+    }
+
     // count -------------------------------------------------------------------
     def count(outputPipe: OutputPipe, args: java.util.List[Object]) = {
         val first = Integer.parseInt(args.get(0).toString)

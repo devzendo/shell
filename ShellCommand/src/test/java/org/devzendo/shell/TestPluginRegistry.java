@@ -26,6 +26,7 @@ import java.util.Set;
 import org.devzendo.commoncode.logging.LoggingUnittestHelper;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import scala.collection.immutable.List;
 
 public class TestPluginRegistry {
     private CommandRegistry mCommandRegistry = new CommandRegistry();
@@ -66,8 +67,9 @@ public class TestPluginRegistry {
         }
     };
 
+
     private PluginRegistry getPluginRegistry(final String propertiesName) {
-        return new DefaultPluginRegistry(propertiesName, mCommandRegistry, mVariableRegistry, Arrays.asList("one", "two"));
+        return new DefaultPluginRegistry(propertiesName, mCommandRegistry, mVariableRegistry, ScalaListHelper.createList("one", "two"));
     }
 
     @Test

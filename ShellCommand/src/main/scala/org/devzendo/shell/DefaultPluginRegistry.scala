@@ -23,14 +23,14 @@ import scala.collection.mutable
 
 class DefaultPluginRegistry(val propertiesResourcePath: String, val commandRegistry: CommandRegistry,
     val variableRegistry: VariableRegistry,
-    val argList: java.util.List[String]) extends PluginRegistry {
+    val argList: List[String]) extends PluginRegistry {
 
     private val pluginMethodScanner = new PluginMethodScanner()
     private val plugins = scala.collection.mutable.Set[ShellPlugin]()
 
     @throws[ShellPluginException]
     def loadAndRegisterPluginMethods(staticPlugins: java.util.List[ShellPlugin]) {
-        val env: ExecutionEnvironment = new DefaultExecutionEnvironment(argList.asScala.toList, commandRegistry, variableRegistry, this)
+        val env: ExecutionEnvironment = new DefaultExecutionEnvironment(argList, commandRegistry, variableRegistry, this)
         val staticPluginsList = staticPlugins.asScala
         val allPlugins = loadAllPlugins(staticPluginsList)
         for (shellPlugin <- allPlugins) {

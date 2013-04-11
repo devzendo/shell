@@ -15,8 +15,6 @@
  */
 package org.devzendo.shell;
 
-import java.util.List;
-
 public class RecordingShellPlugin implements ShellPlugin {
     private scala.collection.immutable.List<String> mArgs;
     private VariableRegistry mVariableRegistry;
