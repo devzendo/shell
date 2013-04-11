@@ -19,14 +19,14 @@ import org.devzendo.shell.ExecutionEnvironment;
 import org.devzendo.shell.ShellPlugin;
 
 public abstract class AbstractShellPlugin implements ShellPlugin {
-    private ExecutionEnvironment mExecutionEnvironment;
+    private ExecutionEnvironment executionEnvironment;
 
     @Override
     public void initialise(final ExecutionEnvironment env) {
-        mExecutionEnvironment = env;
+        executionEnvironment = env;
     }
 
     public final ExecutionEnvironment getExecutionEnvironment() {
-        return mExecutionEnvironment;
+        return executionEnvironment;
     }
 }
