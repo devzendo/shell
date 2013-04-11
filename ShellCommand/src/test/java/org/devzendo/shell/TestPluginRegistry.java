@@ -66,13 +66,13 @@ public class TestPluginRegistry {
         }
     };
 
-    private IPluginRegistry getPluginRegistry(final String propertiesName) {
+    private PluginRegistry getPluginRegistry(final String propertiesName) {
         return new DefaultPluginRegistry(propertiesName, mCommandRegistry, mVariableRegistry, Arrays.asList("one", "two"));
     }
 
     @Test
     public void pluginLoadedAndReceivesExecutionEnvironment() throws ShellPluginException {
-        final IPluginRegistry pluginRegistrar = getPluginRegistry("org/devzendo/shell/testpluginregistrar-recording-plugin.properties");
+        final PluginRegistry pluginRegistrar = getPluginRegistry("org/devzendo/shell/testpluginregistrar-recording-plugin.properties");
         pluginRegistrar.loadAndRegisterPluginMethods(new ArrayList<ShellPlugin>());
         final Set<ShellPlugin> plugins = pluginRegistrar.getPlugins();
         assertThat(plugins.size(), equalTo(1));
@@ -86,7 +86,7 @@ public class TestPluginRegistry {
 
     @Test
     public void staticPluginsPopulatedInRegistry() throws ShellPluginException {
-        final IPluginRegistry pluginRegistrar = getPluginRegistry("org/devzendo/shell/testpluginregistrar-recording-plugin.properties");
+        final PluginRegistry pluginRegistrar = getPluginRegistry("org/devzendo/shell/testpluginregistrar-recording-plugin.properties");
         pluginRegistrar.loadAndRegisterPluginMethods(Arrays.asList(shellPluginOne));
         final Set<ShellPlugin> plugins = pluginRegistrar.getPlugins();
         assertThat(plugins.size(), equalTo(2));
@@ -94,7 +94,7 @@ public class TestPluginRegistry {
     
     @Test
     public void duplicateCommandThrows() {
-        final IPluginRegistry pluginRegistrar = getPluginRegistry("org/devzendo/shell/testpluginregistrar-no-plugins.properties");
+        final PluginRegistry pluginRegistrar = getPluginRegistry("org/devzendo/shell/testpluginregistrar-no-plugins.properties");
         try {
             pluginRegistrar.loadAndRegisterPluginMethods(Arrays.asList(shellPluginOne, shellPluginTwo));
             fail("Should have thrown a ShellPluginexception registering plugins with duplicate command names");

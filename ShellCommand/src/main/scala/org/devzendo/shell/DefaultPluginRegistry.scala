@@ -23,7 +23,7 @@ import scala.collection.mutable
 
 class DefaultPluginRegistry(val propertiesResourcePath: String, val commandRegistry: CommandRegistry,
     val variableRegistry: VariableRegistry,
-    val argList: java.util.List[String]) extends IPluginRegistry {
+    val argList: java.util.List[String]) extends PluginRegistry {
 
     private val pluginMethodScanner = new PluginMethodScanner()
     private val plugins = scala.collection.mutable.Set[ShellPlugin]()

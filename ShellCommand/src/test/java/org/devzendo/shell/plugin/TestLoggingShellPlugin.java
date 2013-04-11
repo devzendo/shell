@@ -51,7 +51,7 @@ public class TestLoggingShellPlugin {
     public void logInfoLogsAtInfoLevel() throws ShellPluginException {
         final ShellPlugin plugin = new LoggingShellPlugin();
         @SuppressWarnings("unchecked")
-        final IPluginRegistry pluginRegistry = new DefaultPluginRegistry("irrelevant", new CommandRegistry(), null, Collections.EMPTY_LIST);
+        final PluginRegistry pluginRegistry = new DefaultPluginRegistry("irrelevant", new CommandRegistry(), null, Collections.EMPTY_LIST);
         pluginRegistry.loadAndRegisterPluginMethods(Arrays.asList(plugin));
 
         setupLogging();

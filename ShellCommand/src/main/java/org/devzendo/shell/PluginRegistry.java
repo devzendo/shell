@@ -18,7 +18,7 @@ import java.util.Set;
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-public interface IPluginRegistry {
+public interface PluginRegistry {
     void loadAndRegisterPluginMethods(List<ShellPlugin> staticPlugins) throws ShellPluginException;
 
     Set<ShellPlugin> getPlugins();
