@@ -25,7 +25,7 @@ public abstract class AbstractShellPlugin implements ShellPlugin {
         executionEnvironment = env;
     }
 
-    public final ExecutionEnvironment getExecutionEnvironment() {
+    public final ExecutionEnvironment executionEnvironment() {
         return executionEnvironment;
     }
 }

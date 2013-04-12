@@ -26,7 +26,7 @@ public class PluginsShellPlugin extends AbstractShellPlugin {
     }
     
     public void listPlugins(final OutputPipe outputPipe) {
-        final Set<ShellPlugin> plugins = getExecutionEnvironment().pluginRegistry().getPlugins();
+        final Set<ShellPlugin> plugins = executionEnvironment().pluginRegistry().getPlugins();
         for (ShellPlugin shellPlugin : plugins) {
             outputPipe.push(shellPlugin.getName());
         }
