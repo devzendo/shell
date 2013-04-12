@@ -16,7 +16,6 @@
 package org.devzendo.shell.plugin;
 
 import java.util.Arrays;
-import java.util.Collections;
 
 import org.devzendo.shell.*;
 import org.devzendo.shell.pipe.OutputPipe;

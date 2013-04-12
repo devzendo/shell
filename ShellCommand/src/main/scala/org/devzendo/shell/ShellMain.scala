@@ -25,7 +25,7 @@ import org.fusesource.jansi.{AnsiRenderer, AnsiConsole}
 import jline.console.completer.CompletionHandler
 import jline.console.ConsoleReader
 import java.util
-import org.devzendo.shell.plugin.{ExperimentalShellPlugin, LoggingShellPlugin, PluginsShellPlugin, VariablesShellPlugin}
+import org.devzendo.shell.plugin._
 import org.devzendo.shell.pipe.{VariableOutputPipe, VariableInputPipe}
 import collection.JavaConverters._
 

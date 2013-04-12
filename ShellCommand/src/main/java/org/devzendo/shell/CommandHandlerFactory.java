@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.devzendo.shell.plugin.ShellPlugin;
 import scala.Option;
 
 public class CommandHandlerFactory {

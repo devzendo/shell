@@ -22,6 +22,7 @@ import org.apache.log4j.Logger
 import java.util.{Map, HashMap, List}
 import java.lang.reflect.Method
 import org.devzendo.shell.pipe.{InputPipe, OutputPipe}
+import org.devzendo.shell.plugin.ShellPlugin
 
 object PluginMethodScanner {
     private val LOGGER = Logger.getLogger(classOf[PluginMethodScanner])

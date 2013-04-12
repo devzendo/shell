@@ -22,6 +22,7 @@ import static org.junit.Assert.fail;
 
 import java.lang.reflect.Method;
 
+import org.devzendo.shell.plugin.ShellPlugin;
 import org.junit.Test;
 
 public class TestCommandRegistry {

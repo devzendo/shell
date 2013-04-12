@@ -15,6 +15,8 @@
  */
 package org.devzendo.shell;
 
+import org.devzendo.shell.plugin.ShellPlugin;
+
 import java.util.HashMap;
 import java.util.Map;
 

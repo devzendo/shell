@@ -16,6 +16,8 @@
 package org.devzendo.shell;
 
 
+import org.devzendo.shell.plugin.ShellPlugin;
+
 public class GoodTestPlugin implements ShellPlugin {
     @Override
     public String getName() {

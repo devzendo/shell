@@ -24,6 +24,8 @@ import java.util.Arrays;
 import java.util.Set;
 
 import org.devzendo.commoncode.logging.LoggingUnittestHelper;
+import org.devzendo.shell.plugin.ShellPlugin;
+import org.devzendo.shell.plugin.ShellPluginException;
 import org.junit.BeforeClass;
 import org.junit.Test;
 

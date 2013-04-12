@@ -13,12 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.devzendo.shell;
+package org.devzendo.shell.plugin;
 
-@SuppressWarnings("serial")
-public class ShellPluginException extends Exception {
+import org.devzendo.shell.ExecutionEnvironment;
 
-    public ShellPluginException(final String warning) {
-        super(warning);
-    }
+public interface ShellPlugin {
+    void initialise(ExecutionEnvironment env);
+    String getName();
 }

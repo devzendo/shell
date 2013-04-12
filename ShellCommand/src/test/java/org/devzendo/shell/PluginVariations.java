@@ -20,6 +20,7 @@ import java.util.List;
 
 import org.devzendo.shell.pipe.InputPipe;
 import org.devzendo.shell.pipe.OutputPipe;
+import org.devzendo.shell.plugin.ShellPlugin;
 
 public class PluginVariations {
     @SuppressWarnings("unchecked")

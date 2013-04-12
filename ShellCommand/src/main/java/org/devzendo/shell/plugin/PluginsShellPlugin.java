@@ -17,7 +17,6 @@ package org.devzendo.shell.plugin;
 
 import java.util.Set;
 
-import org.devzendo.shell.ShellPlugin;
 import org.devzendo.shell.pipe.OutputPipe;
 
 public class PluginsShellPlugin extends AbstractShellPlugin {

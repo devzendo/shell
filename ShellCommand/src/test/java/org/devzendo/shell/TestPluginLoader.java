@@ -22,6 +22,8 @@ import static org.junit.Assert.fail;
 import java.util.List;
 
 import org.devzendo.commoncode.logging.LoggingUnittestHelper;
+import org.devzendo.shell.plugin.ShellPlugin;
+import org.devzendo.shell.plugin.ShellPluginException;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -65,7 +67,7 @@ public class TestPluginLoader {
             pluginLoader.loadPluginsFromClasspath("org/devzendo/shell/testpluginloader-notshellplugin.properties");
             fail("Should have thrown ShellPluginException when loading a class that is not a ShellPlugin");
         } catch (final ShellPluginException e) {
-            assertThat(e.getMessage(), equalTo("Failure loading plugins: Cannot load class 'org.devzendo.shell.NotAShellPlugin': ClassCastException: org.devzendo.shell.NotAShellPlugin cannot be cast to org.devzendo.shell.ShellPlugin"));
+            assertThat(e.getMessage(), equalTo("Failure loading plugins: Cannot load class 'org.devzendo.shell.NotAShellPlugin': ClassCastException: org.devzendo.shell.NotAShellPlugin cannot be cast to org.devzendo.shell.plugin.ShellPlugin"));
         }
     }
 

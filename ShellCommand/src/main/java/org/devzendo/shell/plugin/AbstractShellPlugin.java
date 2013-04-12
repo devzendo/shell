@@ -16,7 +16,6 @@
 package org.devzendo.shell.plugin;
 
 import org.devzendo.shell.ExecutionEnvironment;
-import org.devzendo.shell.ShellPlugin;
 
 public abstract class AbstractShellPlugin implements ShellPlugin {
     private ExecutionEnvironment executionEnvironment;

@@ -27,6 +27,8 @@ import java.util.Properties;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
+import org.devzendo.shell.plugin.ShellPlugin;
+import org.devzendo.shell.plugin.ShellPluginException;
 
 public class PluginLoader {
     private static final Logger LOGGER = Logger.getLogger(PluginLoader.class);
@@ -124,6 +126,7 @@ public class PluginLoader {
                 try {
                     is.close();
                 } catch (final IOException e) {
+                    // do nothing
                 }
             }
         }
