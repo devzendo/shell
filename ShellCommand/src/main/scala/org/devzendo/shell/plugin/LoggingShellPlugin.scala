@@ -17,9 +17,8 @@
 package org.devzendo.shell.plugin
 
 import org.apache.log4j.Level
-import org.devzendo.shell.pipe.{InputPipe, OutputPipe}
+import org.devzendo.shell.pipe.InputPipe
 import org.devzendo.shell.ShellMain.LOGGER
-import scala.Option
 
 class LoggingShellPlugin extends AbstractShellPlugin with PluginHelper {
     def getName() = {

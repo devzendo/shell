@@ -15,17 +15,11 @@
  */
 package org.devzendo.shell;
 
+import org.devzendo.shell.pipe.*;
+import scala.Option;
+
 import java.util.ArrayList;
 import java.util.List;
-
-import org.devzendo.shell.pipe.LogInfoOutputPipe;
-import org.devzendo.shell.pipe.NullInputPipe;
-import org.devzendo.shell.pipe.NullOutputPipe;
-import org.devzendo.shell.pipe.RendezvousPipe;
-import org.devzendo.shell.pipe.VariableInputPipe;
-import org.devzendo.shell.pipe.VariableOutputPipe;
-
-import scala.Option;
 
 /**
  * Given a command pipeline, create a list of command handlers for each

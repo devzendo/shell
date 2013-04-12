@@ -15,11 +15,11 @@
  */
 package org.devzendo.shell.pipe;
 
-import static org.devzendo.shell.pipe.OptionMatcher.isSome;
-import static org.hamcrest.MatcherAssert.assertThat;
-
 import org.devzendo.shell.Variable;
 import org.junit.Test;
+
+import static org.devzendo.shell.pipe.OptionMatcher.isSome;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 public class TestVariableInputPipe {
     private Variable mVar = new Variable();

@@ -15,13 +15,12 @@
  */
 package org.devzendo.shell;
 
-import java.util.List;
-
 import org.apache.log4j.Logger;
 import org.devzendo.shell.pipe.InputPipe;
 import org.devzendo.shell.pipe.OutputPipe;
-
 import scala.Option;
+
+import java.util.List;
 
 public abstract class CommandHandler {
     private static final Logger LOGGER = Logger.getLogger(CommandHandler.class);

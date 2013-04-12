@@ -18,13 +18,11 @@ package org.devzendo.shell.plugin
 
 import java.io.File
 import java.util.regex.{Pattern, PatternSyntaxException}
-import org.apache.log4j.Logger
 import org.devzendo.shell.pipe.{InputPipe, OutputPipe}
 import org.devzendo.shell.ShellMain.LOGGER
 import scala.collection.JavaConversions._
 import scala.io.Source
 import scala.Option
-import scala.util.matching.Regex
 
 class ExperimentalShellPlugin extends AbstractShellPlugin with PluginHelper {
     def getName() = {

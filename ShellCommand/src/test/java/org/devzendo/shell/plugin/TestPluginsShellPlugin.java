@@ -15,9 +15,10 @@
  */
 package org.devzendo.shell.plugin;
 
-import java.util.Arrays;
-
-import org.devzendo.shell.*;
+import org.devzendo.shell.CommandRegistry;
+import org.devzendo.shell.DefaultPluginRegistry;
+import org.devzendo.shell.PluginRegistry;
+import org.devzendo.shell.ScalaListHelper;
 import org.devzendo.shell.pipe.OutputPipe;
 import org.jmock.Expectations;
 import org.jmock.Mockery;
@@ -25,6 +26,8 @@ import org.jmock.integration.junit4.JMock;
 import org.jmock.integration.junit4.JUnit4Mockery;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+
+import java.util.Arrays;
 
 @RunWith(JMock.class)
 public class TestPluginsShellPlugin {

@@ -16,7 +16,6 @@
 package org.devzendo.shell.pipe;
 
 import org.devzendo.shell.Variable;
-
 import scala.Option;
 
 public class VariableInputPipe implements InputPipe {

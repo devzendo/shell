@@ -15,20 +15,16 @@
  */
 package org.devzendo.shell;
 
+import org.apache.log4j.Logger;
+import org.devzendo.shell.plugin.ShellPlugin;
+import org.devzendo.shell.plugin.ShellPluginException;
+
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.Enumeration;
-import java.util.List;
+import java.util.*;
 import java.util.Map.Entry;
-import java.util.Properties;
-import java.util.Set;
-
-import org.apache.log4j.Logger;
-import org.devzendo.shell.plugin.ShellPlugin;
-import org.devzendo.shell.plugin.ShellPluginException;
 
 public class PluginLoader {
     private static final Logger LOGGER = Logger.getLogger(PluginLoader.class);

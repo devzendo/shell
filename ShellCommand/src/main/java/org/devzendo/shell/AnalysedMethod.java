@@ -15,9 +15,9 @@
  */
 package org.devzendo.shell;
 
-import java.lang.reflect.Method;
-
 import scala.Option;
+
+import java.lang.reflect.Method;
 
 public class AnalysedMethod {
     private static final Option<Integer> none = Option.apply(null);

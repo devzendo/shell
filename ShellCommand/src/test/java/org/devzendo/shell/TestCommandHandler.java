@@ -24,8 +24,6 @@ import org.jmock.integration.junit4.JUnit4Mockery;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import scala.Option;
-
 @RunWith(JMock.class)
 public class TestCommandHandler {
     private static final scala.Option<Integer> none = scala.Option.apply(null);

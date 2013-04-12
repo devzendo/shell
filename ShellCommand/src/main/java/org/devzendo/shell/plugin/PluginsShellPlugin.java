@@ -15,9 +15,9 @@
  */
 package org.devzendo.shell.plugin;
 
-import java.util.Set;
-
 import org.devzendo.shell.pipe.OutputPipe;
+
+import java.util.Set;
 
 public class PluginsShellPlugin extends AbstractShellPlugin {
     @Override

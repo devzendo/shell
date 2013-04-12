@@ -15,15 +15,15 @@
  */
 package org.devzendo.shell;
 
+import org.devzendo.shell.plugin.ShellPlugin;
+import org.junit.Test;
+
+import java.lang.reflect.Method;
+
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.fail;
-
-import java.lang.reflect.Method;
-
-import org.devzendo.shell.plugin.ShellPlugin;
-import org.junit.Test;
 
 public class TestCommandRegistry {
     final CommandRegistry registry = new CommandRegistry();

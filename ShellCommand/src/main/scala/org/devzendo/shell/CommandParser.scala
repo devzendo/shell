@@ -16,7 +16,6 @@
  
 package org.devzendo.shell
 
-import java.util.ArrayList
 import scala.collection.JavaConversions._
 import scala.util.parsing.combinator._
 

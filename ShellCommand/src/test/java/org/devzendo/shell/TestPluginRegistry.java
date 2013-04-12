@@ -15,19 +15,19 @@
  */
 package org.devzendo.shell;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.fail;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Set;
-
 import org.devzendo.commoncode.logging.LoggingUnittestHelper;
 import org.devzendo.shell.plugin.ShellPlugin;
 import org.devzendo.shell.plugin.ShellPluginException;
 import org.junit.BeforeClass;
 import org.junit.Test;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Set;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.equalTo;
+import static org.junit.Assert.fail;
 
 public class TestPluginRegistry {
     private CommandRegistry mCommandRegistry = new CommandRegistry();

@@ -15,29 +15,16 @@
  */
 package org.devzendo.shell;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.equalTo;
+import org.devzendo.commoncode.logging.LoggingUnittestHelper;
+import org.devzendo.shell.PluginVariations.*;
+import org.junit.BeforeClass;
+import org.junit.Test;
 
 import java.util.Iterator;
 import java.util.Map;
 
-import org.devzendo.commoncode.logging.LoggingUnittestHelper;
-import org.devzendo.shell.PluginVariations.VoidReturnArrayListArgs;
-import org.devzendo.shell.PluginVariations.VoidReturnInputPipeOutputPipeListArgs;
-import org.devzendo.shell.PluginVariations.VoidReturnListArgs;
-import org.devzendo.shell.PluginVariations.VoidReturnListArgsInputPipe;
-import org.devzendo.shell.PluginVariations.VoidReturnListArgsInputPipeOutputPipe;
-import org.devzendo.shell.PluginVariations.VoidReturnListArgsOutputPipe;
-import org.devzendo.shell.PluginVariations.VoidReturnListArgsOutputPipeInputPipe;
-import org.devzendo.shell.PluginVariations.VoidReturnNoArgs;
-import org.devzendo.shell.PluginVariations.VoidReturnNoArgsBadPluginMethodsNotScanned;
-import org.devzendo.shell.PluginVariations.VoidReturnNoArgsBadSignature;
-import org.devzendo.shell.PluginVariations.VoidReturnNoArgsInputPipe;
-import org.devzendo.shell.PluginVariations.VoidReturnNoArgsInputPipeOutputPipe;
-import org.devzendo.shell.PluginVariations.VoidReturnNoArgsOutputPipe;
-import org.devzendo.shell.PluginVariations.VoidReturnNoArgsOutputPipeInputPipe;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.equalTo;
 
 public class TestPluginMethodScanner {
     private static final scala.Option<Integer> none = scala.Option.apply(null);

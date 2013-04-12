@@ -15,11 +15,10 @@
  */
 package org.devzendo.shell.pipe;
 
-import java.util.concurrent.ArrayBlockingQueue;
-
 import org.apache.log4j.Logger;
-
 import scala.Option;
+
+import java.util.concurrent.ArrayBlockingQueue;
 
 public class RendezvousPipe implements InputPipe, OutputPipe {
     private static final Logger LOGGER = Logger.getLogger(RendezvousPipe.class);

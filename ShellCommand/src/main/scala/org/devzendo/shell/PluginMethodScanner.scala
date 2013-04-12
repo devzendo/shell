@@ -16,7 +16,6 @@
  
 package org.devzendo.shell
 
-import collection.JavaConversions._
 
 import org.apache.log4j.Logger
 import java.util.{Map, HashMap, List}

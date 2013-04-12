@@ -15,16 +15,15 @@
  */
 package org.devzendo.shell.pipe;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-
-import java.util.concurrent.CountDownLatch;
-
 import org.devzendo.commoncode.concurrency.ThreadUtils;
 import org.devzendo.commoncode.logging.LoggingUnittestHelper;
 import org.junit.BeforeClass;
 import org.junit.Test;
-
 import scala.Option;
+
+import java.util.concurrent.CountDownLatch;
+
+import static org.hamcrest.MatcherAssert.assertThat;
 
 public class TestRendezvousPipe {
     private final RendezvousPipe pipe = new RendezvousPipe();

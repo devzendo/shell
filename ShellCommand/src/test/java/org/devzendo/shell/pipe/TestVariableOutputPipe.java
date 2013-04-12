@@ -15,12 +15,12 @@
  */
 package org.devzendo.shell.pipe;
 
+import org.devzendo.shell.Variable;
+import org.junit.Test;
+
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.fail;
-
-import org.devzendo.shell.Variable;
-import org.junit.Test;
 
 
 public class TestVariableOutputPipe {

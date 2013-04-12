@@ -15,14 +15,14 @@
  */
 package org.devzendo.shell.plugin;
 
-import java.util.Arrays;
-import java.util.List;
-
 import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Level;
 import org.apache.log4j.spi.LoggingEvent;
 import org.devzendo.commoncode.logging.CapturingAppender;
-import org.devzendo.shell.*;
+import org.devzendo.shell.CommandRegistry;
+import org.devzendo.shell.DefaultPluginRegistry;
+import org.devzendo.shell.PluginRegistry;
+import org.devzendo.shell.ScalaListHelper;
 import org.devzendo.shell.pipe.InputPipe;
 import org.jmock.Expectations;
 import org.jmock.Mockery;
@@ -31,8 +31,10 @@ import org.jmock.integration.junit4.JUnit4Mockery;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-
 import scala.Option;
+
+import java.util.Arrays;
+import java.util.List;
 
 @RunWith(JMock.class)
 public class TestLoggingShellPlugin {

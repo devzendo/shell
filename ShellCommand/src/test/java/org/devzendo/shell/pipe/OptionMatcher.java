@@ -17,7 +17,6 @@ package org.devzendo.shell.pipe;
 
 import org.hamcrest.Description;
 import org.hamcrest.TypeSafeMatcher;
-
 import scala.Option;
 
 public class OptionMatcher<T> extends TypeSafeMatcher<Option<T>> {

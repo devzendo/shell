@@ -15,12 +15,12 @@
  */
 package org.devzendo.shell;
 
+import org.apache.log4j.Logger;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
-
-import org.apache.log4j.Logger;
 
 public class ExecutionContainer {
     private static final Logger LOGGER = Logger.getLogger(ExecutionContainer.class);

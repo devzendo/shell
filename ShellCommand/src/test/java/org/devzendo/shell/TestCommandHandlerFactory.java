@@ -15,25 +15,8 @@
  */
 package org.devzendo.shell;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.equalTo;
-
-import java.util.List;
-import java.util.Map;
-
 import org.devzendo.commoncode.logging.LoggingUnittestHelper;
-import org.devzendo.shell.PluginVariations.AbstractShellPlugin;
-import org.devzendo.shell.PluginVariations.VoidReturnInputPipeOutputPipeListArgs;
-import org.devzendo.shell.PluginVariations.VoidReturnListArgs;
-import org.devzendo.shell.PluginVariations.VoidReturnListArgsInputPipe;
-import org.devzendo.shell.PluginVariations.VoidReturnListArgsInputPipeOutputPipe;
-import org.devzendo.shell.PluginVariations.VoidReturnListArgsOutputPipe;
-import org.devzendo.shell.PluginVariations.VoidReturnListArgsOutputPipeInputPipe;
-import org.devzendo.shell.PluginVariations.VoidReturnNoArgs;
-import org.devzendo.shell.PluginVariations.VoidReturnNoArgsInputPipe;
-import org.devzendo.shell.PluginVariations.VoidReturnNoArgsInputPipeOutputPipe;
-import org.devzendo.shell.PluginVariations.VoidReturnNoArgsOutputPipe;
-import org.devzendo.shell.PluginVariations.VoidReturnNoArgsOutputPipeInputPipe;
+import org.devzendo.shell.PluginVariations.*;
 import org.devzendo.shell.pipe.InputPipe;
 import org.devzendo.shell.pipe.OutputPipe;
 import org.jmock.Mockery;
@@ -42,6 +25,12 @@ import org.jmock.integration.junit4.JUnit4Mockery;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+
+import java.util.List;
+import java.util.Map;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.equalTo;
 
 @RunWith(JMock.class)
 public class TestCommandHandlerFactory {

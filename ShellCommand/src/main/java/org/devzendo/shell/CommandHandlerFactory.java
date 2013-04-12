@@ -15,14 +15,14 @@
  */
 package org.devzendo.shell;
 
+import org.devzendo.shell.plugin.ShellPlugin;
+import scala.Option;
+
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
-
-import org.devzendo.shell.plugin.ShellPlugin;
-import scala.Option;
 
 public class CommandHandlerFactory {
     private static final Option<Integer> none = Option.apply(null);

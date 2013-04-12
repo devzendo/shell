@@ -15,12 +15,12 @@
  */
 package org.devzendo.shell;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.devzendo.shell.pipe.InputPipe;
 import org.devzendo.shell.pipe.OutputPipe;
 import org.devzendo.shell.plugin.ShellPlugin;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class PluginVariations {
     @SuppressWarnings("unchecked")

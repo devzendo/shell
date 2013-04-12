@@ -15,14 +15,13 @@
  */
 package org.devzendo.shell.pipe;
 
+import org.hamcrest.MatcherAssert;
+import org.junit.Test;
+import scala.Option;
+
 import static org.devzendo.shell.pipe.OptionMatcher.isSome;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.not;
-
-import org.hamcrest.MatcherAssert;
-import org.junit.Test;
-
-import scala.Option;
 
 public class TestOptionMatcher {
     private static final Option<String> none = scala.Option.apply(null);

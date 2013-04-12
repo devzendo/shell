@@ -15,26 +15,19 @@
  */
 package org.devzendo.shell;
 
-import static java.util.Arrays.asList;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.instanceOf;
+import org.devzendo.shell.pipe.*;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
 
 import java.lang.reflect.Method;
 import java.util.Collections;
 import java.util.List;
 
-import org.devzendo.shell.pipe.InputPipe;
-import org.devzendo.shell.pipe.LogInfoOutputPipe;
-import org.devzendo.shell.pipe.NullInputPipe;
-import org.devzendo.shell.pipe.NullOutputPipe;
-import org.devzendo.shell.pipe.OutputPipe;
-import org.devzendo.shell.pipe.RendezvousPipe;
-import org.devzendo.shell.pipe.VariableInputPipe;
-import org.devzendo.shell.pipe.VariableOutputPipe;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import static java.util.Arrays.asList;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.instanceOf;
 
 public class TestCommandHandlerWirer {
     final CommandRegistry commandRegistry = new CommandRegistry();
