@@ -39,7 +39,8 @@ class ExperimentalShellPlugin extends AbstractShellPlugin with PluginHelper {
     def count(outputPipe: OutputPipe, args: java.util.List[Object]) = {
         val first = Integer.parseInt(args.get(0).toString)
         val last = Integer.parseInt(args.get(1).toString)
-        first to last foreach(outputPipe.push)
+
+        first to last foreach( (x: Int) => outputPipe.push(x.asInstanceOf[Integer]) )
     }
     
     // cat ---------------------------------------------------------------------

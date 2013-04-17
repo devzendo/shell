@@ -17,5 +17,5 @@
 package org.devzendo.shell.pipe
 
 trait OutputPipe extends Pipe {
-    def push[T >: AnyRef](obj: T)
+    def push(obj: AnyRef)
 }

@@ -29,7 +29,7 @@ object LogInfoOutputPipe {
  */
 class LogInfoOutputPipe extends OutputPipe {
 
-    def push[T >: AnyRef](obj: T) {
+    def push(obj: AnyRef) {
         LogInfoOutputPipe.LOGGER.info(obj)
     }
 

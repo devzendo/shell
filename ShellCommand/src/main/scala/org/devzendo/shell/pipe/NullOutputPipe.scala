@@ -22,7 +22,7 @@ package org.devzendo.shell.pipe
  *
  */
 class NullOutputPipe extends OutputPipe {
-    def push[T >: AnyRef](obj: T) {
+    def push(obj: AnyRef) {
         // do nothing
     }
 
