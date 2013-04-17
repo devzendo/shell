@@ -18,7 +18,7 @@ package org.devzendo.shell.pipe
 
 import org.devzendo.shell.Variable
 
-class VariableOutputPipe(val variable: Variable) extends OutputPipe {
+class VariableOutputPipe(variable: Variable) extends VariablePipe(variable) with OutputPipe {
     private var terminated = false
 
     def setTerminated() {
@@ -31,6 +31,4 @@ class VariableOutputPipe(val variable: Variable) extends OutputPipe {
         }
         variable.add(obj)
     }
-
-    final def getVariable: Variable = variable
 }

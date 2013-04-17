@@ -18,24 +18,6 @@ package org.devzendo.shell.pipe
 
 import org.devzendo.shell.Variable
 
-class VariableInputPipe(variable: Variable) extends VariablePipe(variable) with InputPipe {
-    private var index = 0
-
-    def setTerminated() {
-        this.synchronized {
-            index = variable.size()
-        }
-    }
-
-    def next(): Option[AnyRef] = {
-        this.synchronized {
-            if (index < variable.size()) {
-                val prevIndex = index
-                index += 1
-                Some(variable.get(prevIndex))
-            } else {
-                None
-            }
-        }
-    }
+abstract class VariablePipe(val variable: Variable) {
+    final def getVariable: Variable = variable
 }
