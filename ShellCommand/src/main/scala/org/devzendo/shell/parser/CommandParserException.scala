@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.devzendo.shell
+package org.devzendo.shell.parser
 
 class CommandParserException(warning: String) extends Exception(warning) {
 }

@@ -13,8 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.devzendo.shell;
+package org.devzendo.shell.parser;
 
+import org.devzendo.shell.Command;
+import org.devzendo.shell.CommandPipeline;
+import org.devzendo.shell.parser.CommandParser;
+import org.devzendo.shell.parser.CommandParserException;
+import org.devzendo.shell.parser.VariableReference;
 import org.hamcrest.Matchers;
 import org.junit.Test;
 
