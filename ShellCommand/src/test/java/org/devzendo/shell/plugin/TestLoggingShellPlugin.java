@@ -22,7 +22,7 @@ import org.devzendo.commoncode.logging.CapturingAppender;
 import org.devzendo.shell.DefaultPluginRegistry;
 import org.devzendo.shell.PluginRegistry;
 import org.devzendo.shell.ScalaListHelper;
-import org.devzendo.shell.interp.CommandRegistry;
+import org.devzendo.shell.interpreter.CommandRegistry;
 import org.devzendo.shell.pipe.InputPipe;
 import org.jmock.Expectations;
 import org.jmock.Mockery;

@@ -16,8 +16,8 @@
 package org.devzendo.shell;
 
 import org.devzendo.commoncode.logging.LoggingUnittestHelper;
-import org.devzendo.shell.interp.CommandRegistry;
-import org.devzendo.shell.interp.VariableRegistry;
+import org.devzendo.shell.interpreter.CommandRegistry;
+import org.devzendo.shell.interpreter.VariableRegistry;
 import org.devzendo.shell.plugin.ShellPlugin;
 import org.devzendo.shell.plugin.ShellPluginException;
 import org.junit.BeforeClass;

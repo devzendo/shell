@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.devzendo.shell.interp
+package org.devzendo.shell.interpreter
 
 import org.devzendo.shell.plugin.ShellPlugin
 import org.devzendo.shell._
