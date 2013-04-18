@@ -16,7 +16,7 @@
 
 package org.devzendo.shell.pipe
 
-import org.devzendo.shell.Variable
+import org.devzendo.shell.interpreter.Variable
 
 abstract class VariablePipe(val variable: Variable) {
     final def getVariable: Variable = variable

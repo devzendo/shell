@@ -15,8 +15,6 @@
  */
 package org.devzendo.shell.interpreter;
 
-import org.devzendo.shell.ExecutionEnvironment;
-import org.devzendo.shell.MethodAnalyser;
 import org.devzendo.shell.plugin.ShellPlugin;
 import org.junit.Test;
 

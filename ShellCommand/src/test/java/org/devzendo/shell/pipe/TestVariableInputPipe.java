@@ -15,7 +15,7 @@
  */
 package org.devzendo.shell.pipe;
 
-import org.devzendo.shell.Variable;
+import org.devzendo.shell.interpreter.Variable;
 import org.junit.Test;
 
 import static org.devzendo.shell.pipe.OptionMatcher.isSome;

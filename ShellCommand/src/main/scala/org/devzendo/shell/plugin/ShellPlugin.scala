@@ -16,7 +16,7 @@
 
 package org.devzendo.shell.plugin
 
-import org.devzendo.shell.ExecutionEnvironment
+import org.devzendo.shell.interpreter.ExecutionEnvironment
 
 trait ShellPlugin {
     def initialise(env: ExecutionEnvironment)

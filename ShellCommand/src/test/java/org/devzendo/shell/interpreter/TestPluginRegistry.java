@@ -13,11 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.devzendo.shell;
+package org.devzendo.shell.interpreter;
 
 import org.devzendo.commoncode.logging.LoggingUnittestHelper;
-import org.devzendo.shell.interpreter.CommandRegistry;
-import org.devzendo.shell.interpreter.VariableRegistry;
+import org.devzendo.shell.RecordingShellPlugin;
+import org.devzendo.shell.ScalaListHelper;
 import org.devzendo.shell.plugin.ShellPlugin;
 import org.devzendo.shell.plugin.ShellPluginException;
 import org.junit.BeforeClass;

@@ -16,7 +16,7 @@
 
 package org.devzendo.shell.pipe
 
-import org.devzendo.shell.Variable
+import org.devzendo.shell.interpreter.Variable
 
 class VariableInputPipe(variable: Variable) extends VariablePipe(variable) with InputPipe {
     private var index = 0

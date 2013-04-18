@@ -14,17 +14,31 @@
  * limitations under the License.
  */
 
-package org.devzendo.shell
+package org.devzendo.shell.interpreter
 
-import org.devzendo.shell.interpreter.{VariableRegistry, CommandRegistry}
+final class Variable {
+    private val store = scala.collection.mutable.ArrayBuffer[AnyRef]()
+    def size(): Int = {
+        store.synchronized {
+            store.length
+        }
+    }
 
-trait ExecutionEnvironment {
+    def add(obj: AnyRef) {
+        store.synchronized {
+            store += obj
+        }
+    }
 
-    def argList(): List[String]
+    def get(index: Integer): AnyRef = {
+        store.synchronized {
+            store.apply(index)
+        }
+    }
 
-    def commandRegistry(): CommandRegistry
-
-    def variableRegistry(): VariableRegistry
-
-    def pluginRegistry(): PluginRegistry
+    def get: List[AnyRef] = {
+        store.synchronized {
+            store.toList
+        }
+    }
 }

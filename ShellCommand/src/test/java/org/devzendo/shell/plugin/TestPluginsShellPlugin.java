@@ -15,10 +15,10 @@
  */
 package org.devzendo.shell.plugin;
 
-import org.devzendo.shell.DefaultPluginRegistry;
-import org.devzendo.shell.PluginRegistry;
 import org.devzendo.shell.ScalaListHelper;
 import org.devzendo.shell.interpreter.CommandRegistry;
+import org.devzendo.shell.interpreter.DefaultPluginRegistry;
+import org.devzendo.shell.interpreter.PluginRegistry;
 import org.devzendo.shell.pipe.OutputPipe;
 import org.jmock.Expectations;
 import org.jmock.Mockery;

@@ -16,7 +16,7 @@
 
 package org.devzendo.shell.pipe
 
-import org.devzendo.shell.Variable
+import org.devzendo.shell.interpreter.Variable
 
 class VariableOutputPipe(variable: Variable) extends VariablePipe(variable) with OutputPipe {
     private var terminated = false

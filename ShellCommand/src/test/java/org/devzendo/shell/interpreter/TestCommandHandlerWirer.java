@@ -15,7 +15,6 @@
  */
 package org.devzendo.shell.interpreter;
 
-import org.devzendo.shell.MethodAnalyser;
 import org.devzendo.shell.ast.Command;
 import org.devzendo.shell.ast.CommandPipeline;
 import org.devzendo.shell.ast.VariableReference;

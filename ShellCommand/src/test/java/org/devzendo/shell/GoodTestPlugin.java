@@ -16,6 +16,7 @@
 package org.devzendo.shell;
 
 
+import org.devzendo.shell.interpreter.ExecutionEnvironment;
 import org.devzendo.shell.plugin.ShellPlugin;
 
 public class GoodTestPlugin implements ShellPlugin {

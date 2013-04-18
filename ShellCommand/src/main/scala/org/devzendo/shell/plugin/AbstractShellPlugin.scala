@@ -16,7 +16,7 @@
 
 package org.devzendo.shell.plugin
 
-import org.devzendo.shell.ExecutionEnvironment
+import org.devzendo.shell.interpreter.ExecutionEnvironment
 
 abstract class AbstractShellPlugin extends ShellPlugin {
     private var execEnvironment: ExecutionEnvironment = null

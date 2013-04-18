@@ -15,6 +15,7 @@
  */
 package org.devzendo.shell;
 
+import org.devzendo.shell.interpreter.ExecutionEnvironment;
 import org.devzendo.shell.pipe.InputPipe;
 import org.devzendo.shell.pipe.OutputPipe;
 import org.devzendo.shell.plugin.ShellPlugin;

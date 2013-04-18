@@ -17,7 +17,6 @@
 package org.devzendo.shell.interpreter
 
 import org.devzendo.shell.ast.VariableReference
-import org.devzendo.shell.Variable
 
 class VariableRegistry {
     private var vars = scala.collection.mutable.Map[String, Variable]()

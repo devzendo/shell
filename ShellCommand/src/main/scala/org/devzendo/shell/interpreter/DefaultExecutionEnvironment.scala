@@ -14,9 +14,8 @@
  * limitations under the License.
  */
 
-package org.devzendo.shell
+package org.devzendo.shell.interpreter
 
-import org.devzendo.shell.interpreter.{VariableRegistry, CommandRegistry}
 
 case class DefaultExecutionEnvironment(
     argList: List[String],

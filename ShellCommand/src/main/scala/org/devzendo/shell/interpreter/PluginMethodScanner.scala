@@ -13,16 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
- 
-package org.devzendo.shell
 
+package org.devzendo.shell.interpreter
 
 import org.apache.log4j.Logger
 import java.util.{Map, HashMap, List}
 import java.lang.reflect.Method
 import org.devzendo.shell.pipe.{InputPipe, OutputPipe}
 import org.devzendo.shell.plugin.ShellPlugin
-import org.devzendo.shell.interpreter.AnalysedMethod
 
 object PluginMethodScanner {
     private val LOGGER = Logger.getLogger(classOf[PluginMethodScanner])

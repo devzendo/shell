@@ -16,7 +16,6 @@
 package org.devzendo.shell.interpreter;
 
 import org.devzendo.commoncode.logging.LoggingUnittestHelper;
-import org.devzendo.shell.PluginMethodScanner;
 import org.devzendo.shell.PluginVariations.*;
 import org.devzendo.shell.pipe.InputPipe;
 import org.devzendo.shell.pipe.OutputPipe;

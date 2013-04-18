@@ -15,7 +15,6 @@
  */
 package org.devzendo.shell.interpreter;
 
-import org.devzendo.shell.Variable;
 import org.devzendo.shell.ast.VariableReference;
 import org.junit.Test;
 
