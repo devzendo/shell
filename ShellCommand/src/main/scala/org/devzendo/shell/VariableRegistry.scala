@@ -43,4 +43,11 @@ class VariableRegistry {
             vars.put(varRef.variableName, variable)
         }
     }
+
+    def getVariables: Map[String, List[AnyRef]] = {
+        vars.synchronized {
+            val mut = vars.map( (p: (String, Variable)) => (p._1, p._2.get))
+            return Map.empty ++ mut // signature seems to mandate an immutable map
+        }
+    }
 }

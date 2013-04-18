@@ -14,31 +14,18 @@
  * limitations under the License.
  */
 
-package org.devzendo.shell
+package org.devzendo.shell.plugin
 
-final class Variable {
-    private val store = scala.collection.mutable.ArrayBuffer[AnyRef]()
-    def size(): Int = {
-        store.synchronized {
-            store.length
+import org.devzendo.shell.pipe.OutputPipe
+
+class VariablesShellPlugin extends AbstractShellPlugin {
+    def getName = "Variables"
+
+    def listVariables(outputPipe: OutputPipe) {
+        val varMap: Map[String, List[AnyRef]] = executionEnvironment().variableRegistry().getVariables
+        for (varEntry <- varMap) {
+            outputPipe.push(varEntry._1 + "=" + varEntry._2)
         }
     }
 
-    def add(obj: AnyRef) {
-        store.synchronized {
-            store += obj
-        }
-    }
-
-    def get(index: Integer): AnyRef = {
-        store.synchronized {
-            store.apply(index)
-        }
-    }
-
-    def get: List[AnyRef] = {
-        store.synchronized {
-            store.toList
-        }
-    }
 }
