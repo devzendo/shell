@@ -13,8 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.devzendo.shell;
+package org.devzendo.shell.interp;
 
+import org.devzendo.shell.*;
+import org.devzendo.shell.interp.CommandRegistry;
 import org.devzendo.shell.plugin.ShellPlugin;
 import org.junit.Test;
 
@@ -62,7 +64,7 @@ public class TestCommandRegistry {
 
     @Test
     public void getRegisteredCommandYieldsHandler() throws SecurityException, NoSuchMethodException, CommandNotFoundException {
-        final AnalysedMethod method = analyseMethod(this.getClass().getMethod("getRegisteredCommandYieldsHandler"));    
+        final AnalysedMethod method = analyseMethod(this.getClass().getMethod("getRegisteredCommandYieldsHandler"));
         try {
             registry.registerCommand("foo", shellPluginOne, method);
             CommandHandler handler = registry.getHandler("foo");

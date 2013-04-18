@@ -19,7 +19,7 @@ import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Level;
 import org.apache.log4j.spi.LoggingEvent;
 import org.devzendo.commoncode.logging.CapturingAppender;
-import org.devzendo.shell.CommandRegistry;
+import org.devzendo.shell.interp.CommandRegistry;
 import org.devzendo.shell.DefaultPluginRegistry;
 import org.devzendo.shell.PluginRegistry;
 import org.devzendo.shell.ScalaListHelper;

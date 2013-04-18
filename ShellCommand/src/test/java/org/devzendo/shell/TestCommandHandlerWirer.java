@@ -18,6 +18,7 @@ package org.devzendo.shell;
 import org.devzendo.shell.ast.Command;
 import org.devzendo.shell.ast.CommandPipeline;
 import org.devzendo.shell.ast.VariableReference;
+import org.devzendo.shell.interp.CommandRegistry;
 import org.devzendo.shell.pipe.*;
 import org.junit.Assert;
 import org.junit.Before;

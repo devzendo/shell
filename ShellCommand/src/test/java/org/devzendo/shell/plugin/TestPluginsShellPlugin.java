@@ -15,7 +15,7 @@
  */
 package org.devzendo.shell.plugin;
 
-import org.devzendo.shell.CommandRegistry;
+import org.devzendo.shell.interp.CommandRegistry;
 import org.devzendo.shell.DefaultPluginRegistry;
 import org.devzendo.shell.PluginRegistry;
 import org.devzendo.shell.ScalaListHelper;

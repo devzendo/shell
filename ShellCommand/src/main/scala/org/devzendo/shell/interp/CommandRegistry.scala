@@ -14,9 +14,11 @@
  * limitations under the License.
  */
 
-package org.devzendo.shell
+package org.devzendo.shell.interp
 
 import org.devzendo.shell.plugin.ShellPlugin
+import org.devzendo.shell._
+import scala.Some
 
 class CommandRegistry {
     private val commandHandlerFactory = new CommandHandlerFactory

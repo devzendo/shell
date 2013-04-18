@@ -16,6 +16,8 @@
 
 package org.devzendo.shell
 
+import org.devzendo.shell.interp.CommandRegistry
+
 case class DefaultExecutionEnvironment(
     argList: List[String],
     commandRegistry: CommandRegistry,

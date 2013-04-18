@@ -16,6 +16,8 @@
 
 package org.devzendo.shell
 
+import org.devzendo.shell.interp.CommandRegistry
+
 trait ExecutionEnvironment {
 
     def argList(): List[String]
