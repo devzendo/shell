@@ -54,9 +54,9 @@ public class TestCommandHandlerWirer {
         @SuppressWarnings("unchecked")
         final Command command = new Command("foo", Collections.EMPTY_LIST);
         pipeline.addCommand(command);
-        List<CommandHandler> handlers = wirer.wire(pipeline);
+        scala.collection.immutable.List<CommandHandler> handlers = wirer.wire(pipeline);
         assertThat(handlers.size(), equalTo(1));
-        CommandHandler commandHandler = handlers.get(0);
+        CommandHandler commandHandler = handlers.apply(0);
         assertThat(commandHandler.getInputPipe(), instanceOf(NullInputPipe.class));
         assertThat(commandHandler.getOutputPipe(), instanceOf(LogInfoOutputPipe.class));
     }
@@ -71,14 +71,14 @@ public class TestCommandHandlerWirer {
         pipeline.addCommand(fooCommand);
         final Command barCommand = new Command("bar", Collections.EMPTY_LIST);
         pipeline.addCommand(barCommand);
-        List<CommandHandler> handlers = wirer.wire(pipeline);
+        scala.collection.immutable.List<CommandHandler> handlers = wirer.wire(pipeline);
         assertThat(handlers.size(), equalTo(2));
 
-        CommandHandler fooCommandHandler = handlers.get(0);
+        CommandHandler fooCommandHandler = handlers.apply(0);
         assertThat(fooCommandHandler.getInputPipe(), instanceOf(NullInputPipe.class));
         assertThat(fooCommandHandler.getOutputPipe(), instanceOf(RendezvousPipe.class));
         
-        CommandHandler barCommandHandler = handlers.get(1);
+        CommandHandler barCommandHandler = handlers.apply(1);
         assertThat(barCommandHandler.getInputPipe(), instanceOf(RendezvousPipe.class));
         assertThat(barCommandHandler.getOutputPipe(), instanceOf(LogInfoOutputPipe.class));
     }
@@ -90,9 +90,9 @@ public class TestCommandHandlerWirer {
         final Command command = new Command("foo", Collections.EMPTY_LIST);
         pipeline.addCommand(command);
         pipeline.setInputVariable(new VariableReference("var")); // variable registry autocreates
-        List<CommandHandler> handlers = wirer.wire(pipeline);
+        scala.collection.immutable.List<CommandHandler> handlers = wirer.wire(pipeline);
         assertThat(handlers.size(), equalTo(1));
-        CommandHandler commandHandler = handlers.get(0);
+        CommandHandler commandHandler = handlers.apply(0);
         assertThat(commandHandler.getInputPipe(), instanceOf(VariableInputPipe.class));
     }
 
@@ -103,9 +103,9 @@ public class TestCommandHandlerWirer {
         final Command command = new Command("foo", Collections.EMPTY_LIST);
         pipeline.addCommand(command);
         pipeline.setOutputVariable(new VariableReference("var")); // variable registry autocreates
-        final List<CommandHandler> handlers = wirer.wire(pipeline);
+        scala.collection.immutable.List<CommandHandler> handlers = wirer.wire(pipeline);
         assertThat(handlers.size(), equalTo(1));
-        final CommandHandler commandHandler = handlers.get(0);
+        final CommandHandler commandHandler = handlers.apply(0);
         assertThat(commandHandler.getOutputPipe(), instanceOf(VariableOutputPipe.class));
     }
     
@@ -124,15 +124,15 @@ public class TestCommandHandlerWirer {
     public void rightCommandWithNoInputConnectedToLeftCommandViaDiscardPipe() throws DuplicateCommandException, CommandNotFoundException {
         registerMethodAsCommandAndAddToPipeline("commandHandlerWithBothPipes");
         registerMethodAsCommandAndAddToPipeline("rightNoInputPipe");
-        
-        List<CommandHandler> handlers = wirer.wire(pipeline);
+
+        scala.collection.immutable.List<CommandHandler> handlers = wirer.wire(pipeline);
         assertThat(handlers.size(), equalTo(2));
 
-        CommandHandler leftCommandHandler = handlers.get(0);
+        CommandHandler leftCommandHandler = handlers.apply(0);
         assertThat(leftCommandHandler.getInputPipe(), instanceOf(NullInputPipe.class));
         assertThat(leftCommandHandler.getOutputPipe(), instanceOf(NullOutputPipe.class));
         
-        CommandHandler rightCommandHandler = handlers.get(1);
+        CommandHandler rightCommandHandler = handlers.apply(1);
         assertThat(rightCommandHandler.getInputPipe(), instanceOf(NullInputPipe.class));
         assertThat(rightCommandHandler.getOutputPipe(), instanceOf(LogInfoOutputPipe.class));
     }
@@ -152,15 +152,15 @@ public class TestCommandHandlerWirer {
     public void leftCommandWithNoOutputConnectedToRightCommandViaEmptyPipe() throws DuplicateCommandException, CommandNotFoundException {
         registerMethodAsCommandAndAddToPipeline("leftNoOutputPipe");
         registerMethodAsCommandAndAddToPipeline("commandHandlerWithBothPipes");
-        
-        List<CommandHandler> handlers = wirer.wire(pipeline);
+
+        scala.collection.immutable.List<CommandHandler> handlers = wirer.wire(pipeline);
         assertThat(handlers.size(), equalTo(2));
 
-        CommandHandler leftCommandHandler = handlers.get(0);
+        CommandHandler leftCommandHandler = handlers.apply(0);
         assertThat(leftCommandHandler.getInputPipe(), instanceOf(NullInputPipe.class));
         assertThat(leftCommandHandler.getOutputPipe(), instanceOf(NullOutputPipe.class));
         
-        CommandHandler rightCommandHandler = handlers.get(1);
+        CommandHandler rightCommandHandler = handlers.apply(1);
         assertThat(rightCommandHandler.getInputPipe(), instanceOf(NullInputPipe.class));
         assertThat(rightCommandHandler.getOutputPipe(), instanceOf(LogInfoOutputPipe.class));
     }
@@ -171,9 +171,9 @@ public class TestCommandHandlerWirer {
         @SuppressWarnings("unchecked")
         final Command command = new Command("foo", Collections.EMPTY_LIST);
         pipeline.addCommand(command);
-        final List<CommandHandler> handlers = wirer.wire(pipeline);
+        scala.collection.immutable.List<CommandHandler> handlers = wirer.wire(pipeline);
         assertThat(handlers.size(), equalTo(1));
-        final CommandHandler commandHandler = handlers.get(0);
+        final CommandHandler commandHandler = handlers.apply(0);
         final List<Object> args = commandHandler.getArgs();
         assertThat(args.size(), equalTo(0));
     }
@@ -184,9 +184,9 @@ public class TestCommandHandlerWirer {
         final List<Object> inputArgs = asList(new Object[] { (Integer)5, "hello"});
         final Command command = new Command("foo", inputArgs);
         pipeline.addCommand(command);
-        final List<CommandHandler> handlers = wirer.wire(pipeline);
+        scala.collection.immutable.List<CommandHandler> handlers = wirer.wire(pipeline);
         assertThat(handlers.size(), equalTo(1));
-        final CommandHandler commandHandler = handlers.get(0);
+        final CommandHandler commandHandler = handlers.apply(0);
         final List<Object> args = commandHandler.getArgs();
         assertThat(args.size(), equalTo(2));
         assertThat((Integer) args.get(0), equalTo(5));

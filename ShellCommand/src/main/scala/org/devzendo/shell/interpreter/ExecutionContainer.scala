@@ -21,18 +21,16 @@ import scala.throws
 import java.util.concurrent.CountDownLatch
 import java.util.Collections
 import java.util
-import collection.JavaConverters._
 
 object ExecutionContainer {
     private val LOGGER = Logger.getLogger(classOf[ExecutionContainer])
 }
-// TODO convert to Scala List
-case class ExecutionContainer(commandHandlers: java.util.List[CommandHandler]) {
-    val handlers = commandHandlers.asScala
+
+case class ExecutionContainer(commandHandlers: List[CommandHandler]) {
 
     @throws[CommandExecutionException]
     def execute() {
-        if (commandHandlers.size() == 1) {
+        if (commandHandlers.size == 1) {
             executeOnCurrentThread()
         } else {
             executeOnMultipleThreads()
@@ -41,9 +39,9 @@ case class ExecutionContainer(commandHandlers: java.util.List[CommandHandler]) {
 
     @throws[CommandExecutionException]
     private def executeOnMultipleThreads() {
-        val latch = new CountDownLatch(commandHandlers.size())
+        val latch = new CountDownLatch(commandHandlers.size)
         val exceptions = Collections.synchronizedList(new util.ArrayList[CommandExecutionException]())
-        handlers.foreach {
+        commandHandlers.foreach {
             (handler: CommandHandler) => {
                 val thread = new Thread(new Runnable() {
                     def run() {
@@ -85,6 +83,6 @@ case class ExecutionContainer(commandHandlers: java.util.List[CommandHandler]) {
 
     @throws[CommandExecutionException]
     private def executeOnCurrentThread() {
-        handlers.head.executeAndTerminatePipes()
+        commandHandlers.head.executeAndTerminatePipes()
     }
 }

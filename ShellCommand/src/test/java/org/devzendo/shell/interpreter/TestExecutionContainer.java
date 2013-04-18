@@ -15,6 +15,7 @@
  */
 package org.devzendo.shell.interpreter;
 
+import org.devzendo.shell.ScalaListHelper;
 import org.devzendo.shell.pipe.InputPipe;
 import org.devzendo.shell.pipe.OutputPipe;
 import org.devzendo.shell.pipe.Pipe;
@@ -61,7 +62,7 @@ public class TestExecutionContainer {
     @Test
     public void singleCommandExecutesOnCurrentThread() throws CommandExecutionException {
         final TestCommandHandler testCommandHandler = new TestCommandHandler("one");
-        final List<CommandHandler> handlers = Arrays.<CommandHandler>asList(testCommandHandler);
+        final scala.collection.immutable.List<CommandHandler> handlers = ScalaListHelper.createList((CommandHandler) testCommandHandler);
         final ExecutionContainer executionContainer = new ExecutionContainer(handlers);
         
         executionContainer.execute();
@@ -102,7 +103,8 @@ public class TestExecutionContainer {
         final TerminationRecordingOutputPipe terminationRecordingOutputPipe = new TerminationRecordingOutputPipe();
         testCommandHandler.setInputPipe(terminationRecordingInputPipe);
         testCommandHandler.setOutputPipe(terminationRecordingOutputPipe);
-        final List<CommandHandler> handlers = Arrays.<CommandHandler>asList(testCommandHandler);
+        final scala.collection.immutable.List<CommandHandler> handlers = ScalaListHelper.createList((CommandHandler) testCommandHandler);
+
         final ExecutionContainer executionContainer = new ExecutionContainer(handlers);
         
         executionContainer.execute();
@@ -115,7 +117,7 @@ public class TestExecutionContainer {
     public void multipleCommandsExecuteOnSeparateThreads() throws CommandExecutionException {
         final TestCommandHandler testCommandHandlerOne = new TestCommandHandler("one");
         final TestCommandHandler testCommandHandlerTwo = new TestCommandHandler("two");
-        final List<CommandHandler> handlers = Arrays.<CommandHandler>asList(testCommandHandlerOne, testCommandHandlerTwo);
+        final scala.collection.immutable.List<CommandHandler> handlers = ScalaListHelper.createList((CommandHandler) testCommandHandlerOne, (CommandHandler) testCommandHandlerTwo);
         final ExecutionContainer executionContainer = new ExecutionContainer(handlers);
         
         executionContainer.execute();
@@ -129,7 +131,7 @@ public class TestExecutionContainer {
     public void pipesAreTerminatedAfterExecutionOfMultipleCommands() throws CommandExecutionException {
         final TestCommandHandler testCommandHandlerOne = new TestCommandHandler("one");
         final TestCommandHandler testCommandHandlerTwo = new TestCommandHandler("two");
-        final List<CommandHandler> handlers = Arrays.<CommandHandler>asList(testCommandHandlerOne, testCommandHandlerTwo);
+        final scala.collection.immutable.List<CommandHandler> handlers = ScalaListHelper.createList((CommandHandler) testCommandHandlerOne, (CommandHandler) testCommandHandlerTwo);
         final TerminationRecordingInputPipe terminationRecordingInputPipeOne = new TerminationRecordingInputPipe();
         final TerminationRecordingOutputPipe terminationRecordingOutputPipeOne = new TerminationRecordingOutputPipe();
         testCommandHandlerOne.setInputPipe(terminationRecordingInputPipeOne);
@@ -154,7 +156,7 @@ public class TestExecutionContainer {
         testCommandHandlerOne.injectCommandFailure();
         final TestCommandHandler testCommandHandlerTwo = new TestCommandHandler("two");
         testCommandHandlerTwo.injectCommandFailure();
-        final List<CommandHandler> handlers = Arrays.<CommandHandler>asList(testCommandHandlerOne, testCommandHandlerTwo);
+        final scala.collection.immutable.List<CommandHandler> handlers = ScalaListHelper.createList((CommandHandler) testCommandHandlerOne, (CommandHandler) testCommandHandlerTwo);
         final ExecutionContainer executionContainer = new ExecutionContainer(handlers);
         
         try {
@@ -169,7 +171,7 @@ public class TestExecutionContainer {
     public void exceptionThrownOnFailureOfSingleCommand() {
         final TestCommandHandler testCommandHandler = new TestCommandHandler("one");
         testCommandHandler.injectCommandFailure();
-        final List<CommandHandler> handlers = Arrays.<CommandHandler>asList(testCommandHandler);
+        final scala.collection.immutable.List<CommandHandler> handlers = ScalaListHelper.createList((CommandHandler) testCommandHandler);
         final ExecutionContainer executionContainer = new ExecutionContainer(handlers);
         
         try {

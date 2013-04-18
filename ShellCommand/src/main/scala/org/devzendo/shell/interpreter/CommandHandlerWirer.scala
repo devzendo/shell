@@ -17,7 +17,6 @@
 package org.devzendo.shell.interpreter
 
 import org.devzendo.shell.pipe._
-import collection.JavaConverters._
 import org.devzendo.shell.ast.CommandPipeline
 
 /**
@@ -31,7 +30,7 @@ import org.devzendo.shell.ast.CommandPipeline
 case class CommandHandlerWirer(commandRegistry: CommandRegistry, variableRegistry: VariableRegistry) {
 
     @throws[CommandNotFoundException]
-    def wire(commandPipeline: CommandPipeline): java.util.List[CommandHandler] = {
+    def wire(commandPipeline: CommandPipeline): List[CommandHandler] = {
         val handlers = scala.collection.mutable.ArrayBuffer[CommandHandler]()
         val commands = commandPipeline.getCommands
         assert(commands.size > 0)
@@ -71,7 +70,7 @@ case class CommandHandlerWirer(commandRegistry: CommandRegistry, variableRegistr
                 connectByRendezvousPipe(left, right)
             }
         }
-        handlers.asJava
+        handlers.toList
     }
 
     private def connectByRendezvousPipe(left: CommandHandler, right: CommandHandler) {
