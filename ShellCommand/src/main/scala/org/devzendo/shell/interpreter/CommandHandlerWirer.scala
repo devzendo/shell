@@ -34,8 +34,7 @@ case class CommandHandlerWirer(commandRegistry: CommandRegistry, variableRegistr
         val handlers = scala.collection.mutable.ArrayBuffer[CommandHandler]()
         val commands = commandPipeline.getCommands
         assert(commands.size > 0)
-        for (i <- 0 until commands.size()) {
-            val command = commands.get(i)
+        for (command <- commands) {
             val handler = commandRegistry.getHandler(command.getName)
             handler.setArgs(command.getArgs)
             handlers += handler

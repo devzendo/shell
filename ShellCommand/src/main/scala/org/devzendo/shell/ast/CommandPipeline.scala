@@ -16,8 +16,6 @@
 
 package org.devzendo.shell.ast
 
-import scala.collection.JavaConverters._
-
 final class CommandPipeline {
     var commands = scala.collection.mutable.ArrayBuffer[Command]()
 
@@ -27,13 +25,12 @@ final class CommandPipeline {
     @scala.reflect.BeanProperty
     var outputVariable: VariableReference = null
 
-    def getCommands: java.util.List[Command] = {
-        commands.asJava
+    def getCommands: List[Command] = {
+        commands.toList
     }
 
-    // TODO convert this to Scala List
-    def addCommands(commandsToAdd: java.util.List[Command]) {
-        (0 until commandsToAdd.size()).foreach( commands += commandsToAdd.get(_) )
+    def addCommands(commandsToAdd: List[Command]) {
+        commands ++= commandsToAdd
     }
 
     def addCommand(commandToAdd: Command) {

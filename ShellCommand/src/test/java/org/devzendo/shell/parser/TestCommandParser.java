@@ -33,7 +33,7 @@ public class TestCommandParser {
     @Test
     public void nullCommands() throws CommandParserException {
         final CommandPipeline pipeline = parser.parse(null);
-        final List<Command> cmds = pipeline.getCommands();
+        final scala.collection.immutable.List<Command> cmds = pipeline.getCommands();
         assertThat(cmds.size(), equalTo(0));
         assertThat(pipeline.isEmpty(), equalTo(true));
     }
@@ -41,7 +41,7 @@ public class TestCommandParser {
     @Test
     public void emptyCommands() throws CommandParserException {
         final CommandPipeline pipeline = parser.parse("");
-        final List<Command> cmds = pipeline.getCommands();
+        final scala.collection.immutable.List<Command> cmds = pipeline.getCommands();
         assertThat(cmds.size(), equalTo(0));
         assertThat(pipeline.isEmpty(), equalTo(true));
     }
@@ -49,9 +49,9 @@ public class TestCommandParser {
     @Test
     public void singleWordCommand() throws CommandParserException {
         final CommandPipeline pipeline = parser.parse("foo");
-        final List<Command> cmds = pipeline.getCommands();
+        final scala.collection.immutable.List<Command> cmds = pipeline.getCommands();
         assertThat(cmds.size(), equalTo(1));
-        final Command cmd = cmds.get(0);
+        final Command cmd = cmds.apply(0);
         assertThat(cmd.getName(), equalTo("foo"));
         assertNoArgs(cmd);
         assertThat(pipeline.isEmpty(), equalTo(false));
@@ -60,9 +60,9 @@ public class TestCommandParser {
     @Test
     public void takeFromVariable() throws CommandParserException {
         final CommandPipeline pipeline = parser.parse(" foo < var ");
-        final List<Command> cmds = pipeline.getCommands();
+        final scala.collection.immutable.List<Command> cmds = pipeline.getCommands();
         assertThat(cmds.size(), equalTo(1));
-        final Command cmd = cmds.get(0);
+        final Command cmd = cmds.apply(0);
         assertThat(cmd.getName(), equalTo("foo"));
         assertNoArgs(cmd);
         assertThat(pipeline.getInputVariable().variableName(), equalTo("var"));
@@ -72,12 +72,12 @@ public class TestCommandParser {
     @Test
     public void takeFromVariableAndPipe() throws CommandParserException {
         final CommandPipeline pipeline = parser.parse(" foo < var | bar");
-        final List<Command> cmds = pipeline.getCommands();
+        final scala.collection.immutable.List<Command> cmds = pipeline.getCommands();
         assertThat(cmds.size(), equalTo(2));
-        final Command foo = cmds.get(0);
+        final Command foo = cmds.apply(0);
         assertThat(foo.getName(), equalTo("foo"));
         assertNoArgs(foo);
-        final Command bar = cmds.get(1);
+        final Command bar = cmds.apply(1);
         assertThat(bar.getName(), equalTo("bar"));
         assertNoArgs(bar);
 
@@ -88,9 +88,9 @@ public class TestCommandParser {
     @Test
     public void storeIntoVariable() throws CommandParserException {
         final CommandPipeline pipeline = parser.parse("foo > var");
-        final List<Command> cmds = pipeline.getCommands();
+        final scala.collection.immutable.List<Command> cmds = pipeline.getCommands();
         assertThat(cmds.size(), equalTo(1));
-        final Command cmd = cmds.get(0);
+        final Command cmd = cmds.apply(0);
         assertThat(cmd.getName(), equalTo("foo"));
         assertNoArgs(cmd);
         assertThat(pipeline.getInputVariable(), nullValue());
@@ -105,10 +105,10 @@ public class TestCommandParser {
         assertThat(pipeline.getInputVariable().variableName(), equalTo("invar"));
         assertThat(pipeline.getOutputVariable().variableName(), equalTo("outvar"));
 
-        final List<Command> cmds = pipeline.getCommands();
+        final scala.collection.immutable.List<Command> cmds = pipeline.getCommands();
         assertThat(cmds.size(), equalTo(3));
         
-        final Command command1 = cmds.get(0);
+        final Command command1 = cmds.apply(0);
         assertThat(command1.getName(), equalTo("cmd1"));
         final List<Object> cmd1args = command1.getArgs();
         assertThat(cmd1args.size(), equalTo(5));
@@ -118,11 +118,11 @@ public class TestCommandParser {
         assertThat(((Double)cmd1args.get(3)), closeTo(6.8, 0.001));
         assertThat(((VariableReference)cmd1args.get(4)).variableName(), equalTo("ident"));
         
-        final Command command2 = cmds.get(1);
+        final Command command2 = cmds.apply(1);
         assertThat(command2.getName(), equalTo("cmd2"));
         assertNoArgs(command2);
         
-        final Command command3 = cmds.get(2);
+        final Command command3 = cmds.apply(2);
         assertThat(command3.getName(), equalTo("cmd3"));
         final List<Object> cmd3args = command3.getArgs();
         assertThat(cmd3args.size(), equalTo(3));
@@ -144,10 +144,10 @@ public class TestCommandParser {
         final CommandPipeline pipeline = parser.parse(
             "cmd1 3 2.5 5");
 
-        final List<Command> cmds = pipeline.getCommands();
+        final scala.collection.immutable.List<Command> cmds = pipeline.getCommands();
         assertThat(cmds.size(), equalTo(1));
         
-        final Command command1 = cmds.get(0);
+        final Command command1 = cmds.apply(0);
         final List<Object> cmd1args = command1.getArgs();
         assertThat(cmd1args.size(), equalTo(3));
         assertThat(((Integer)cmd1args.get(0)), equalTo(3));
@@ -159,22 +159,22 @@ public class TestCommandParser {
     public void simpleCommandList() throws CommandParserException {
         final CommandPipeline pipeline = parser.parse(
             "zero | one | two");
-        final List<Command> cmds = pipeline.getCommands();
+        final scala.collection.immutable.List<Command> cmds = pipeline.getCommands();
         
         assertThat(pipeline.getInputVariable(), nullValue());
         assertThat(pipeline.getOutputVariable(), nullValue());
         
         assertThat(cmds.size(), equalTo(3));
         
-        final Command command1 = cmds.get(0);
+        final Command command1 = cmds.apply(0);
         assertThat(command1.getName(), equalTo("zero"));
         assertNoArgs(command1);
         
-        final Command command2 = cmds.get(1);
+        final Command command2 = cmds.apply(1);
         assertThat(command2.getName(), equalTo("one"));
         assertNoArgs(command2);
         
-        final Command command3 = cmds.get(2);
+        final Command command3 = cmds.apply(2);
         assertThat(command3.getName(), equalTo("two"));
         assertNoArgs(command3);
     }
