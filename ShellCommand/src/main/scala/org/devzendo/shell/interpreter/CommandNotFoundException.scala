@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.devzendo.shell
+package org.devzendo.shell.interpreter
 
 class CommandNotFoundException(warning: String) extends Exception(warning) {
 }

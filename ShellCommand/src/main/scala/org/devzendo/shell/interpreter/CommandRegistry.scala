@@ -17,7 +17,6 @@
 package org.devzendo.shell.interpreter
 
 import org.devzendo.shell.plugin.ShellPlugin
-import org.devzendo.shell._
 import scala.Some
 
 class CommandRegistry {

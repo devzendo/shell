@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.devzendo.shell
+package org.devzendo.shell.interpreter
 
-class DuplicateCommandException(message: String) extends Exception(message) {
+class CommandExecutionException(warning: String) extends Exception(warning) {
 }

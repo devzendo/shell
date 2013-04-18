@@ -14,7 +14,21 @@
  * limitations under the License.
  */
 
-package org.devzendo.shell
+package org.devzendo.shell.interpreter
 
-class CommandExecutionException(warning: String) extends Exception(warning) {
+import java.lang.reflect.Method
+
+final class AnalysedMethod(val meth: Method) {
+
+    @scala.reflect.BeanProperty
+    val method: Method = meth
+
+    @scala.reflect.BeanProperty
+    var argumentsPosition: Option[Integer] = None
+
+    @scala.reflect.BeanProperty
+    var inputPipePosition: Option[Integer] = None
+
+    @scala.reflect.BeanProperty
+    var outputPipePosition: Option[Integer] = None
 }

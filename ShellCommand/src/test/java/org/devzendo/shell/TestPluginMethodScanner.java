@@ -17,6 +17,7 @@ package org.devzendo.shell;
 
 import org.devzendo.commoncode.logging.LoggingUnittestHelper;
 import org.devzendo.shell.PluginVariations.*;
+import org.devzendo.shell.interpreter.AnalysedMethod;
 import org.junit.BeforeClass;
 import org.junit.Test;
 

@@ -19,7 +19,6 @@ package org.devzendo.shell.interpreter
 import org.devzendo.shell.pipe._
 import collection.JavaConverters._
 import org.devzendo.shell.ast.CommandPipeline
-import org.devzendo.shell.{CommandHandler, CommandNotFoundException}
 
 /**
  * Given a command pipeline, create a list of command handlers for each

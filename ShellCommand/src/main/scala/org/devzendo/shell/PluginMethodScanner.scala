@@ -22,6 +22,7 @@ import java.util.{Map, HashMap, List}
 import java.lang.reflect.Method
 import org.devzendo.shell.pipe.{InputPipe, OutputPipe}
 import org.devzendo.shell.plugin.ShellPlugin
+import org.devzendo.shell.interpreter.AnalysedMethod
 
 object PluginMethodScanner {
     private val LOGGER = Logger.getLogger(classOf[PluginMethodScanner])

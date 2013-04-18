@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.devzendo.shell
+package org.devzendo.shell.interpreter
 
 import org.apache.log4j.Logger
 import org.devzendo.shell.pipe.{OutputPipe, InputPipe}

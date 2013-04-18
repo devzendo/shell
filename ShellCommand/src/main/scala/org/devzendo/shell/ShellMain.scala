@@ -29,7 +29,8 @@ import org.devzendo.shell.plugin._
 import org.devzendo.shell.pipe.{VariableOutputPipe, VariableInputPipe}
 import collection.JavaConverters._
 import org.devzendo.shell.parser.{CommandParserException, CommandParser}
-import org.devzendo.shell.interpreter.{VariableRegistry, CommandHandlerWirer, CommandRegistry}
+import org.devzendo.shell.interpreter._
+import org.devzendo.shell.interpreter.CommandHandlerWirer
 
 class ShellMain(val argList:java.util.List[String]) {
     val commandRegistry = new CommandRegistry()

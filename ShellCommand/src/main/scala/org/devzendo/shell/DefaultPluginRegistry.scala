@@ -21,7 +21,7 @@ import scala.collection.convert.WrapAsScala._
 import collection.JavaConverters._
 import scala.collection.mutable
 import org.devzendo.shell.plugin.{ShellPluginException, ShellPlugin}
-import org.devzendo.shell.interpreter.{VariableRegistry, CommandRegistry}
+import org.devzendo.shell.interpreter.{DuplicateCommandException, AnalysedMethod, VariableRegistry, CommandRegistry}
 
 class DefaultPluginRegistry(val propertiesResourcePath: String, val commandRegistry: CommandRegistry,
     val variableRegistry: VariableRegistry,
