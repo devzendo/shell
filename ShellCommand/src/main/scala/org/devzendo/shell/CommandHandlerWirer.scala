@@ -18,6 +18,7 @@ package org.devzendo.shell
 
 import org.devzendo.shell.pipe._
 import collection.JavaConverters._
+import org.devzendo.shell.ast.CommandPipeline
 
 /**
  * Given a command pipeline, create a list of command handlers for each

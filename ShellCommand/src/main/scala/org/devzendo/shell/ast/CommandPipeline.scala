@@ -14,10 +14,9 @@
  * limitations under the License.
  */
 
-package org.devzendo.shell
+package org.devzendo.shell.ast
 
 import scala.collection.JavaConverters._
-import org.devzendo.shell.ast.VariableReference
 
 final class CommandPipeline {
     var commands = scala.collection.mutable.ArrayBuffer[Command]()

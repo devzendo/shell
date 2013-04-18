@@ -15,8 +15,8 @@
  */
 package org.devzendo.shell.parser;
 
-import org.devzendo.shell.Command;
-import org.devzendo.shell.CommandPipeline;
+import org.devzendo.shell.ast.Command;
+import org.devzendo.shell.ast.CommandPipeline;
 import org.devzendo.shell.parser.CommandParser;
 import org.devzendo.shell.parser.CommandParserException;
 import org.devzendo.shell.ast.VariableReference;
