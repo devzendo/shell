@@ -16,7 +16,7 @@
 
 package org.devzendo.shell
 
-import org.devzendo.shell.interp.CommandRegistry
+import org.devzendo.shell.interp.{VariableRegistry, CommandRegistry}
 
 trait ExecutionEnvironment {
 

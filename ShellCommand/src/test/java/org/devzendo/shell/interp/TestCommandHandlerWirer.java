@@ -13,12 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.devzendo.shell;
+package org.devzendo.shell.interp;
 
+import org.devzendo.shell.*;
 import org.devzendo.shell.ast.Command;
 import org.devzendo.shell.ast.CommandPipeline;
 import org.devzendo.shell.ast.VariableReference;
-import org.devzendo.shell.interp.CommandRegistry;
 import org.devzendo.shell.pipe.*;
 import org.junit.Assert;
 import org.junit.Before;

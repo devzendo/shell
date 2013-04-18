@@ -13,8 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.devzendo.shell;
+package org.devzendo.shell.interp;
 
+import org.devzendo.shell.Variable;
 import org.devzendo.shell.ast.VariableReference;
 import org.junit.Test;
 

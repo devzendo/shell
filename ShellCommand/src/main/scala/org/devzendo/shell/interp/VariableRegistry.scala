@@ -14,9 +14,10 @@
  * limitations under the License.
  */
 
-package org.devzendo.shell
+package org.devzendo.shell.interp
 
 import org.devzendo.shell.ast.VariableReference
+import org.devzendo.shell.Variable
 
 class VariableRegistry {
     private var vars = scala.collection.mutable.Map[String, Variable]()

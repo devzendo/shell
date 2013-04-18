@@ -16,6 +16,7 @@
 package org.devzendo.shell;
 
 import org.devzendo.shell.interp.CommandRegistry;
+import org.devzendo.shell.interp.VariableRegistry;
 import org.devzendo.shell.plugin.ShellPlugin;
 
 public class RecordingShellPlugin implements ShellPlugin {

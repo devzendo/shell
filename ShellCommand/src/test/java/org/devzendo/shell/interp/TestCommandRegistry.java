@@ -16,7 +16,6 @@
 package org.devzendo.shell.interp;
 
 import org.devzendo.shell.*;
-import org.devzendo.shell.interp.CommandRegistry;
 import org.devzendo.shell.plugin.ShellPlugin;
 import org.junit.Test;
 
