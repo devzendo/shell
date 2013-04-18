@@ -19,8 +19,7 @@ package org.devzendo.shell.parser
 import scala.collection.JavaConversions._
 import scala.util.parsing.combinator._
 import org.devzendo.shell.{Command, CommandPipeline}
-
-case class VariableReference(val variableName: String)
+import org.devzendo.shell.ast.VariableReference
 
 class CommandParser {
     

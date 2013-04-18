@@ -17,7 +17,7 @@
 package org.devzendo.shell
 
 import scala.collection.JavaConverters._
-import org.devzendo.shell.parser.VariableReference
+import org.devzendo.shell.ast.VariableReference
 
 final class CommandPipeline {
     var commands = scala.collection.mutable.ArrayBuffer[Command]()

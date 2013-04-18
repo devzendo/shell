@@ -15,7 +15,7 @@
  */
 package org.devzendo.shell;
 
-import org.devzendo.shell.parser.VariableReference;
+import org.devzendo.shell.ast.VariableReference;
 import org.junit.Test;
 
 import static org.hamcrest.MatcherAssert.assertThat;

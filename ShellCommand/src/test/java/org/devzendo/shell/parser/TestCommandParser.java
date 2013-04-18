@@ -19,7 +19,7 @@ import org.devzendo.shell.Command;
 import org.devzendo.shell.CommandPipeline;
 import org.devzendo.shell.parser.CommandParser;
 import org.devzendo.shell.parser.CommandParserException;
-import org.devzendo.shell.parser.VariableReference;
+import org.devzendo.shell.ast.VariableReference;
 import org.hamcrest.Matchers;
 import org.junit.Test;
 
