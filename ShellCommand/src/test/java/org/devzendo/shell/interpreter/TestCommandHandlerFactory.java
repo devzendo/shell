@@ -126,7 +126,7 @@ public class TestCommandHandlerFactory {
 
     private void setupAndExecuteHandler(final AbstractShellPlugin plugin)
             throws CommandExecutionException {
-        final Map<String, AnalysedMethod> methods = scanner.scanPluginMethods(plugin);
+        final scala.collection.immutable.Map<String, AnalysedMethod> methods = scanner.scanPluginMethods(plugin);
         assertThat(methods.size(), equalTo(1));
         final AnalysedMethod analysedMethod = methods.values().iterator().next();
         final CommandHandler handler = factory.createHandler(plugin, analysedMethod);

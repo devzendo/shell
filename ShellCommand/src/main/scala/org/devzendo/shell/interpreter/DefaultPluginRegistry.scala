@@ -17,7 +17,6 @@
 package org.devzendo.shell.interpreter
 
 import scala.Predef.String
-import scala.collection.convert.WrapAsScala._
 import collection.JavaConverters._
 import scala.collection.mutable
 import org.devzendo.shell.plugin.{ShellPluginException, ShellPlugin}
@@ -37,10 +36,10 @@ class DefaultPluginRegistry(val propertiesResourcePath: String, val commandRegis
         for (shellPlugin <- allPlugins) {
             plugins += shellPlugin
             shellPlugin.initialise(env)
-            val nameMethodMap: java.util.Map[String, AnalysedMethod] = pluginMethodScanner.scanPluginMethods(shellPlugin)
-            for (entry: java.util.Map.Entry[String, AnalysedMethod] <- nameMethodMap.entrySet()) {
+            val nameMethodMap = pluginMethodScanner.scanPluginMethods(shellPlugin)
+            for (entry <- nameMethodMap) {
                 try {
-                    commandRegistry.registerCommand(entry.getKey, shellPlugin, entry.getValue)
+                    commandRegistry.registerCommand(entry._1, shellPlugin, entry._2)
                 } catch {
                     case e: DuplicateCommandException => {
                         throw new ShellPluginException(e.getMessage)

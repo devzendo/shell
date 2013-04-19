@@ -118,21 +118,21 @@ public class TestPluginMethodScanner {
             scala.Option.apply(2), scala.Option.apply(0), scala.Option.apply(1));
     }
 
-    private void gotFunk(final Map<String, AnalysedMethod> map,
+    private void gotFunk(final scala.collection.immutable.Map<String, AnalysedMethod> map,
             final scala.Option<Integer> argPos,
             final scala.Option<Integer> inputPipePos,
             final scala.Option<Integer> outputPipePos) {
         assertThat(map.size(), equalTo(1));
-        final Iterator<String> it = map.keySet().iterator();
+        final scala.collection.Iterator<String> it = map.keysIterator();
         assertThat(it.hasNext(), equalTo(true));
         assertThat(it.next(), equalTo("funk"));
-        final AnalysedMethod analysedMethod = map.get("funk");
+        final AnalysedMethod analysedMethod = map.apply("funk");
         assertThat(analysedMethod.getArgumentsPosition(), equalTo(argPos));
         assertThat(analysedMethod.getInputPipePosition(), equalTo(inputPipePos));
         assertThat(analysedMethod.getOutputPipePosition(), equalTo(outputPipePos));
     }
 
-    private void noMethods(Map<String, AnalysedMethod> map) {
+    private void noMethods(scala.collection.immutable.Map<String, AnalysedMethod> map) {
         assertThat(map.size(), equalTo(0));
     }
 }

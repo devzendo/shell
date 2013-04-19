@@ -20,8 +20,6 @@ import org.apache.log4j.Logger
 import java.lang.reflect.Method
 import org.devzendo.shell.pipe.{InputPipe, OutputPipe}
 import org.devzendo.shell.plugin.ShellPlugin
-import scala.collection.convert.WrapAsScala._
-import collection.JavaConverters._
 
 object PluginMethodScanner {
     private val LOGGER = Logger.getLogger(classOf[PluginMethodScanner])
@@ -33,7 +31,7 @@ object PluginMethodScanner {
 class PluginMethodScanner {
     val methodAnalyser = new MethodAnalyser()
 
-    def scanPluginMethods(shellPlugin: ShellPlugin): java.util.Map[String, AnalysedMethod] = {
+    def scanPluginMethods(shellPlugin: ShellPlugin): Map[String, AnalysedMethod] = {
         val methods = shellPlugin.getClass.getMethods
         PluginMethodScanner.LOGGER.debug("Scanning " + methods.length + " method(s) from class " + shellPlugin.getClass.getSimpleName)
         val possiblePluginMethods = methods filter notObjectOrShellPluginMethodNames filter voidReturn filter validParameterTypes
@@ -49,7 +47,7 @@ class PluginMethodScanner {
             }
         }
         PluginMethodScanner.LOGGER.debug("Plugin scanned")
-        namedAnalysedMethods.toMap.asJava
+        namedAnalysedMethods.toMap
     }
     
     private def notObjectOrShellPluginMethodNames(method: Method): Boolean = {
