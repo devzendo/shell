@@ -19,7 +19,6 @@ package org.devzendo.shell.interpreter
 import org.apache.log4j.Logger
 import collection.JavaConverters._
 import org.devzendo.shell.plugin.{ShellPlugin, ShellPluginException}
-import java.util
 import java.io.{BufferedInputStream, InputStream, IOException}
 import java.net.URL
 import java.util.Properties
@@ -68,11 +67,10 @@ class PluginLoader {
         Thread.currentThread().getContextClassLoader.getResources(resourcePath)
     }
 
-    // TODO plenty to convert to Scala collections in here!
     @throws[IOException]
     private def loadPlugins(properties: Properties): List[ShellPlugin] = {
         val entrySet = properties.entrySet().asScala
-        val plugins = entrySet.map { (entry: java.util.Map.Entry[AnyRef, AnyRef]) =>
+        val plugins = entrySet.map { entry =>
             // we can ignore the lhs
             val pluginClassName = entry.getValue.toString
             loadPlugin(pluginClassName)
