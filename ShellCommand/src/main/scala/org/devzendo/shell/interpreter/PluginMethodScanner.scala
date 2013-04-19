@@ -20,6 +20,8 @@ import org.apache.log4j.Logger
 import java.lang.reflect.Method
 import org.devzendo.shell.pipe.{InputPipe, OutputPipe}
 import org.devzendo.shell.plugin.ShellPlugin
+import scala.collection.convert.WrapAsScala._
+import collection.JavaConverters._
 
 object PluginMethodScanner {
     private val LOGGER = Logger.getLogger(classOf[PluginMethodScanner])
@@ -32,7 +34,7 @@ class PluginMethodScanner {
     val methodAnalyser = new MethodAnalyser()
 
     def scanPluginMethods(shellPlugin: ShellPlugin): java.util.Map[String, AnalysedMethod] = {
-        val returnMethods = new java.util.HashMap[String, AnalysedMethod]()
+        var returnMethods = scala.collection.immutable.Map[String, AnalysedMethod]()
         val methods = shellPlugin.getClass.getMethods
         PluginMethodScanner.LOGGER.debug("Scanning " + methods.length + " method(s) from class " + shellPlugin.getClass.getSimpleName)
         val possiblePluginMethods = methods filter notObjectOrShellPluginMethodNames filter voidReturn filter validParameterTypes
@@ -41,16 +43,15 @@ class PluginMethodScanner {
             val optionalAnalysedMethod = methodAnalyser.analyseMethod(method)
             if (optionalAnalysedMethod.isDefined) {
                 PluginMethodScanner.LOGGER.debug("Registering method " + method)
-                returnMethods.put(method.getName, optionalAnalysedMethod.get)
+                returnMethods += (method.getName -> optionalAnalysedMethod.get)
             } else {
                 PluginMethodScanner.LOGGER.debug("Not of the right signature")
             }
         })
         PluginMethodScanner.LOGGER.debug("Plugin scanned")
-        returnMethods
+        returnMethods.asJava
     }
     
-        
     private def notObjectOrShellPluginMethodNames(method: Method): Boolean = {
         val name = method.getName
         ! (PluginMethodScanner.objectMethodNames.contains(name) ||
