@@ -72,8 +72,9 @@ class PluginLoader {
     @throws[IOException]
     private def loadPlugins(properties: Properties): List[ShellPlugin] = {
         val plugins = ArrayBuffer[ShellPlugin]()
-        val entrySet: java.util.Set[java.util.Map.Entry[AnyRef, AnyRef]] = properties.entrySet()
-        entrySet.asScala.foreach { (entry: java.util.Map.Entry[AnyRef, AnyRef]) =>
+        val entrySet = properties.entrySet().asScala
+
+        entrySet.foreach { (entry: java.util.Map.Entry[AnyRef, AnyRef]) =>
             // we can ignore the lhs
             val pluginClassName = entry.getValue.toString
             plugins += loadPlugin(pluginClassName)
