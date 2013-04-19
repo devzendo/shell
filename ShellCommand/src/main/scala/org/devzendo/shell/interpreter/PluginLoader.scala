@@ -17,13 +17,13 @@
 package org.devzendo.shell.interpreter
 
 import org.apache.log4j.Logger
-import collection.JavaConverters._
 import org.devzendo.shell.plugin.{ShellPlugin, ShellPluginException}
 import java.io.{BufferedInputStream, InputStream, IOException}
 import java.net.URL
 import java.util.Properties
 import scala.throws
 import scala.collection.mutable.ArrayBuffer
+import scala.collection.convert.WrapAsScala.propertiesAsScalaMap
 
 object PluginLoader {
     private val LOGGER = Logger.getLogger(classOf[PluginLoader])
@@ -68,11 +68,10 @@ class PluginLoader {
     }
 
     @throws[IOException]
-    private def loadPlugins(properties: Properties): List[ShellPlugin] = {
-        val entrySet = properties.entrySet().asScala
-        val plugins = entrySet.map { entry =>
+    private def loadPlugins(properties: scala.collection.mutable.Map[String, String]): List[ShellPlugin] = {
+        val plugins = properties.map { entry =>
             // we can ignore the lhs
-            val pluginClassName = entry.getValue.toString
+            val pluginClassName = entry._2.toString
             loadPlugin(pluginClassName)
         }
         plugins.toList
@@ -101,7 +100,7 @@ class PluginLoader {
     }
 
     @throws[IOException]
-    private def loadProperties(propertiesURL: URL): Properties = {
+    private def loadProperties(propertiesURL: URL): scala.collection.mutable.Map[String, String] = {
         PluginLoader.LOGGER.debug("Loading properties file at " + propertiesURL.toString)
         var is: InputStream = null
         try {
