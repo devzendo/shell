@@ -62,13 +62,14 @@ class PluginLoader {
      * @throws IOException
      *         on classpath scanning failure
      */
+    // TODO java collection
     @throws[IOException]
     private def getPluginDescriptorURLs(resourcePath: String): java.util.Enumeration[URL] = {
         Thread.currentThread().getContextClassLoader.getResources(resourcePath)
     }
 
     @throws[IOException]
-    private def loadPlugins(properties: scala.collection.mutable.Map[String, String]): List[ShellPlugin] = {
+    private def loadPlugins(properties: Map[String, String]): List[ShellPlugin] = {
         val plugins = properties.map { entry =>
             // we can ignore the lhs
             val pluginClassName = entry._2.toString
@@ -100,7 +101,7 @@ class PluginLoader {
     }
 
     @throws[IOException]
-    private def loadProperties(propertiesURL: URL): scala.collection.mutable.Map[String, String] = {
+    private def loadProperties(propertiesURL: URL): Map[String, String] = {
         PluginLoader.LOGGER.debug("Loading properties file at " + propertiesURL.toString)
         var is: InputStream = null
         try {
@@ -108,7 +109,7 @@ class PluginLoader {
             is = new BufferedInputStream(stream)
             val properties = new Properties()
             properties.load(is)
-            properties
+            Map.empty ++ properties
         } catch {
             case e: IOException =>
                 val warning = "Cannot load plugin descriptor at URL" + propertiesURL.toString + ": " + e.getMessage
