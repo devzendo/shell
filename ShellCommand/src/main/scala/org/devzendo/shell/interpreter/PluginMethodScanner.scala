@@ -34,20 +34,22 @@ class PluginMethodScanner {
     val methodAnalyser = new MethodAnalyser()
 
     def scanPluginMethods(shellPlugin: ShellPlugin): java.util.Map[String, AnalysedMethod] = {
-        var returnMethods = scala.collection.immutable.Map[String, AnalysedMethod]()
+        var returnMethods = Map[String, AnalysedMethod]()
         val methods = shellPlugin.getClass.getMethods
         PluginMethodScanner.LOGGER.debug("Scanning " + methods.length + " method(s) from class " + shellPlugin.getClass.getSimpleName)
         val possiblePluginMethods = methods filter notObjectOrShellPluginMethodNames filter voidReturn filter validParameterTypes
-        possiblePluginMethods.foreach(method => {
+        val xx = possiblePluginMethods.flatMap { (method: Method) =>
             PluginMethodScanner.LOGGER.debug("Considering method " + method)
             val optionalAnalysedMethod = methodAnalyser.analyseMethod(method)
             if (optionalAnalysedMethod.isDefined) {
                 PluginMethodScanner.LOGGER.debug("Registering method " + method)
-                returnMethods += (method.getName -> optionalAnalysedMethod.get)
+                Some(method.getName -> optionalAnalysedMethod.get)
             } else {
                 PluginMethodScanner.LOGGER.debug("Not of the right signature")
+                None
             }
-        })
+        }
+        returnMethods ++= xx
         PluginMethodScanner.LOGGER.debug("Plugin scanned")
         returnMethods.asJava
     }
