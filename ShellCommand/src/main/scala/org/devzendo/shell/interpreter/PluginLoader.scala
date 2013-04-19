@@ -23,7 +23,8 @@ import java.net.URL
 import java.util.Properties
 import scala.throws
 import scala.collection.mutable.ArrayBuffer
-import scala.collection.convert.WrapAsScala.propertiesAsScalaMap
+import scala.collection.convert.WrapAsScala.{propertiesAsScalaMap, enumerationAsScalaIterator}
+
 
 object PluginLoader {
     private val LOGGER = Logger.getLogger(classOf[PluginLoader])
@@ -36,8 +37,8 @@ class PluginLoader {
         try {
             val propertiesURLs = getPluginDescriptorURLs(propertiesResourcePath)
             val plugins = ArrayBuffer[ShellPlugin]()
-            while (propertiesURLs.hasMoreElements) {
-                val propertiesURL = propertiesURLs.nextElement()
+            while (propertiesURLs.hasNext) {
+                val propertiesURL = propertiesURLs.next()
                 val properties = loadProperties(propertiesURL)
                 plugins ++= loadPlugins(properties)
             }
@@ -62,9 +63,8 @@ class PluginLoader {
      * @throws IOException
      *         on classpath scanning failure
      */
-    // TODO java collection
     @throws[IOException]
-    private def getPluginDescriptorURLs(resourcePath: String): java.util.Enumeration[URL] = {
+    private def getPluginDescriptorURLs(resourcePath: String): Iterator[URL] = {
         Thread.currentThread().getContextClassLoader.getResources(resourcePath)
     }
 
