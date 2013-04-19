@@ -17,7 +17,6 @@
 package org.devzendo.shell.interpreter
 
 import org.apache.log4j.Logger
-import java.util.{Map, HashMap, List}
 import java.lang.reflect.Method
 import org.devzendo.shell.pipe.{InputPipe, OutputPipe}
 import org.devzendo.shell.plugin.ShellPlugin
@@ -28,42 +27,43 @@ object PluginMethodScanner {
         "wait", "equals", "hashCode", "toString")
     private val shellPluginMethodNames = Set("initialise")
 }
+
 class PluginMethodScanner {
     val methodAnalyser = new MethodAnalyser()
 
-    def scanPluginMethods(shellPlugin: ShellPlugin): Map[String, AnalysedMethod] = {
-        val returnMethods = new HashMap[String, AnalysedMethod]()
-        val methods = shellPlugin.getClass.getMethods()
-        PluginMethodScanner.LOGGER.debug("Scanning " + methods.length + " method(s) from class " + shellPlugin.getClass().getSimpleName());
+    def scanPluginMethods(shellPlugin: ShellPlugin): java.util.Map[String, AnalysedMethod] = {
+        val returnMethods = new java.util.HashMap[String, AnalysedMethod]()
+        val methods = shellPlugin.getClass.getMethods
+        PluginMethodScanner.LOGGER.debug("Scanning " + methods.length + " method(s) from class " + shellPlugin.getClass.getSimpleName)
         val possiblePluginMethods = methods filter notObjectOrShellPluginMethodNames filter voidReturn filter validParameterTypes
         possiblePluginMethods.foreach(method => {
             PluginMethodScanner.LOGGER.debug("Considering method " + method)
             val optionalAnalysedMethod = methodAnalyser.analyseMethod(method)
             if (optionalAnalysedMethod.isDefined) {
                 PluginMethodScanner.LOGGER.debug("Registering method " + method)
-                returnMethods.put(method.getName, optionalAnalysedMethod.get);
+                returnMethods.put(method.getName, optionalAnalysedMethod.get)
             } else {
-                PluginMethodScanner.LOGGER.debug("Not of the right signature");
+                PluginMethodScanner.LOGGER.debug("Not of the right signature")
             }
         })
-        PluginMethodScanner.LOGGER.debug("Plugin scanned");
-        return returnMethods;
+        PluginMethodScanner.LOGGER.debug("Plugin scanned")
+        returnMethods
     }
     
         
     private def notObjectOrShellPluginMethodNames(method: Method): Boolean = {
-        val name = method.getName()
+        val name = method.getName
         ! (PluginMethodScanner.objectMethodNames.contains(name) ||
             PluginMethodScanner.shellPluginMethodNames.contains(name))
     }
 
     private def voidReturn(method: Method): Boolean = {
-        method.getReturnType.toString().equals("void") // no other way to detect this? 
+        method.getReturnType.toString.equals("void") // no other way to detect this?
     }
 
     private def validParameterTypes(method: Method): Boolean = {
         method.getParameterTypes forall(c => {
-            c == classOf[List[_]] ||
+            c == classOf[java.util.List[_]] ||
             c == classOf[InputPipe] ||
             c == classOf[OutputPipe]
         })
@@ -89,7 +89,7 @@ class MethodAnalyser {
 
     private def optionalArguments(analysedMethod: AnalysedMethod,
             parameterTypes: Array[Class[_]]): Boolean = {
-        optionalParameter(parameterTypes, classOf[List[_]], 
+        optionalParameter(parameterTypes, classOf[java.util.List[_]],
             (o: Option[Integer]) => analysedMethod.setArgumentsPosition(o))
     }
     
@@ -120,6 +120,6 @@ class MethodAnalyser {
             storePosition(position)
             return true
         }
-        return false
+        false
     }
 }
