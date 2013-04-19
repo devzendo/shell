@@ -71,14 +71,14 @@ class PluginLoader {
     // TODO plenty to convert to Scala collections in here!
     @throws[IOException]
     private def loadPlugins(properties: Properties): List[ShellPlugin] = {
-        val plugins = new util.ArrayList[ShellPlugin]()
+        val plugins = ArrayBuffer[ShellPlugin]()
         val entrySet: java.util.Set[java.util.Map.Entry[AnyRef, AnyRef]] = properties.entrySet()
         entrySet.asScala.foreach { (entry: java.util.Map.Entry[AnyRef, AnyRef]) =>
             // we can ignore the lhs
             val pluginClassName = entry.getValue.toString
-            plugins.add(loadPlugin(pluginClassName))
+            plugins += loadPlugin(pluginClassName)
         }
-        plugins.asScala.toList
+        plugins.toList
     }
 
     @throws[IOException]
