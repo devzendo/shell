@@ -24,25 +24,26 @@ import java.io.{BufferedInputStream, InputStream, IOException}
 import java.net.URL
 import java.util.Properties
 import scala.throws
+import scala.collection.mutable.ArrayBuffer
 
 object PluginLoader {
     private val LOGGER = Logger.getLogger(classOf[PluginLoader])
 }
-class PluginLoader {
 
+class PluginLoader {
     @throws[ShellPluginException]
-    def loadPluginsFromClasspath(propertiesResourcePath: String): java.util.List[ShellPlugin] = {
+    def loadPluginsFromClasspath(propertiesResourcePath: String): List[ShellPlugin] = {
         PluginLoader.LOGGER.debug("Loading plugins from properties at " + propertiesResourcePath)
         try {
             val propertiesURLs = getPluginDescriptorURLs(propertiesResourcePath)
-            val plugins = new util.ArrayList[ShellPlugin]()
+            val plugins = ArrayBuffer[ShellPlugin]()
             while (propertiesURLs.hasMoreElements) {
                 val propertiesURL = propertiesURLs.nextElement()
                 val properties = loadProperties(propertiesURL)
-                plugins.addAll(loadPlugins(properties))
+                plugins ++= loadPlugins(properties).asScala
             }
-            PluginLoader.LOGGER.debug("Returning " + plugins.size() + " plugin(s)")
-            plugins
+            PluginLoader.LOGGER.debug("Returning " + plugins.size + " plugin(s)")
+            plugins.toList
         } catch {
             case e: IOException =>
                 val warning = "Failure loading plugins: " + e.getMessage

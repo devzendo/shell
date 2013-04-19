@@ -37,7 +37,7 @@ public class TestPluginLoader {
 
     @Test
     public void canLoadWellDefinedPlugin() throws ShellPluginException {
-        final List<ShellPlugin> plugins = pluginLoader.loadPluginsFromClasspath("org/devzendo/shell/testpluginloader-good-plugins.properties");
+        final scala.collection.immutable.List<ShellPlugin> plugins = pluginLoader.loadPluginsFromClasspath("org/devzendo/shell/testpluginloader-good-plugins.properties");
         assertThat(plugins.size(), equalTo(1));
     }
 
