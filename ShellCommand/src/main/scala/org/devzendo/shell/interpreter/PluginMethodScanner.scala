@@ -34,11 +34,10 @@ class PluginMethodScanner {
     val methodAnalyser = new MethodAnalyser()
 
     def scanPluginMethods(shellPlugin: ShellPlugin): java.util.Map[String, AnalysedMethod] = {
-        var returnMethods = Map[String, AnalysedMethod]()
         val methods = shellPlugin.getClass.getMethods
         PluginMethodScanner.LOGGER.debug("Scanning " + methods.length + " method(s) from class " + shellPlugin.getClass.getSimpleName)
         val possiblePluginMethods = methods filter notObjectOrShellPluginMethodNames filter voidReturn filter validParameterTypes
-        val xx = possiblePluginMethods.flatMap { (method: Method) =>
+        val namedAnalysedMethods = possiblePluginMethods.flatMap { (method: Method) =>
             PluginMethodScanner.LOGGER.debug("Considering method " + method)
             val optionalAnalysedMethod = methodAnalyser.analyseMethod(method)
             if (optionalAnalysedMethod.isDefined) {
@@ -49,9 +48,8 @@ class PluginMethodScanner {
                 None
             }
         }
-        returnMethods ++= xx
         PluginMethodScanner.LOGGER.debug("Plugin scanned")
-        returnMethods.asJava
+        namedAnalysedMethods.toMap.asJava
     }
     
     private def notObjectOrShellPluginMethodNames(method: Method): Boolean = {
