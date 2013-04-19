@@ -22,9 +22,7 @@ import java.io.{BufferedInputStream, InputStream, IOException}
 import java.net.URL
 import java.util.Properties
 import scala.throws
-import scala.collection.mutable.ArrayBuffer
 import scala.collection.convert.WrapAsScala.{propertiesAsScalaMap, enumerationAsScalaIterator}
-
 
 object PluginLoader {
     private val LOGGER = Logger.getLogger(classOf[PluginLoader])
@@ -36,14 +34,12 @@ class PluginLoader {
         PluginLoader.LOGGER.debug("Loading plugins from properties at " + propertiesResourcePath)
         try {
             val propertiesURLs = getPluginDescriptorURLs(propertiesResourcePath)
-            val plugins = ArrayBuffer[ShellPlugin]()
-            val iterator = propertiesURLs.map { propertiesURL =>
+            val plugins = propertiesURLs.map { propertiesURL =>
                 val properties = loadProperties(propertiesURL)
                 loadPlugins(properties)
-            }
-            plugins ++= iterator.flatten
+            }.flatten.toList
             PluginLoader.LOGGER.debug("Returning " + plugins.size + " plugin(s)")
-            plugins.toList
+            plugins
         } catch {
             case e: IOException =>
                 val warning = "Failure loading plugins: " + e.getMessage
