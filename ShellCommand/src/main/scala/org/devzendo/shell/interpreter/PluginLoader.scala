@@ -40,7 +40,7 @@ class PluginLoader {
             while (propertiesURLs.hasMoreElements) {
                 val propertiesURL = propertiesURLs.nextElement()
                 val properties = loadProperties(propertiesURL)
-                plugins ++= loadPlugins(properties).asScala
+                plugins ++= loadPlugins(properties)
             }
             PluginLoader.LOGGER.debug("Returning " + plugins.size + " plugin(s)")
             plugins.toList
@@ -70,7 +70,7 @@ class PluginLoader {
 
     // TODO plenty to convert to Scala collections in here!
     @throws[IOException]
-    private def loadPlugins(properties: Properties): java.util.List[ShellPlugin] = {
+    private def loadPlugins(properties: Properties): List[ShellPlugin] = {
         val plugins = new util.ArrayList[ShellPlugin]()
         val entrySet: java.util.Set[java.util.Map.Entry[AnyRef, AnyRef]] = properties.entrySet()
         entrySet.asScala.foreach { (entry: java.util.Map.Entry[AnyRef, AnyRef]) =>
@@ -78,7 +78,7 @@ class PluginLoader {
             val pluginClassName = entry.getValue.toString
             plugins.add(loadPlugin(pluginClassName))
         }
-        plugins
+        plugins.asScala.toList
     }
 
     @throws[IOException]
