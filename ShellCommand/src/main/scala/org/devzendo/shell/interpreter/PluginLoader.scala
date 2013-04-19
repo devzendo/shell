@@ -37,10 +37,11 @@ class PluginLoader {
         try {
             val propertiesURLs = getPluginDescriptorURLs(propertiesResourcePath)
             val plugins = ArrayBuffer[ShellPlugin]()
-            for (propertiesURL <- propertiesURLs) {
+            val iterator = propertiesURLs.map { propertiesURL =>
                 val properties = loadProperties(propertiesURL)
-                plugins ++= loadPlugins(properties)
+                loadPlugins(properties)
             }
+            plugins ++= iterator.flatten
             PluginLoader.LOGGER.debug("Returning " + plugins.size + " plugin(s)")
             plugins.toList
         } catch {
