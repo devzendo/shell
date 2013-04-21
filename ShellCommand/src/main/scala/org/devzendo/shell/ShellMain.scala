@@ -16,7 +16,6 @@
 
 package org.devzendo.shell
 
-import collection.JavaConversions._
 import org.apache.log4j.Logger
 import org.devzendo.commoncode.logging.Logging
 import org.devzendo.commonapp.prefs.{DefaultPrefsLocation, PrefsLocation}
@@ -32,10 +31,10 @@ import org.devzendo.shell.parser.{CommandParserException, CommandParser}
 import org.devzendo.shell.interpreter._
 import org.devzendo.shell.interpreter.CommandHandlerWirer
 
-class ShellMain(val argList:java.util.List[String]) {
+class ShellMain(val argList: List[String]) {
     val commandRegistry = new CommandRegistry()
     val variableRegistry = new VariableRegistry()
-    val pluginRegistry = new DefaultPluginRegistry(ShellMain.SHELLPLUGIN_PROPERTIES, commandRegistry, variableRegistry, argList.asScala.toList)
+    val pluginRegistry = new DefaultPluginRegistry(ShellMain.SHELLPLUGIN_PROPERTIES, commandRegistry, variableRegistry, argList)
 
     private var quitShell = false
 
@@ -128,7 +127,7 @@ class ShellMain(val argList:java.util.List[String]) {
         } )
     }
 
-    private[this] def dumpHandlers(commandHandlers: util.List[CommandHandler]) {
+    private[this] def dumpHandlers(commandHandlers: List[CommandHandler]) {
         val sb = new StringBuilder()
         commandHandlers.foreach( handler => {
             sb.append("<")
@@ -172,7 +171,7 @@ object ShellMain {
         val logging = Logging.getInstance()
         val argList: java.util.List[String] = new java.util.ArrayList[String]()
         args.foreach(s => argList.add(s))
-        val finalArgList = logging.setupLoggingFromArgs(argList)
+        val finalArgList = logging.setupLoggingFromArgs(argList).asScala.toList
         new ShellMain(finalArgList).start()
     }
 }
