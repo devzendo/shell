@@ -27,11 +27,12 @@ class DefaultPluginRegistry(val propertiesResourcePath: String, val commandRegis
 
     private val pluginMethodScanner = new PluginMethodScanner()
     private val plugins = scala.collection.mutable.Set[ShellPlugin]()
+    private val pluginLoader = new PluginLoader()
 
     @throws[ShellPluginException]
     def loadAndRegisterPluginMethods(staticPlugins: List[ShellPlugin]) {
         val env: ExecutionEnvironment = new DefaultExecutionEnvironment(argList, commandRegistry, variableRegistry, this)
-        val allPlugins = loadAllPlugins(staticPlugins.toBuffer)
+        val allPlugins = staticPlugins ++ pluginLoader.loadPluginsFromClasspath(propertiesResourcePath)
         for (shellPlugin <- allPlugins) {
             plugins += shellPlugin
             shellPlugin.initialise(env)
@@ -46,12 +47,6 @@ class DefaultPluginRegistry(val propertiesResourcePath: String, val commandRegis
                 }
             }
         }
-    }
-
-    @throws[ShellPluginException]
-    private[this] def loadAllPlugins(staticPlugins: mutable.Buffer[ShellPlugin]): List[ShellPlugin] = {
-        val pluginsFromClasspath = new PluginLoader().loadPluginsFromClasspath(propertiesResourcePath)
-        List[ShellPlugin]() ++ staticPlugins ++ pluginsFromClasspath
     }
 
     def getPlugins: java.util.Set[ShellPlugin] = {
