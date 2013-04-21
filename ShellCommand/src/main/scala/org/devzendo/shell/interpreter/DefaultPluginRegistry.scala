@@ -16,9 +16,6 @@
 
 package org.devzendo.shell.interpreter
 
-import scala.Predef.String
-import collection.JavaConverters._
-import scala.collection.mutable
 import org.devzendo.shell.plugin.{ShellPluginException, ShellPlugin}
 
 class DefaultPluginRegistry(val propertiesResourcePath: String, val commandRegistry: CommandRegistry,
@@ -49,8 +46,8 @@ class DefaultPluginRegistry(val propertiesResourcePath: String, val commandRegis
         }
     }
 
-    def getPlugins: java.util.Set[ShellPlugin] = {
-        plugins.asJava
+    def getPlugins: Set[ShellPlugin] = {
+        Set.empty ++ plugins
     }
 }
 

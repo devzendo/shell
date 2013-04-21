@@ -22,5 +22,5 @@ trait PluginRegistry {
     @throws[ShellPluginException]
     def loadAndRegisterPluginMethods(staticPlugins: List[ShellPlugin])
 
-    def getPlugins: java.util.Set[ShellPlugin]
+    def getPlugins: Set[ShellPlugin]
 }

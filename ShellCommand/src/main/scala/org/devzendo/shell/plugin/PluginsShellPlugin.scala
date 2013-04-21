@@ -22,8 +22,7 @@ class PluginsShellPlugin extends AbstractShellPlugin {
     def getName = "Plugins"
 
     def listPlugins(outputPipe: OutputPipe) {
-        val plugins: java.util.Set[ShellPlugin] = executionEnvironment().pluginRegistry().getPlugins
-        import scala.collection.JavaConversions._
+        val plugins: Set[ShellPlugin] = executionEnvironment().pluginRegistry().getPlugins
         for (shellPlugin <- plugins) {
             outputPipe.push(shellPlugin.getName)
         }

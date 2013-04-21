@@ -23,10 +23,6 @@ import org.devzendo.shell.plugin.ShellPluginException;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Set;
-
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.fail;
@@ -79,7 +75,7 @@ public class TestPluginRegistry {
     public void pluginLoadedAndReceivesExecutionEnvironment() throws ShellPluginException {
         final PluginRegistry pluginRegistrar = getPluginRegistry("org/devzendo/shell/testpluginregistrar-recording-plugin.properties");
         pluginRegistrar.loadAndRegisterPluginMethods(ScalaListHelper.<ShellPlugin>createList());
-        final Set<ShellPlugin> plugins = pluginRegistrar.getPlugins();
+        final scala.collection.immutable.Set<ShellPlugin> plugins = pluginRegistrar.getPlugins();
         assertThat(plugins.size(), equalTo(1));
         final RecordingShellPlugin recordingPlugin = (RecordingShellPlugin) plugins.iterator().next();
         assertThat(recordingPlugin.getCommandRegistry(), equalTo(mCommandRegistry));
@@ -93,7 +89,7 @@ public class TestPluginRegistry {
     public void staticPluginsPopulatedInRegistry() throws ShellPluginException {
         final PluginRegistry pluginRegistrar = getPluginRegistry("org/devzendo/shell/testpluginregistrar-recording-plugin.properties");
         pluginRegistrar.loadAndRegisterPluginMethods(ScalaListHelper.createList(shellPluginOne));
-        final Set<ShellPlugin> plugins = pluginRegistrar.getPlugins();
+        final scala.collection.immutable.Set<ShellPlugin> plugins = pluginRegistrar.getPlugins();
         assertThat(plugins.size(), equalTo(2));
     }
     
