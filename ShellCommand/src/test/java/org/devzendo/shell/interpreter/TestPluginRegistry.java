@@ -73,9 +73,9 @@ public class TestPluginRegistry {
 
     @Test
     public void pluginLoadedAndReceivesExecutionEnvironment() throws ShellPluginException {
-        final PluginRegistry pluginRegistrar = getPluginRegistry("org/devzendo/shell/testpluginregistrar-recording-plugin.properties");
-        pluginRegistrar.loadAndRegisterPluginMethods(ScalaListHelper.<ShellPlugin>createList());
-        final scala.collection.immutable.Set<ShellPlugin> plugins = pluginRegistrar.getPlugins();
+        final PluginRegistry pluginRegistry = getPluginRegistry("org/devzendo/shell/testpluginregistrar-recording-plugin.properties");
+        pluginRegistry.loadAndRegisterPluginMethods(ScalaListHelper.<ShellPlugin>createList());
+        final scala.collection.immutable.Set<ShellPlugin> plugins = pluginRegistry.getPlugins();
         assertThat(plugins.size(), equalTo(1));
         final RecordingShellPlugin recordingPlugin = (RecordingShellPlugin) plugins.iterator().next();
         assertThat(recordingPlugin.getCommandRegistry(), equalTo(mCommandRegistry));
@@ -87,17 +87,17 @@ public class TestPluginRegistry {
 
     @Test
     public void staticPluginsPopulatedInRegistry() throws ShellPluginException {
-        final PluginRegistry pluginRegistrar = getPluginRegistry("org/devzendo/shell/testpluginregistrar-recording-plugin.properties");
-        pluginRegistrar.loadAndRegisterPluginMethods(ScalaListHelper.createList(shellPluginOne));
-        final scala.collection.immutable.Set<ShellPlugin> plugins = pluginRegistrar.getPlugins();
+        final PluginRegistry pluginRegistry = getPluginRegistry("org/devzendo/shell/testpluginregistrar-recording-plugin.properties");
+        pluginRegistry.loadAndRegisterPluginMethods(ScalaListHelper.createList(shellPluginOne));
+        final scala.collection.immutable.Set<ShellPlugin> plugins = pluginRegistry.getPlugins();
         assertThat(plugins.size(), equalTo(2));
     }
     
     @Test
     public void duplicateCommandThrows() {
-        final PluginRegistry pluginRegistrar = getPluginRegistry("org/devzendo/shell/testpluginregistrar-no-plugins.properties");
+        final PluginRegistry pluginRegistry = getPluginRegistry("org/devzendo/shell/testpluginregistrar-no-plugins.properties");
         try {
-            pluginRegistrar.loadAndRegisterPluginMethods(ScalaListHelper.createList(shellPluginOne, shellPluginTwo));
+            pluginRegistry.loadAndRegisterPluginMethods(ScalaListHelper.createList(shellPluginOne, shellPluginTwo));
             fail("Should have thrown a ShellPluginexception registering plugins with duplicate command names");
         } catch (final ShellPluginException e) {
             assertThat(e.getMessage(), equalTo("Command 'foo' from plugin 'plugin two' is duplicated; initially declared in plugin 'plugin one'"));
