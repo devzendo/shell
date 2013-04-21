@@ -27,8 +27,6 @@ import org.jmock.integration.junit4.JUnit4Mockery;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import java.util.Arrays;
-
 @RunWith(JMock.class)
 public class TestPluginsShellPlugin {
     private final Mockery context = new JUnit4Mockery();

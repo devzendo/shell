@@ -33,7 +33,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import scala.Option;
 
-import java.util.Arrays;
 import java.util.List;
 
 @RunWith(JMock.class)

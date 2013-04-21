@@ -22,9 +22,6 @@ import org.devzendo.shell.pipe.Pipe;
 import org.junit.Test;
 import scala.Option;
 
-import java.util.Arrays;
-import java.util.List;
-
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.not;

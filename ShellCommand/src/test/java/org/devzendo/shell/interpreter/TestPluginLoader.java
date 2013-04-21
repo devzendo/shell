@@ -21,8 +21,6 @@ import org.devzendo.shell.plugin.ShellPluginException;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import java.util.List;
-
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.fail;
