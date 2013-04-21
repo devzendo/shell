@@ -38,7 +38,7 @@ public class TestPluginsShellPlugin {
         @SuppressWarnings("unchecked")
         final scala.collection.immutable.List<String> noArgs = ScalaListHelper.createList();
         final PluginRegistry pluginRegistry = new DefaultPluginRegistry("irrelevant", new CommandRegistry(), null, noArgs);
-        pluginRegistry.loadAndRegisterPluginMethods(Arrays.asList(plugin));
+        pluginRegistry.loadAndRegisterPluginMethods(ScalaListHelper.createList(plugin));
 
         final OutputPipe outputPipe = context.mock(OutputPipe.class);
         context.checking(new Expectations() { {

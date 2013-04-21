@@ -20,7 +20,7 @@ import org.devzendo.shell.plugin.{ShellPluginException, ShellPlugin}
 
 trait PluginRegistry {
     @throws[ShellPluginException]
-    def loadAndRegisterPluginMethods(staticPlugins: java.util.List[ShellPlugin])
+    def loadAndRegisterPluginMethods(staticPlugins: List[ShellPlugin])
 
     def getPlugins: java.util.Set[ShellPlugin]
 }

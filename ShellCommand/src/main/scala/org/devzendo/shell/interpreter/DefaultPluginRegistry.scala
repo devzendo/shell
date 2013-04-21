@@ -29,10 +29,9 @@ class DefaultPluginRegistry(val propertiesResourcePath: String, val commandRegis
     private val plugins = scala.collection.mutable.Set[ShellPlugin]()
 
     @throws[ShellPluginException]
-    def loadAndRegisterPluginMethods(staticPlugins: java.util.List[ShellPlugin]) {
+    def loadAndRegisterPluginMethods(staticPlugins: List[ShellPlugin]) {
         val env: ExecutionEnvironment = new DefaultExecutionEnvironment(argList, commandRegistry, variableRegistry, this)
-        val staticPluginsList = staticPlugins.asScala
-        val allPlugins = loadAllPlugins(staticPluginsList)
+        val allPlugins = loadAllPlugins(staticPlugins.toBuffer)
         for (shellPlugin <- allPlugins) {
             plugins += shellPlugin
             shellPlugin.initialise(env)

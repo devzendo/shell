@@ -78,7 +78,7 @@ public class TestPluginRegistry {
     @Test
     public void pluginLoadedAndReceivesExecutionEnvironment() throws ShellPluginException {
         final PluginRegistry pluginRegistrar = getPluginRegistry("org/devzendo/shell/testpluginregistrar-recording-plugin.properties");
-        pluginRegistrar.loadAndRegisterPluginMethods(new ArrayList<ShellPlugin>());
+        pluginRegistrar.loadAndRegisterPluginMethods(ScalaListHelper.<ShellPlugin>createList());
         final Set<ShellPlugin> plugins = pluginRegistrar.getPlugins();
         assertThat(plugins.size(), equalTo(1));
         final RecordingShellPlugin recordingPlugin = (RecordingShellPlugin) plugins.iterator().next();
@@ -92,7 +92,7 @@ public class TestPluginRegistry {
     @Test
     public void staticPluginsPopulatedInRegistry() throws ShellPluginException {
         final PluginRegistry pluginRegistrar = getPluginRegistry("org/devzendo/shell/testpluginregistrar-recording-plugin.properties");
-        pluginRegistrar.loadAndRegisterPluginMethods(Arrays.asList(shellPluginOne));
+        pluginRegistrar.loadAndRegisterPluginMethods(ScalaListHelper.createList(shellPluginOne));
         final Set<ShellPlugin> plugins = pluginRegistrar.getPlugins();
         assertThat(plugins.size(), equalTo(2));
     }
@@ -101,7 +101,7 @@ public class TestPluginRegistry {
     public void duplicateCommandThrows() {
         final PluginRegistry pluginRegistrar = getPluginRegistry("org/devzendo/shell/testpluginregistrar-no-plugins.properties");
         try {
-            pluginRegistrar.loadAndRegisterPluginMethods(Arrays.asList(shellPluginOne, shellPluginTwo));
+            pluginRegistrar.loadAndRegisterPluginMethods(ScalaListHelper.createList(shellPluginOne, shellPluginTwo));
             fail("Should have thrown a ShellPluginexception registering plugins with duplicate command names");
         } catch (final ShellPluginException e) {
             assertThat(e.getMessage(), equalTo("Command 'foo' from plugin 'plugin two' is duplicated; initially declared in plugin 'plugin one'"));

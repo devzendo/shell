@@ -75,7 +75,7 @@ class ShellMain(val argList:java.util.List[String]) {
         val lineReader: LineReader = new JLineLineReader(historyFile, completionHandler)
 
         try {
-            pluginRegistry.loadAndRegisterPluginMethods(util.Arrays.asList(
+            pluginRegistry.loadAndRegisterPluginMethods(List(
                 new InternalShellPlugin(),
                 new VariablesShellPlugin(),
                 new PluginsShellPlugin(),
