@@ -25,18 +25,18 @@ import scala.io.Source
 import scala.Option
 
 class ExperimentalShellPlugin extends AbstractShellPlugin with PluginHelper {
-    def getName() = {
+    def getName = {
         "Experimental"
     }
 
     // envargs -----------------------------------------------------------------
-    def envargs(outputPipe: OutputPipe, args: java.util.List[Object]) = {
+    def envargs(outputPipe: OutputPipe, args: java.util.List[Object]) {
         val envArgs = executionEnvironment().argList()
         envArgs.foreach(outputPipe.push)
     }
 
     // count -------------------------------------------------------------------
-    def count(outputPipe: OutputPipe, args: java.util.List[Object]) = {
+    def count(outputPipe: OutputPipe, args: java.util.List[Object]) {
         val first = Integer.parseInt(args.get(0).toString)
         val last = Integer.parseInt(args.get(1).toString)
 
@@ -44,20 +44,20 @@ class ExperimentalShellPlugin extends AbstractShellPlugin with PluginHelper {
     }
     
     // cat ---------------------------------------------------------------------
-    def cat(outputPipe: OutputPipe, args: java.util.List[Object]) = {
+    def cat(outputPipe: OutputPipe, args: java.util.List[Object]) {
         filterString(args).foreach(catFile(_, outputPipe))
     }
     
-    private def catFile(filename: Object, outputPipe: OutputPipe) = {
+    private def catFile(filename: Object, outputPipe: OutputPipe) {
         if (new File(filename.toString).exists) {
-            Source.fromFile(filename.toString).getLines.foreach(outputPipe.push)
+            Source.fromFile(filename.toString).getLines().foreach(outputPipe.push)
         } else {
-            LOGGER.warn("cat: File '" + filename + "' does not exist");
+            LOGGER.warn("cat: File '" + filename + "' does not exist")
         }
     }
     
     // filterRegex -------------------------------------------------------------
-    def filterRegex(inputPipe: InputPipe, outputPipe: OutputPipe, args: java.util.List[Object]) = {
+    def filterRegex(inputPipe: InputPipe, outputPipe: OutputPipe, args: java.util.List[Object]) {
         val patternSeq = filterValidPatterns(args)
         def filterOutput(o: Object) = {
             patternSeq.find { (pattern: Pattern) =>  
@@ -88,7 +88,7 @@ class ExperimentalShellPlugin extends AbstractShellPlugin with PluginHelper {
             Some(Pattern.compile(possRegex))
         } catch {
             case ex: PatternSyntaxException => {
-                LOGGER.warn("Regex syntax error: " + ex.getMessage())
+                LOGGER.warn("Regex syntax error: " + ex.getMessage)
                 None
             }
         }
@@ -97,7 +97,7 @@ class ExperimentalShellPlugin extends AbstractShellPlugin with PluginHelper {
     // cut ---------------------------------------------------------------------
     // cut takes MatchContexts (capture groups) and cuts out specific ones, 
     // pushing ArrayBuffer of cut capture groups. Indices start at 1.
-    def cut(inputPipe: InputPipe, outputPipe: OutputPipe, args: java.util.List[Object]) = {
+    def cut(inputPipe: InputPipe, outputPipe: OutputPipe, args: java.util.List[Object]) {
        val captureGroups = filterInt(args)
        streamForeach(inputPipe.next(), (a: Object) => a match {
            case mc: MatchContext =>
