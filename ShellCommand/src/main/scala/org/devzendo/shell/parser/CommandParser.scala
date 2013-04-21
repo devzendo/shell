@@ -16,7 +16,6 @@
 
 package org.devzendo.shell.parser
 
-import scala.collection.JavaConversions._
 import scala.util.parsing.combinator._
 import org.devzendo.shell.ast.{Command, CommandPipeline, VariableReference}
 
@@ -30,10 +29,10 @@ class CommandParser {
             val parserOutput = ccp.parsePipeline(sanitizedInput)
             parserOutput match {
                 case ccp.Success(r, _) => return r
-                case x => throw new CommandParserException(x.toString())
+                case x => throw new CommandParserException(x.toString)
             }
         }
-        return new CommandPipeline()
+        new CommandPipeline()
     }
     
     private def nullToEmpty(input: String): String = {
