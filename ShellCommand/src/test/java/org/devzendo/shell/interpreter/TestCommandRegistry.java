@@ -89,6 +89,23 @@ public class TestCommandRegistry {
         }
     }
 
+    @Test
+    public void getNamesOfRegisteredCommands() throws SecurityException, NoSuchMethodException, CommandNotFoundException {
+        final AnalysedMethod method = analyseMethod(this.getClass().getMethod("getNamesOfRegisteredCommands"));
+        try {
+            registry.registerCommand("foo", shellPluginOne, method);
+            registry.registerCommand("bar", shellPluginTwo, method);
+            final scala.collection.immutable.Map<String, String> names = registry.getNames();
+            assertThat(names.size(), equalTo(2));
+            assertThat(names.contains("foo"), equalTo(true));
+            assertThat(names.contains("bar"), equalTo(true));
+            assertThat(names.get("foo").get(), equalTo("plugin one"));
+            assertThat(names.get("bar").get(), equalTo("plugin two"));
+        } catch (DuplicateCommandException e) {
+            fail("Should not have thrown on initial command registration");
+        }
+    }
+
     private AnalysedMethod analyseMethod(Method method) {
         return (AnalysedMethod) new MethodAnalyser().analyseMethod(method).get();
     }

@@ -32,7 +32,7 @@ class CommandRegistry {
             case Some(pluginMethod) =>
                 throw new DuplicateCommandException("Command '" + name + "' from plugin '"
                     + plugin.getName + "' is duplicated; initially declared in plugin '"
-                    + pluginMethod.shellPlugin.getName + "'");
+                    + pluginMethod.shellPlugin.getName + "'")
         }
     }
 
@@ -45,5 +45,11 @@ class CommandRegistry {
                 commandHandlerFactory.createHandler(pluginMethod.shellPlugin, pluginMethod.analysedMethod)
         }
 
+    }
+
+    def getNames: Map[String, String] = {
+        Map.empty ++ nameToPluginMethod.map( (p: (String, PluginMethod)) => {
+            (p._1 -> p._2.shellPlugin.getName)
+        })
     }
 }
