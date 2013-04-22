@@ -41,7 +41,7 @@ class PluginMethodScanner {
             val optionalAnalysedMethod = methodAnalyser.analyseMethod(method)
             optionalAnalysedMethod match {
                 case Some(analysedMethod) =>
-                    methodsFrom(analysedMethod) ++ commandAliasesFrom(optionalAnalysedMethod)
+                    methodsFrom(analysedMethod) ++ commandAliasesFrom(analysedMethod)
                 case None =>
                     PluginMethodScanner.LOGGER.debug("Not of the right signature")
                     Map[String, AnalysedMethod]().empty
@@ -57,18 +57,13 @@ class PluginMethodScanner {
         Map(analysedMethod.getMethod.getName -> analysedMethod)
     }
 
-    private def commandAliasesFrom(optionalAnalysedMethod: Option[AnalysedMethod]): Map[String, AnalysedMethod] = {
-        optionalAnalysedMethod match {
-            case Some(analysedMethod) =>
-                analysedMethod.getMethod.getAnnotation(classOf[CommandAlias]) match {
-                    case null =>
-                        Map.empty
-                    case ca: CommandAlias =>
-                        PluginMethodScanner.LOGGER.debug("Registering alias " + ca.alias() + " to method " + analysedMethod.getMethod)
-                        Map(ca.alias() -> analysedMethod)
-                }
-            case None =>
+    private def commandAliasesFrom(analysedMethod: AnalysedMethod): Map[String, AnalysedMethod] = {
+        analysedMethod.getMethod.getAnnotation(classOf[CommandAlias]) match {
+            case null =>
                 Map.empty
+            case ca: CommandAlias =>
+                PluginMethodScanner.LOGGER.debug("Registering alias " + ca.alias() + " to method " + analysedMethod.getMethod)
+                Map(ca.alias() -> analysedMethod)
         }
     }
 
