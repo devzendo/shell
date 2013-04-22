@@ -126,6 +126,13 @@ public class TestPluginMethodScanner {
         assertThat(map.get("funk").get(), equalTo(map.get("jazz").get()));
     }
 
+    @Test
+    public void nameAnnotationCanOverrideOk() {
+        final Map<String,AnalysedMethod> map = scanner.scanPluginMethods(new NameOverride());
+        assertThat(map.size(), equalTo(1));
+        assertThat(map.contains("Command-Me-O-Master"), equalTo(true));
+    }
+
     private void gotFunk(final scala.collection.immutable.Map<String, AnalysedMethod> map,
             final scala.Option<Integer> argPos,
             final scala.Option<Integer> inputPipePos,

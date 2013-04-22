@@ -44,7 +44,6 @@ class CommandRegistry {
             case Some(pluginMethod) =>
                 commandHandlerFactory.createHandler(pluginMethod.shellPlugin, pluginMethod.analysedMethod)
         }
-
     }
 
     def getNames: Map[String, String] = {

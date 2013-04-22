@@ -19,6 +19,7 @@ import org.devzendo.shell.interpreter.ExecutionEnvironment;
 import org.devzendo.shell.pipe.InputPipe;
 import org.devzendo.shell.pipe.OutputPipe;
 import org.devzendo.shell.plugin.CommandAlias;
+import org.devzendo.shell.plugin.CommandName;
 import org.devzendo.shell.plugin.ShellPlugin;
 
 import java.util.ArrayList;
@@ -148,6 +149,14 @@ public class PluginVariations {
     public static class Alias extends
             AbstractShellPlugin {
         @CommandAlias(alias = "jazz")
+        public void funk() {
+            mExecuted = true;
+        }
+    }
+
+    public static class NameOverride extends
+            AbstractShellPlugin {
+        @CommandName(name = "Command-Me-O-Master")
         public void funk() {
             mExecuted = true;
         }

@@ -19,7 +19,7 @@ package org.devzendo.shell.interpreter
 import org.apache.log4j.Logger
 import java.lang.reflect.Method
 import org.devzendo.shell.pipe.{InputPipe, OutputPipe}
-import org.devzendo.shell.plugin.{CommandAlias, ShellPlugin}
+import org.devzendo.shell.plugin.{CommandName, CommandAlias, ShellPlugin}
 
 object PluginMethodScanner {
     private val LOGGER = Logger.getLogger(classOf[PluginMethodScanner])
@@ -54,7 +54,12 @@ class PluginMethodScanner {
 
     private def methodsFrom(analysedMethod: AnalysedMethod): Map[String, AnalysedMethod] = {
         PluginMethodScanner.LOGGER.debug("Registering method " + analysedMethod.getMethod)
-        Map(analysedMethod.getMethod.getName -> analysedMethod)
+        analysedMethod.getMethod.getAnnotation(classOf[CommandName]) match {
+            case null =>
+                Map(analysedMethod.getMethod.getName -> analysedMethod)
+            case cn: CommandName =>
+                Map(cn.name() -> analysedMethod)
+        }
     }
 
     private def commandAliasesFrom(analysedMethod: AnalysedMethod): Map[String, AnalysedMethod] = {
