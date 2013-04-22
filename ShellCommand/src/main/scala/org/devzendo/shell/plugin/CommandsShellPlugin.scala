@@ -23,8 +23,8 @@ class CommandsShellPlugin extends AbstractShellPlugin {
 
     def listCommands(outputPipe: OutputPipe) {
         val commandMap: Map[String, String] = executionEnvironment().commandRegistry().getNames
-        for (command <- commandMap.) {
-            outputPipe.push(command)
+        commandMap.toList.sortBy(_._1.toLowerCase) foreach {
+            outputPipe.push(_)
         }
     }
 }
