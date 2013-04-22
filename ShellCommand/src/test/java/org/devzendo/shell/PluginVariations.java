@@ -18,6 +18,7 @@ package org.devzendo.shell;
 import org.devzendo.shell.interpreter.ExecutionEnvironment;
 import org.devzendo.shell.pipe.InputPipe;
 import org.devzendo.shell.pipe.OutputPipe;
+import org.devzendo.shell.plugin.CommandAlias;
 import org.devzendo.shell.plugin.ShellPlugin;
 
 import java.util.ArrayList;
@@ -141,6 +142,14 @@ public class PluginVariations {
             mInputPipe = input;
             mOutputPipe = output;
             mArgs = args;
+        }
+    }
+
+    public static class Alias extends
+            AbstractShellPlugin {
+        @CommandAlias(alias = "jazz")
+        public void funk() {
+            mExecuted = true;
         }
     }
 

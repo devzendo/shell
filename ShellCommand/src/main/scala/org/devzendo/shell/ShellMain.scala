@@ -44,6 +44,7 @@ class ShellMain(val argList: List[String]) {
             "Internal"
         }
 
+        @CommandAlias(alias = "exit")
         def quit() {
             quitShell = true
         }

@@ -16,9 +16,11 @@
 package org.devzendo.shell.interpreter;
 
 import org.devzendo.commoncode.logging.LoggingUnittestHelper;
+import org.devzendo.shell.PluginVariations;
 import org.devzendo.shell.PluginVariations.*;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import scala.collection.immutable.Map;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
@@ -113,6 +115,15 @@ public class TestPluginMethodScanner {
     public void voidReturnInputPipeOutputPipeListArgsOk() {
         gotFunk(scanner.scanPluginMethods(new VoidReturnInputPipeOutputPipeListArgs()),
             scala.Option.apply(2), scala.Option.apply(0), scala.Option.apply(1));
+    }
+
+    @Test
+    public void aliasOk() {
+        final Map<String,AnalysedMethod> map = scanner.scanPluginMethods(new Alias());
+        assertThat(map.size(), equalTo(2));
+        assertThat(map.contains("funk"), equalTo(true));
+        assertThat(map.contains("jazz"), equalTo(true));
+        assertThat(map.get("funk").get(), equalTo(map.get("jazz").get()));
     }
 
     private void gotFunk(final scala.collection.immutable.Map<String, AnalysedMethod> map,

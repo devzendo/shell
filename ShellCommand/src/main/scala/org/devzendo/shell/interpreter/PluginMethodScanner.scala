@@ -19,7 +19,7 @@ package org.devzendo.shell.interpreter
 import org.apache.log4j.Logger
 import java.lang.reflect.Method
 import org.devzendo.shell.pipe.{InputPipe, OutputPipe}
-import org.devzendo.shell.plugin.ShellPlugin
+import org.devzendo.shell.plugin.{CommandAlias, ShellPlugin}
 
 object PluginMethodScanner {
     private val LOGGER = Logger.getLogger(classOf[PluginMethodScanner])
@@ -35,21 +35,43 @@ class PluginMethodScanner {
         val methods = shellPlugin.getClass.getMethods
         PluginMethodScanner.LOGGER.debug("Scanning " + methods.length + " method(s) from class " + shellPlugin.getClass.getSimpleName)
         val possiblePluginMethods = methods filter notObjectOrShellPluginMethodNames filter voidReturn filter validParameterTypes
+
         val namedAnalysedMethods = possiblePluginMethods.flatMap { (method: Method) =>
             PluginMethodScanner.LOGGER.debug("Considering method " + method)
-            val optionalAnalysedMethod = methodAnalyser.analyseMethod(method)
-            if (optionalAnalysedMethod.isDefined) {
-                PluginMethodScanner.LOGGER.debug("Registering method " + method)
-                Some(method.getName -> optionalAnalysedMethod.get)
-            } else {
-                PluginMethodScanner.LOGGER.debug("Not of the right signature")
-                None
-            }
+            val analysedMethod = methodAnalyser.analyseMethod(method)
+            methodsFrom(analysedMethod) ++ commandAliasesFrom(analysedMethod)
         }
+
         PluginMethodScanner.LOGGER.debug("Plugin scanned")
         namedAnalysedMethods.toMap
     }
-    
+
+    private def methodsFrom(optionalAnalysedMethod: Option[AnalysedMethod]): Map[String, AnalysedMethod] = {
+        optionalAnalysedMethod match {
+            case Some(analysedMethod) =>
+                PluginMethodScanner.LOGGER.debug("Registering method " + analysedMethod.getMethod)
+                Map(analysedMethod.getMethod.getName -> analysedMethod)
+            case None =>
+                PluginMethodScanner.LOGGER.debug("Not of the right signature")
+                Map.empty
+        }
+    }
+
+    private def commandAliasesFrom(optionalAnalysedMethod: Option[AnalysedMethod]): Map[String, AnalysedMethod] = {
+        optionalAnalysedMethod match {
+            case Some(analysedMethod) =>
+                analysedMethod.getMethod.getAnnotation(classOf[CommandAlias]) match {
+                    case null =>
+                        Map.empty
+                    case ca: CommandAlias =>
+                        PluginMethodScanner.LOGGER.debug("Registering alias " + ca.alias() + " to method " + analysedMethod.getMethod)
+                        Map(ca.alias() -> analysedMethod)
+                }
+            case None =>
+                Map.empty
+        }
+    }
+
     private def notObjectOrShellPluginMethodNames(method: Method): Boolean = {
         val name = method.getName
         ! (PluginMethodScanner.objectMethodNames.contains(name) ||
