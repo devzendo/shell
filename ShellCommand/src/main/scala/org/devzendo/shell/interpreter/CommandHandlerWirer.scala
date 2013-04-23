@@ -17,17 +17,26 @@
 package org.devzendo.shell.interpreter
 
 import org.devzendo.shell.pipe._
-import org.devzendo.shell.ast.CommandPipeline
+import org.devzendo.shell.ast.{Switch, CommandPipeline}
+import scala.collection.JavaConversions._
 
 /**
  * Given a command pipeline, create a list of command handlers for each
  * command in the pipeline, and wire up the input and output pipes between
- * them, also, connect the pipeline input and outputs.
+ * them, also, connect the pipeline input and outputs. Set standard command
+ * handler flags (Verbose), and remove these Switches from the arguments.
  *
  * @author matt
  *
  */
 case class CommandHandlerWirer(commandRegistry: CommandRegistry, variableRegistry: VariableRegistry) {
+
+    private[this] def isFilterSwitch(p: AnyRef) = p match {
+        case sw: Switch =>
+            sw.switchName.equals("Verbose")
+        case _ =>
+            false
+    }
 
     @throws[CommandNotFoundException]
     def wire(commandPipeline: CommandPipeline): List[CommandHandler] = {
@@ -36,7 +45,11 @@ case class CommandHandlerWirer(commandRegistry: CommandRegistry, variableRegistr
         assert(commands.size > 0)
         for (command <- commands) {
             val handler = commandRegistry.getHandler(command.getName)
-            handler.setArgs(command.getArgs)
+            val args = command.getArgs
+            val verbose = args.exists( isFilterSwitch )
+            val filteredArgs = args.filterNot( isFilterSwitch )
+            handler.setVerbose(verbose)
+            handler.setArgs(filteredArgs)
             handlers += handler
         }
         // TODO convert this null to Option

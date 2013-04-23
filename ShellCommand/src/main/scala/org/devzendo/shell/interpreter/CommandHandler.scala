@@ -48,8 +48,12 @@ abstract class CommandHandler(
     @scala.reflect.BeanProperty
     final var outputPipe: OutputPipe = null
 
+    // TODO use a Scala List here
     @scala.reflect.BeanProperty
     final var args: java.util.List[AnyRef] = new util.ArrayList[AnyRef]()
+
+    @scala.reflect.BeanProperty
+    var verbose: Boolean = false
 
     @throws[CommandExecutionException]
     def execute()

@@ -17,6 +17,7 @@ package org.devzendo.shell.interpreter;
 
 import org.devzendo.shell.ast.Command;
 import org.devzendo.shell.ast.CommandPipeline;
+import org.devzendo.shell.ast.Switch;
 import org.devzendo.shell.ast.VariableReference;
 import org.devzendo.shell.pipe.*;
 import org.junit.Assert;
@@ -24,6 +25,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.lang.reflect.Method;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -46,6 +48,38 @@ public class TestCommandHandlerWirer {
     
     public void commandHandlerWithBothPipes(final InputPipe inputPipe, final OutputPipe outputPipe) {
         // do nothing
+    }
+
+    @Test
+    public void verboseFlagDisabledByDefault() throws DuplicateCommandException, CommandNotFoundException {
+        commandRegistry.registerCommand("foo", null, mAnalysedMethod);
+        @SuppressWarnings("unchecked")
+        final Command command = new Command("foo", Collections.EMPTY_LIST);
+        pipeline.addCommand(command);
+        scala.collection.immutable.List<CommandHandler> handlers = wirer.wire(pipeline);
+        assertThat(handlers.size(), equalTo(1));
+        CommandHandler commandHandler = handlers.apply(0);
+        assertThat(commandHandler.getVerbose(), equalTo(false));
+    }
+
+    @Test
+    public void verboseFlagEnabledAndVerboseSwitchRemovedFromArgs() throws DuplicateCommandException, CommandNotFoundException {
+        commandRegistry.registerCommand("foo", null, mAnalysedMethod);
+        @SuppressWarnings("unchecked")
+        final Command command = new Command("foo", Arrays.<Object>asList("One", new Switch("Two"), new Switch("Verbose"), new Switch("Three")));
+        pipeline.addCommand(command);
+        scala.collection.immutable.List<CommandHandler> handlers = wirer.wire(pipeline);
+        assertThat(handlers.size(), equalTo(1));
+        CommandHandler commandHandler = handlers.apply(0);
+        assertThat(commandHandler.getVerbose(), equalTo(true));
+        final List<Object> args = commandHandler.getArgs();
+        assertThat(args.size(), equalTo(3));
+        assertThat(args.get(0), instanceOf(String.class));
+        assertThat(args.get(0).toString(), equalTo("One"));
+        assertThat(args.get(1), instanceOf(Switch.class));
+        assertThat((Switch) args.get(1), equalTo(new Switch("Two")));
+        assertThat(args.get(2), instanceOf(Switch.class));
+        assertThat((Switch) args.get(2), equalTo(new Switch("Three")));
     }
 
     @Test
