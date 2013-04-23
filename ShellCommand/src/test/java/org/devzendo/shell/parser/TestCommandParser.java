@@ -17,6 +17,7 @@ package org.devzendo.shell.parser;
 
 import org.devzendo.shell.ast.Command;
 import org.devzendo.shell.ast.CommandPipeline;
+import org.devzendo.shell.ast.Switch;
 import org.devzendo.shell.ast.VariableReference;
 import org.hamcrest.Matchers;
 import org.junit.Test;
@@ -55,6 +56,20 @@ public class TestCommandParser {
         assertThat(cmd.getName(), equalTo("foo"));
         assertNoArgs(cmd);
         assertThat(pipeline.isEmpty(), equalTo(false));
+    }
+
+    @Test
+    public void singleWordCommandWithSwitches() throws CommandParserException {
+        final CommandPipeline pipeline = parser.parse("foo -Minus /Slash");
+        final scala.collection.immutable.List<Command> cmds = pipeline.getCommands();
+        assertThat(cmds.size(), equalTo(1));
+        final Command cmd = cmds.apply(0);
+        final List<Object> args = cmd.getArgs();
+        assertThat(args.size(), equalTo(2));
+        assertThat(args.get(0), instanceOf(Switch.class));
+        assertThat( ((Switch)args.get(0)).switchName(), equalTo("Minus"));
+        assertThat(args.get(1), instanceOf(Switch.class));
+        assertThat( ((Switch)args.get(1)).switchName(), equalTo("Slash"));
     }
 
     @Test

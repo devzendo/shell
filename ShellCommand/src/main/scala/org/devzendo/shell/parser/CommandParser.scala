@@ -17,7 +17,7 @@
 package org.devzendo.shell.parser
 
 import scala.util.parsing.combinator._
-import org.devzendo.shell.ast.{Command, CommandPipeline, VariableReference}
+import org.devzendo.shell.ast.{Switch, Command, CommandPipeline, VariableReference}
 
 class CommandParser {
     
@@ -74,6 +74,7 @@ class CommandParser {
         def argument: Parser[Any] = (
                 "true" ^^ (x => true)
               | "false" ^^ (x => false)
+              | "[-/]".r ~> ident ^^ ( x => new Switch(x.toString) )
               | wholeIntegerNumber ^^ (_.toInt)
               | floatingPointNumber ^^ (_.toDouble)
               | variable 
