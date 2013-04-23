@@ -23,6 +23,7 @@ import org.devzendo.shell.ShellMain.LOGGER
 import scala.collection.JavaConversions._
 import scala.io.Source
 import scala.Option
+import org.devzendo.shell.ast.VariableReference
 
 class ExperimentalShellPlugin extends AbstractShellPlugin with PluginHelper {
     def getName = {
@@ -105,5 +106,21 @@ class ExperimentalShellPlugin extends AbstractShellPlugin with PluginHelper {
            case s: String => // in case we got here straight from cat
                LOGGER.info("Got string '" + s + "' - cut doesn't know what to do with Strings")
        })
+    }
+
+    // echo --------------------------------------------------------------------
+    def echo(outputPipe: OutputPipe, args: java.util.List[Object]) {
+        args.foreach((arg: AnyRef) => {
+            arg match {
+                case varRef: VariableReference =>
+                    if (executionEnvironment().variableRegistry().exists(varRef)) {
+                        outputPipe.push(executionEnvironment().variableRegistry().getVariable(varRef).get)
+                    } else {
+                        LOGGER.warn("No such variable '" + varRef.variableName + "'")
+                    }
+                case str: String =>
+                    outputPipe.push(str)
+            }
+        })
     }
 }
