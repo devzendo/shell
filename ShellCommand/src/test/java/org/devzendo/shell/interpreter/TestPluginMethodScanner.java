@@ -37,49 +37,50 @@ public class TestPluginMethodScanner {
     
     @Test
     public void voidReturnNoArgsOkBadInitialiseNotScanned() {
-        gotFunk(scanner.scanPluginMethods(new VoidReturnNoArgsBadPluginMethodsNotScanned()),
-            none, none, none, none);
+        final Map<String, AnalysedMethod> map = scanner.scanPluginMethods(new VoidReturnNoArgsBadPluginMethodsNotScanned());
+        gotFunk(map, none, none, none, none);
     }
     
     @Test
     public void voidReturnNoArgsBadSignature() {
-        noMethods(scanner.scanPluginMethods(new VoidReturnNoArgsBadSignature()));
+        final Map<String, AnalysedMethod> map = scanner.scanPluginMethods(new VoidReturnNoArgsBadSignature());
+        noMethods(map);
     }
     
     @Test
     public void voidReturnNoArgsOk() {
-        gotFunk(scanner.scanPluginMethods(new VoidReturnNoArgs()),
-            none, none, none, none);
+        final Map<String, AnalysedMethod> map = scanner.scanPluginMethods(new VoidReturnNoArgs());
+        gotFunk(map, none, none, none, none);
     }
 
     @Test
     public void voidReturnNoArgsInputPipeOk() {
-        gotFunk(scanner.scanPluginMethods(new VoidReturnNoArgsInputPipe()),
-            none, scala.Option.apply(0), none, none);
+        final Map<String, AnalysedMethod> map = scanner.scanPluginMethods(new VoidReturnNoArgsInputPipe());
+        gotFunk(map, none, scala.Option.apply(0), none, none);
     }
 
     @Test
     public void voidReturnNoArgsOutputPipeOk() {
-        gotFunk(scanner.scanPluginMethods(new VoidReturnNoArgsOutputPipe()),
-            none, none, scala.Option.apply(0), none);
+        final Map<String, AnalysedMethod> map = scanner.scanPluginMethods(new VoidReturnNoArgsOutputPipe());
+        gotFunk(map, none, none, scala.Option.apply(0), none);
     }
 
     @Test
     public void voidReturnNoArgsOutputPipeInputPipeOk() {
-        gotFunk(scanner.scanPluginMethods(new VoidReturnNoArgsOutputPipeInputPipe()),
-            none, scala.Option.apply(1), scala.Option.apply(0), none);
+        final Map<String, AnalysedMethod> map = scanner.scanPluginMethods(new VoidReturnNoArgsOutputPipeInputPipe());
+        gotFunk(map, none, scala.Option.apply(1), scala.Option.apply(0), none);
     }
 
     @Test
     public void voidReturnNoArgsInputPipeOutputPipeOk() {
-        gotFunk(scanner.scanPluginMethods(new VoidReturnNoArgsInputPipeOutputPipe()),
-            none, scala.Option.apply(0), scala.Option.apply(1), none);
+        final Map<String, AnalysedMethod> map = scanner.scanPluginMethods(new VoidReturnNoArgsInputPipeOutputPipe());
+        gotFunk(map, none, scala.Option.apply(0), scala.Option.apply(1), none);
     }
 
     @Test
     public void voidReturnListArgsOk() {
-        gotFunk(scanner.scanPluginMethods(new VoidReturnListArgs()),
-            scala.Option.apply(0), none, none, none);
+        final Map<String, AnalysedMethod> map = scanner.scanPluginMethods(new VoidReturnListArgs());
+        gotFunk(map, scala.Option.apply(0), none, none, none);
     }
 
     @Test
@@ -89,32 +90,32 @@ public class TestPluginMethodScanner {
     
     @Test
     public void voidReturnListArgsInputPipeOk() {
-        gotFunk(scanner.scanPluginMethods(new VoidReturnListArgsInputPipe()),
-            scala.Option.apply(0), scala.Option.apply(1), none, none);
+        final Map<String, AnalysedMethod> map = scanner.scanPluginMethods(new VoidReturnListArgsInputPipe());
+        gotFunk(map, scala.Option.apply(0), scala.Option.apply(1), none, none);
     }
 
     @Test
     public void voidReturnListArgsOutputPipeOk() {
-        gotFunk(scanner.scanPluginMethods(new VoidReturnListArgsOutputPipe()),
-            scala.Option.apply(0), none, scala.Option.apply(1), none);
+        final Map<String, AnalysedMethod> map = scanner.scanPluginMethods(new VoidReturnListArgsOutputPipe());
+        gotFunk(map, scala.Option.apply(0), none, scala.Option.apply(1), none);
     }
     
     @Test
     public void voidReturnListArgsInputPipeOutputPipeOk() {
-        gotFunk(scanner.scanPluginMethods(new VoidReturnListArgsInputPipeOutputPipe()),
-            scala.Option.apply(0), scala.Option.apply(1), scala.Option.apply(2), none);
+        final Map<String, AnalysedMethod> map = scanner.scanPluginMethods(new VoidReturnListArgsInputPipeOutputPipe());
+        gotFunk(map, scala.Option.apply(0), scala.Option.apply(1), scala.Option.apply(2), none);
     }
 
     @Test
     public void voidReturnListArgsOutputPipeInputPipeOk() {
-        gotFunk(scanner.scanPluginMethods(new VoidReturnListArgsOutputPipeInputPipe()),
-            scala.Option.apply(0), scala.Option.apply(2), scala.Option.apply(1), none);
+        final Map<String, AnalysedMethod> map = scanner.scanPluginMethods(new VoidReturnListArgsOutputPipeInputPipe());
+        gotFunk(map, scala.Option.apply(0), scala.Option.apply(2), scala.Option.apply(1), none);
     }
 
     @Test
     public void voidReturnInputPipeOutputPipeListArgsOk() {
-        gotFunk(scanner.scanPluginMethods(new VoidReturnInputPipeOutputPipeListArgs()),
-            scala.Option.apply(2), scala.Option.apply(0), scala.Option.apply(1), none);
+        final Map<String, AnalysedMethod> map = scanner.scanPluginMethods(new VoidReturnInputPipeOutputPipeListArgs());
+        gotFunk(map, scala.Option.apply(2), scala.Option.apply(0), scala.Option.apply(1), none);
     }
 
     @Test
