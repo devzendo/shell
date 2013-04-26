@@ -36,8 +36,8 @@ public class TestPluginMethodScanner {
     
     @Test
     public void voidReturnNoArgsOkBadInitialiseNotScanned() {
-        final Map<String, AnalysedMethod> map = scanner.scanPluginMethods(new VoidReturnNoArgsBadPluginMethodsNotScanned());
-        positionsAre(getAnalysedMethod(map), none, none, none, none);
+        final AnalysedMethod analysedMethod = getAnalysedMethod(scanner.scanPluginMethods(new VoidReturnNoArgsBadPluginMethodsNotScanned()));
+        positionsAre(analysedMethod, none, none, none, none);
     }
     
     @Test
@@ -48,38 +48,38 @@ public class TestPluginMethodScanner {
     
     @Test
     public void voidReturnNoArgsOk() {
-        final Map<String, AnalysedMethod> map = scanner.scanPluginMethods(new VoidReturnNoArgs());
-        positionsAre(getAnalysedMethod(map), none, none, none, none);
+        final AnalysedMethod analysedMethod = getAnalysedMethod(scanner.scanPluginMethods(new VoidReturnNoArgs()));
+        positionsAre(analysedMethod, none, none, none, none);
     }
 
     @Test
     public void voidReturnNoArgsInputPipeOk() {
-        final Map<String, AnalysedMethod> map = scanner.scanPluginMethods(new VoidReturnNoArgsInputPipe());
-        positionsAre(getAnalysedMethod(map), none, scala.Option.apply(0), none, none);
+        final AnalysedMethod analysedMethod = getAnalysedMethod(scanner.scanPluginMethods(new VoidReturnNoArgsInputPipe()));
+        positionsAre(analysedMethod, none, scala.Option.apply(0), none, none);
     }
 
     @Test
     public void voidReturnNoArgsOutputPipeOk() {
-        final Map<String, AnalysedMethod> map = scanner.scanPluginMethods(new VoidReturnNoArgsOutputPipe());
-        positionsAre(getAnalysedMethod(map), none, none, scala.Option.apply(0), none);
+        final AnalysedMethod analysedMethod = getAnalysedMethod(scanner.scanPluginMethods(new VoidReturnNoArgsOutputPipe()));
+        positionsAre(analysedMethod, none, none, scala.Option.apply(0), none);
     }
 
     @Test
     public void voidReturnNoArgsOutputPipeInputPipeOk() {
-        final Map<String, AnalysedMethod> map = scanner.scanPluginMethods(new VoidReturnNoArgsOutputPipeInputPipe());
-        positionsAre(getAnalysedMethod(map), none, scala.Option.apply(1), scala.Option.apply(0), none);
+        final AnalysedMethod analysedMethod = getAnalysedMethod(scanner.scanPluginMethods(new VoidReturnNoArgsOutputPipeInputPipe()));
+        positionsAre(analysedMethod, none, scala.Option.apply(1), scala.Option.apply(0), none);
     }
 
     @Test
     public void voidReturnNoArgsInputPipeOutputPipeOk() {
-        final Map<String, AnalysedMethod> map = scanner.scanPluginMethods(new VoidReturnNoArgsInputPipeOutputPipe());
-        positionsAre(getAnalysedMethod(map), none, scala.Option.apply(0), scala.Option.apply(1), none);
+        final AnalysedMethod analysedMethod = getAnalysedMethod(scanner.scanPluginMethods(new VoidReturnNoArgsInputPipeOutputPipe()));
+        positionsAre(analysedMethod, none, scala.Option.apply(0), scala.Option.apply(1), none);
     }
 
     @Test
     public void voidReturnListArgsOk() {
-        final Map<String, AnalysedMethod> map = scanner.scanPluginMethods(new VoidReturnListArgs());
-        positionsAre(getAnalysedMethod(map), scala.Option.apply(0), none, none, none);
+        final AnalysedMethod analysedMethod = getAnalysedMethod(scanner.scanPluginMethods(new VoidReturnListArgs()));
+        positionsAre(analysedMethod, scala.Option.apply(0), none, none, none);
     }
 
     @Test
@@ -89,32 +89,32 @@ public class TestPluginMethodScanner {
     
     @Test
     public void voidReturnListArgsInputPipeOk() {
-        final Map<String, AnalysedMethod> map = scanner.scanPluginMethods(new VoidReturnListArgsInputPipe());
-        positionsAre(getAnalysedMethod(map), scala.Option.apply(0), scala.Option.apply(1), none, none);
+        final AnalysedMethod analysedMethod = getAnalysedMethod(scanner.scanPluginMethods(new VoidReturnListArgsInputPipe()));
+        positionsAre(analysedMethod, scala.Option.apply(0), scala.Option.apply(1), none, none);
     }
 
     @Test
     public void voidReturnListArgsOutputPipeOk() {
-        final Map<String, AnalysedMethod> map = scanner.scanPluginMethods(new VoidReturnListArgsOutputPipe());
-        positionsAre(getAnalysedMethod(map), scala.Option.apply(0), none, scala.Option.apply(1), none);
+        final AnalysedMethod analysedMethod = getAnalysedMethod(scanner.scanPluginMethods(new VoidReturnListArgsOutputPipe()));
+        positionsAre(analysedMethod, scala.Option.apply(0), none, scala.Option.apply(1), none);
     }
     
     @Test
     public void voidReturnListArgsInputPipeOutputPipeOk() {
-        final Map<String, AnalysedMethod> map = scanner.scanPluginMethods(new VoidReturnListArgsInputPipeOutputPipe());
-        positionsAre(getAnalysedMethod(map), scala.Option.apply(0), scala.Option.apply(1), scala.Option.apply(2), none);
+        final AnalysedMethod analysedMethod = getAnalysedMethod(scanner.scanPluginMethods(new VoidReturnListArgsInputPipeOutputPipe()));
+        positionsAre(analysedMethod, scala.Option.apply(0), scala.Option.apply(1), scala.Option.apply(2), none);
     }
 
     @Test
     public void voidReturnListArgsOutputPipeInputPipeOk() {
-        final Map<String, AnalysedMethod> map = scanner.scanPluginMethods(new VoidReturnListArgsOutputPipeInputPipe());
-        positionsAre(getAnalysedMethod(map), scala.Option.apply(0), scala.Option.apply(2), scala.Option.apply(1), none);
+        final AnalysedMethod analysedMethod = getAnalysedMethod(scanner.scanPluginMethods(new VoidReturnListArgsOutputPipeInputPipe()));
+        positionsAre(analysedMethod, scala.Option.apply(0), scala.Option.apply(2), scala.Option.apply(1), none);
     }
 
     @Test
     public void voidReturnInputPipeOutputPipeListArgsOk() {
-        final Map<String, AnalysedMethod> map = scanner.scanPluginMethods(new VoidReturnInputPipeOutputPipeListArgs());
-        positionsAre(getAnalysedMethod(map), scala.Option.apply(2), scala.Option.apply(0), scala.Option.apply(1), none);
+        final AnalysedMethod analysedMethod = getAnalysedMethod(scanner.scanPluginMethods(new VoidReturnInputPipeOutputPipeListArgs()));
+        positionsAre(analysedMethod, scala.Option.apply(2), scala.Option.apply(0), scala.Option.apply(1), none);
     }
 
     @Test
