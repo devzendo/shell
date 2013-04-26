@@ -38,7 +38,7 @@ public class TestPluginMethodScanner {
     @Test
     public void voidReturnNoArgsOkBadInitialiseNotScanned() {
         final Map<String, AnalysedMethod> map = scanner.scanPluginMethods(new VoidReturnNoArgsBadPluginMethodsNotScanned());
-        gotFunk(map, none, none, none, none);
+        positionsAre(gotFunk(map), none, none, none, none);
     }
     
     @Test
@@ -50,37 +50,37 @@ public class TestPluginMethodScanner {
     @Test
     public void voidReturnNoArgsOk() {
         final Map<String, AnalysedMethod> map = scanner.scanPluginMethods(new VoidReturnNoArgs());
-        gotFunk(map, none, none, none, none);
+        positionsAre(gotFunk(map), none, none, none, none);
     }
 
     @Test
     public void voidReturnNoArgsInputPipeOk() {
         final Map<String, AnalysedMethod> map = scanner.scanPluginMethods(new VoidReturnNoArgsInputPipe());
-        gotFunk(map, none, scala.Option.apply(0), none, none);
+        positionsAre(gotFunk(map), none, scala.Option.apply(0), none, none);
     }
 
     @Test
     public void voidReturnNoArgsOutputPipeOk() {
         final Map<String, AnalysedMethod> map = scanner.scanPluginMethods(new VoidReturnNoArgsOutputPipe());
-        gotFunk(map, none, none, scala.Option.apply(0), none);
+        positionsAre(gotFunk(map), none, none, scala.Option.apply(0), none);
     }
 
     @Test
     public void voidReturnNoArgsOutputPipeInputPipeOk() {
         final Map<String, AnalysedMethod> map = scanner.scanPluginMethods(new VoidReturnNoArgsOutputPipeInputPipe());
-        gotFunk(map, none, scala.Option.apply(1), scala.Option.apply(0), none);
+        positionsAre(gotFunk(map), none, scala.Option.apply(1), scala.Option.apply(0), none);
     }
 
     @Test
     public void voidReturnNoArgsInputPipeOutputPipeOk() {
         final Map<String, AnalysedMethod> map = scanner.scanPluginMethods(new VoidReturnNoArgsInputPipeOutputPipe());
-        gotFunk(map, none, scala.Option.apply(0), scala.Option.apply(1), none);
+        positionsAre(gotFunk(map), none, scala.Option.apply(0), scala.Option.apply(1), none);
     }
 
     @Test
     public void voidReturnListArgsOk() {
         final Map<String, AnalysedMethod> map = scanner.scanPluginMethods(new VoidReturnListArgs());
-        gotFunk(map, scala.Option.apply(0), none, none, none);
+        positionsAre(gotFunk(map), scala.Option.apply(0), none, none, none);
     }
 
     @Test
@@ -91,31 +91,31 @@ public class TestPluginMethodScanner {
     @Test
     public void voidReturnListArgsInputPipeOk() {
         final Map<String, AnalysedMethod> map = scanner.scanPluginMethods(new VoidReturnListArgsInputPipe());
-        gotFunk(map, scala.Option.apply(0), scala.Option.apply(1), none, none);
+        positionsAre(gotFunk(map), scala.Option.apply(0), scala.Option.apply(1), none, none);
     }
 
     @Test
     public void voidReturnListArgsOutputPipeOk() {
         final Map<String, AnalysedMethod> map = scanner.scanPluginMethods(new VoidReturnListArgsOutputPipe());
-        gotFunk(map, scala.Option.apply(0), none, scala.Option.apply(1), none);
+        positionsAre(gotFunk(map), scala.Option.apply(0), none, scala.Option.apply(1), none);
     }
     
     @Test
     public void voidReturnListArgsInputPipeOutputPipeOk() {
         final Map<String, AnalysedMethod> map = scanner.scanPluginMethods(new VoidReturnListArgsInputPipeOutputPipe());
-        gotFunk(map, scala.Option.apply(0), scala.Option.apply(1), scala.Option.apply(2), none);
+        positionsAre(gotFunk(map), scala.Option.apply(0), scala.Option.apply(1), scala.Option.apply(2), none);
     }
 
     @Test
     public void voidReturnListArgsOutputPipeInputPipeOk() {
         final Map<String, AnalysedMethod> map = scanner.scanPluginMethods(new VoidReturnListArgsOutputPipeInputPipe());
-        gotFunk(map, scala.Option.apply(0), scala.Option.apply(2), scala.Option.apply(1), none);
+        positionsAre(gotFunk(map), scala.Option.apply(0), scala.Option.apply(2), scala.Option.apply(1), none);
     }
 
     @Test
     public void voidReturnInputPipeOutputPipeListArgsOk() {
         final Map<String, AnalysedMethod> map = scanner.scanPluginMethods(new VoidReturnInputPipeOutputPipeListArgs());
-        gotFunk(map, scala.Option.apply(2), scala.Option.apply(0), scala.Option.apply(1), none);
+        positionsAre(gotFunk(map), scala.Option.apply(2), scala.Option.apply(0), scala.Option.apply(1), none);
     }
 
     @Test
@@ -134,16 +134,19 @@ public class TestPluginMethodScanner {
         assertThat(map.contains("Command-Me-O-Master"), equalTo(true));
     }
 
-    private void gotFunk(final scala.collection.immutable.Map<String, AnalysedMethod> map,
-            final scala.Option<Integer> argPos,
-            final scala.Option<Integer> inputPipePos,
-            final scala.Option<Integer> outputPipePos,
-            final scala.Option<Integer> logPos) {
+    private AnalysedMethod gotFunk(final scala.collection.immutable.Map<String, AnalysedMethod> map) {
         assertThat(map.size(), equalTo(1));
         final scala.collection.Iterator<String> it = map.keysIterator();
         assertThat(it.hasNext(), equalTo(true));
         assertThat(it.next(), equalTo("funk"));
-        final AnalysedMethod analysedMethod = map.apply("funk");
+        return map.apply("funk");
+    }
+
+    private void positionsAre(final AnalysedMethod analysedMethod,
+            final scala.Option<Integer> argPos,
+            final scala.Option<Integer> inputPipePos,
+            final scala.Option<Integer> outputPipePos,
+            final scala.Option<Integer> logPos) {
         assertThat(analysedMethod.getArgumentsPosition(), equalTo(argPos));
         assertThat(analysedMethod.getInputPipePosition(), equalTo(inputPipePos));
         assertThat(analysedMethod.getOutputPipePosition(), equalTo(outputPipePos));
