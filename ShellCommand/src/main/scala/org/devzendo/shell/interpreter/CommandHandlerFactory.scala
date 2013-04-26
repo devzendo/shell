@@ -39,7 +39,8 @@ class CommandHandlerFactory {
             method.getName,
             analysedMethod.getArgumentsPosition,
             analysedMethod.getInputPipePosition,
-            analysedMethod.getOutputPipePosition) {
+            analysedMethod.getOutputPipePosition,
+            analysedMethod.getLogPosition) {
 
             @throws[CommandExecutionException]
             override def execute() {
@@ -54,6 +55,8 @@ class CommandHandlerFactory {
                         argsMap += (pos -> getInputPipe)
                     for (pos <- analysedMethod.getOutputPipePosition)
                         argsMap += (pos -> getOutputPipe)
+                    for (pos <- analysedMethod.getLogPosition)
+                        argsMap += (pos -> getLog)
                     val argsList = (0 until argsMap.size).map { argsMap(_) }
                     val array = argsList.toArray
                     method.invoke(plugin, array:_*) // :_* ensures varargs gets called correctly

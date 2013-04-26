@@ -86,7 +86,8 @@ class PluginMethodScanner {
         method.getParameterTypes forall(c => {
             c == classOf[java.util.List[_]] ||
             c == classOf[InputPipe] ||
-            c == classOf[OutputPipe]
+            c == classOf[OutputPipe] ||
+            c == classOf[Log]
         })
     }
 }
@@ -97,10 +98,11 @@ class MethodAnalyser {
         val parameterTypes = method.getParameterTypes
         if (parameterTypes.length == 0 ||
                 
-            (parameterTypes.length >= 1 && parameterTypes.length <= 3 &&
+            (parameterTypes.length >= 1 && parameterTypes.length <= 4 &&
              (optionalInput(analysedMethod, parameterTypes) &&
               optionalOutput(analysedMethod, parameterTypes) &&
-              optionalArguments(analysedMethod, parameterTypes)
+              optionalArguments(analysedMethod, parameterTypes) &&
+              optionalLog(analysedMethod, parameterTypes)
              ))) {
             Option(analysedMethod)
         } else {
@@ -113,7 +115,13 @@ class MethodAnalyser {
         optionalParameter(parameterTypes, classOf[java.util.List[_]],
             (o: Option[Integer]) => analysedMethod.setArgumentsPosition(o))
     }
-    
+
+    private def optionalLog(analysedMethod: AnalysedMethod,
+                               parameterTypes: Array[Class[_]]): Boolean = {
+        optionalParameter(parameterTypes, classOf[Log],
+            (o: Option[Integer]) => analysedMethod.setLogPosition(o))
+    }
+
     private def optionalOutput(analysedMethod: AnalysedMethod,
             parameterTypes: Array[Class[_]]): Boolean = {
         optionalParameter(parameterTypes, classOf[OutputPipe], 

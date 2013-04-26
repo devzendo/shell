@@ -29,17 +29,20 @@ object CommandHandler {
  * @param argumentsPos
  * @param inputPipePos
  * @param outputPipePos
+ * @param logPos
  */
 abstract class CommandHandler(
     val name: String,
     val argumentsPos: Option[Integer],
     val inputPipePos: Option[Integer],
-    val outputPipePos: Option[Integer]) {
+    val outputPipePos: Option[Integer],
+    val logPos: Option[Integer]) {
 
     def getName = name
     def getArgumentsPos = argumentsPos
     def getInputPipePos = inputPipePos
     def getOutputPipePos = outputPipePos
+    def getLogPos = logPos
 
     // TODO use Option[Input|OutputPipe] here instead of null
     @scala.reflect.BeanProperty
@@ -47,6 +50,9 @@ abstract class CommandHandler(
 
     @scala.reflect.BeanProperty
     final var outputPipe: OutputPipe = null
+
+    @scala.reflect.BeanProperty
+    final var log: Log = null
 
     // TODO use a Scala List here
     @scala.reflect.BeanProperty

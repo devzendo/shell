@@ -16,6 +16,7 @@
 package org.devzendo.shell;
 
 import org.devzendo.shell.interpreter.ExecutionEnvironment;
+import org.devzendo.shell.interpreter.Log;
 import org.devzendo.shell.pipe.InputPipe;
 import org.devzendo.shell.pipe.OutputPipe;
 import org.devzendo.shell.plugin.CommandAlias;
@@ -31,6 +32,7 @@ public class PluginVariations {
         protected InputPipe mInputPipe = null;
         protected OutputPipe mOutputPipe = null;
         protected List<Object> mArgs = null;
+        protected Log mLog = null;
         
         public final List<Object> getArgs() {
             return mArgs;
@@ -42,6 +44,10 @@ public class PluginVariations {
 
         public final OutputPipe getOutputPipe() {
             return mOutputPipe;
+        }
+
+        public final Log getLog() {
+            return mLog;
         }
 
         public final boolean isExecuted() {
@@ -66,16 +72,18 @@ public class PluginVariations {
         }
     }
 
-    public static class VoidReturnListArgsInputPipeOutputPipe extends
+    public static class VoidReturnListArgsInputPipeOutputPipeLog extends
             AbstractShellPlugin {
         public void funk(
                 final List<Object> args,
                 final InputPipe input,
-                final OutputPipe output) {
+                final OutputPipe output,
+                final Log log) {
             mExecuted = true;
             mArgs = args;
             mInputPipe = input;
             mOutputPipe = output;
+            mLog = log;
         }
     }
 

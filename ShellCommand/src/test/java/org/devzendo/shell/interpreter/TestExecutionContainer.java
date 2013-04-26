@@ -35,7 +35,7 @@ public class TestExecutionContainer {
         private CommandExecutionException mCommandExecutionException;
 
         public TestCommandHandler(String name) {
-            super(name, none, none, none);
+            super(name, none, none, none, none);
         }
 
         @Override

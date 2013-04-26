@@ -40,6 +40,7 @@ public class TestCommandHandlerFactory {
     private final List<Object> args = context.mock(List.class);
     private final InputPipe inputPipe = context.mock(InputPipe.class);
     private final OutputPipe outputPipe = context.mock(OutputPipe.class);
+    private final Log log = context.mock(Log.class);
     
     @BeforeClass
     public static void setupLogging() {
@@ -47,17 +48,17 @@ public class TestCommandHandlerFactory {
     }
     
     @Test
-    public void voidReturnListArgsInputPipeOutputPipe() throws CommandExecutionException {
-        final AbstractShellPlugin plugin = new VoidReturnListArgsInputPipeOutputPipe();
+    public void voidReturnListArgsInputPipeOutputPipeLog() throws CommandExecutionException {
+        final AbstractShellPlugin plugin = new VoidReturnListArgsInputPipeOutputPipeLog();
         setupAndExecuteHandler(plugin);
-        assertPluginHasBeenPassed(plugin, args, inputPipe, outputPipe);
+        assertPluginHasBeenPassed(plugin, args, inputPipe, outputPipe, log);
     }
 
     @Test
     public void voidReturnNoArgs() throws CommandExecutionException {
         final AbstractShellPlugin plugin = new VoidReturnNoArgs();
         setupAndExecuteHandler(plugin);
-        assertPluginHasBeenPassed(plugin, null, null, null);
+        assertPluginHasBeenPassed(plugin, null, null, null, null);
     }
 
     private void setupAndExecuteHandler(final AbstractShellPlugin plugin)
@@ -69,16 +70,19 @@ public class TestCommandHandlerFactory {
         handler.setArgs(args);
         handler.setInputPipe(inputPipe);
         handler.setOutputPipe(outputPipe);
-        assertPluginHasBeenPassed(plugin, null, null, null);
+        handler.setLog(log);
+        assertPluginHasBeenPassed(plugin, null, null, null, null);
         handler.execute();
     }
     
     private void assertPluginHasBeenPassed(final AbstractShellPlugin plugin,
             final List<Object> expectedArgs,
             final InputPipe expectedInputPipe,
-            final OutputPipe expectedOutputPipe) {
+            final OutputPipe expectedOutputPipe,
+            final Log expectedLog) {
         assertThat(plugin.getArgs(), equalTo(expectedArgs));
         assertThat(plugin.getInputPipe(), equalTo(expectedInputPipe));
         assertThat(plugin.getOutputPipe(), equalTo(expectedOutputPipe));
+        assertThat(plugin.getLog(), equalTo(expectedLog));
     }
 }

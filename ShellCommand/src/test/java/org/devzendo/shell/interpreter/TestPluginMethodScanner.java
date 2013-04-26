@@ -59,8 +59,8 @@ public class TestPluginMethodScanner {
     
     @Test
     public void voidReturnListArgsInputPipeOutputPipeOk() {
-        final AnalysedMethod analysedMethod = getAnalysedMethod(scanner.scanPluginMethods(new VoidReturnListArgsInputPipeOutputPipe()));
-        positionsAre(analysedMethod, scala.Option.apply(0), scala.Option.apply(1), scala.Option.apply(2), none);
+        final AnalysedMethod analysedMethod = getAnalysedMethod(scanner.scanPluginMethods(new VoidReturnListArgsInputPipeOutputPipeLog()));
+        positionsAre(analysedMethod, scala.Option.apply(0), scala.Option.apply(1), scala.Option.apply(2), scala.Option.apply(3));
     }
 
     @Test

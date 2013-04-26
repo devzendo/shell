@@ -35,7 +35,7 @@ public class TestCommandHandler {
     @Test
     public void pipesTerminatedAfterExecuteAndTerminatePipes() throws CommandExecutionException {
         final CommandHandler handler = new CommandHandler(
-            "foo", none, none, none /*Option.<Integer>apply(0), Option.<Integer>apply(1) */ ) {
+            "foo", none, none, none, none ) {
 
             @Override
             public void execute() throws CommandExecutionException {
