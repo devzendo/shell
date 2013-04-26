@@ -26,23 +26,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class PluginVariations {
-    @SuppressWarnings("unchecked")
-    public Class<? extends ShellPlugin>[] pluginClasses = new Class[] {
-            VoidReturnNoArgsBadPluginMethodsNotScanned.class,
-            VoidReturnNoArgs.class, VoidReturnNoArgsInputPipe.class,
-            VoidReturnNoArgsOutputPipe.class,
-            VoidReturnNoArgsOutputPipeInputPipe.class,
-            VoidReturnNoArgsInputPipeOutputPipe.class,
-            VoidReturnListArgs.class,
-            VoidReturnArrayListArgs.class,
-            VoidReturnListArgsInputPipe.class,
-            VoidReturnListArgsOutputPipe.class,
-            VoidReturnListArgsInputPipeOutputPipe.class,
-            VoidReturnListArgsOutputPipeInputPipe.class,};
-
-    // VoidReturnNoArgsBadSignature.class not added since it defines no
-    // plugin methods.
-    
     public static abstract class AbstractShellPlugin implements ShellPlugin {
         protected boolean mExecuted = false;
         protected InputPipe mInputPipe = null;
@@ -76,25 +59,10 @@ public class PluginVariations {
         }
     }
 
-    public static class VoidReturnListArgs extends AbstractShellPlugin {
-        public void funk(final List<Object> args) {
-            mExecuted = true;
-            mArgs = args;
-        }
-    }
-
     public static class VoidReturnArrayListArgs extends AbstractShellPlugin {
         public void funk(final ArrayList<Object> args) {
             mExecuted = true;
             mArgs = args;
-        }
-    }
-
-    public static class VoidReturnListArgsInputPipe extends AbstractShellPlugin {
-        public void funk(final List<Object> args, final InputPipe input) {
-            mExecuted = true;
-            mArgs = args;
-            mInputPipe = input;
         }
     }
 
@@ -108,41 +76,6 @@ public class PluginVariations {
             mArgs = args;
             mInputPipe = input;
             mOutputPipe = output;
-        }
-    }
-
-    public static class VoidReturnListArgsOutputPipe extends
-            AbstractShellPlugin {
-        public void funk(final List<Object> args, final OutputPipe output) {
-            mExecuted = true;
-            mArgs = args;
-            mOutputPipe = output;
-        }
-    }
-
-    public static class VoidReturnListArgsOutputPipeInputPipe extends
-            AbstractShellPlugin {
-        public void funk(
-                final List<Object> args,
-                final OutputPipe output,
-                final InputPipe input) {
-            mExecuted = true;
-            mArgs = args;
-            mInputPipe = input;
-            mOutputPipe = output;
-        }
-    }
-
-    public static class VoidReturnInputPipeOutputPipeListArgs extends
-            AbstractShellPlugin {
-        public void funk(
-                final InputPipe input,
-                final OutputPipe output,
-                final List<Object> args) {
-            mExecuted = true;
-            mInputPipe = input;
-            mOutputPipe = output;
-            mArgs = args;
         }
     }
 
@@ -182,38 +115,6 @@ public class PluginVariations {
     public static class VoidReturnNoArgsBadSignature extends AbstractShellPlugin {
         public void funk(final OutputPipe output, final Integer notValid) {
             mExecuted = true;
-            mOutputPipe = output;
-        }
-    }
-
-    public static class VoidReturnNoArgsInputPipe extends AbstractShellPlugin {
-        public void funk(final InputPipe input) {
-            mExecuted = true;
-            mInputPipe = input;
-        }
-    }
-
-    public static class VoidReturnNoArgsInputPipeOutputPipe extends
-            AbstractShellPlugin {
-        public void funk(final InputPipe input, final OutputPipe output) {
-            mExecuted = true;
-            mInputPipe = input;
-            mOutputPipe = output;
-        }
-    }
-
-    public static class VoidReturnNoArgsOutputPipe extends AbstractShellPlugin {
-        public void funk(final OutputPipe output) {
-            mExecuted = true;
-            mOutputPipe = output;
-        }
-    }
-
-    public static class VoidReturnNoArgsOutputPipeInputPipe extends
-            AbstractShellPlugin {
-        public void funk(final OutputPipe output, final InputPipe input) {
-            mExecuted = true;
-            mInputPipe = input;
             mOutputPipe = output;
         }
     }

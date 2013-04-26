@@ -47,36 +47,8 @@ public class TestCommandHandlerFactory {
     }
     
     @Test
-    public void voidReturnListArgs() throws CommandExecutionException {
-        final AbstractShellPlugin plugin = new VoidReturnListArgs();
-        setupAndExecuteHandler(plugin);
-        assertPluginHasBeenPassed(plugin, args, null, null);
-    }
-    
-    @Test
-    public void voidReturnListArgsInputPipe() throws CommandExecutionException {
-        final AbstractShellPlugin plugin = new VoidReturnListArgsInputPipe();
-        setupAndExecuteHandler(plugin);
-        assertPluginHasBeenPassed(plugin, args, inputPipe, null);
-    }
-
-    @Test
     public void voidReturnListArgsInputPipeOutputPipe() throws CommandExecutionException {
         final AbstractShellPlugin plugin = new VoidReturnListArgsInputPipeOutputPipe();
-        setupAndExecuteHandler(plugin);
-        assertPluginHasBeenPassed(plugin, args, inputPipe, outputPipe);
-    }
-
-    @Test
-    public void voidReturnListArgsOutputPipe() throws CommandExecutionException {
-        final AbstractShellPlugin plugin = new VoidReturnListArgsOutputPipe();
-        setupAndExecuteHandler(plugin);
-        assertPluginHasBeenPassed(plugin, args, null, outputPipe);
-    }
-
-    @Test
-    public void voidReturnListArgsOutputPipeInputPipe() throws CommandExecutionException {
-        final AbstractShellPlugin plugin = new VoidReturnListArgsOutputPipeInputPipe();
         setupAndExecuteHandler(plugin);
         assertPluginHasBeenPassed(plugin, args, inputPipe, outputPipe);
     }
@@ -86,41 +58,6 @@ public class TestCommandHandlerFactory {
         final AbstractShellPlugin plugin = new VoidReturnNoArgs();
         setupAndExecuteHandler(plugin);
         assertPluginHasBeenPassed(plugin, null, null, null);
-    }
-
-    @Test
-    public void voidReturnNoArgsInputPipe() throws CommandExecutionException {
-        final AbstractShellPlugin plugin = new VoidReturnNoArgsInputPipe();
-        setupAndExecuteHandler(plugin);
-        assertPluginHasBeenPassed(plugin, null, inputPipe, null);
-    }
-
-    @Test
-    public void voidReturnNoArgsInputPipeOutputPipe() throws CommandExecutionException {
-        final AbstractShellPlugin plugin = new VoidReturnNoArgsInputPipeOutputPipe();
-        setupAndExecuteHandler(plugin);
-        assertPluginHasBeenPassed(plugin, null, inputPipe, outputPipe);
-    }
-
-    @Test
-    public void voidReturnNoArgsOutputPipe() throws CommandExecutionException {
-        final AbstractShellPlugin plugin = new VoidReturnNoArgsOutputPipe();
-        setupAndExecuteHandler(plugin);
-        assertPluginHasBeenPassed(plugin, null, null, outputPipe);
-    }
-
-    @Test
-    public void voidReturnNoArgsOutputPipeInputPipe() throws CommandExecutionException {
-        final AbstractShellPlugin plugin = new VoidReturnNoArgsOutputPipeInputPipe();
-        setupAndExecuteHandler(plugin);
-        assertPluginHasBeenPassed(plugin, null, inputPipe, outputPipe);
-    }
-    
-    @Test
-    public void voidReturnInputPipeOutputPipeListArgs() throws CommandExecutionException {
-        final AbstractShellPlugin plugin = new VoidReturnInputPipeOutputPipeListArgs();
-        setupAndExecuteHandler(plugin);
-        assertPluginHasBeenPassed(plugin, args, inputPipe, outputPipe);
     }
 
     private void setupAndExecuteHandler(final AbstractShellPlugin plugin)
