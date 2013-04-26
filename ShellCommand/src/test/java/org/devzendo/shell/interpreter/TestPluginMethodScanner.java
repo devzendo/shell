@@ -38,7 +38,7 @@ public class TestPluginMethodScanner {
     @Test
     public void voidReturnNoArgsOkBadInitialiseNotScanned() {
         gotFunk(scanner.scanPluginMethods(new VoidReturnNoArgsBadPluginMethodsNotScanned()),
-            none, none, none);
+            none, none, none, none);
     }
     
     @Test
@@ -49,37 +49,37 @@ public class TestPluginMethodScanner {
     @Test
     public void voidReturnNoArgsOk() {
         gotFunk(scanner.scanPluginMethods(new VoidReturnNoArgs()),
-            none, none, none);
+            none, none, none, none);
     }
 
     @Test
     public void voidReturnNoArgsInputPipeOk() {
         gotFunk(scanner.scanPluginMethods(new VoidReturnNoArgsInputPipe()),
-            none, scala.Option.apply(0), none);
+            none, scala.Option.apply(0), none, none);
     }
 
     @Test
     public void voidReturnNoArgsOutputPipeOk() {
         gotFunk(scanner.scanPluginMethods(new VoidReturnNoArgsOutputPipe()),
-            none, none, scala.Option.apply(0));
+            none, none, scala.Option.apply(0), none);
     }
 
     @Test
     public void voidReturnNoArgsOutputPipeInputPipeOk() {
         gotFunk(scanner.scanPluginMethods(new VoidReturnNoArgsOutputPipeInputPipe()),
-            none, scala.Option.apply(1), scala.Option.apply(0));
+            none, scala.Option.apply(1), scala.Option.apply(0), none);
     }
 
     @Test
     public void voidReturnNoArgsInputPipeOutputPipeOk() {
         gotFunk(scanner.scanPluginMethods(new VoidReturnNoArgsInputPipeOutputPipe()),
-            none, scala.Option.apply(0), scala.Option.apply(1));
+            none, scala.Option.apply(0), scala.Option.apply(1), none);
     }
 
     @Test
     public void voidReturnListArgsOk() {
         gotFunk(scanner.scanPluginMethods(new VoidReturnListArgs()),
-            scala.Option.apply(0), none, none);
+            scala.Option.apply(0), none, none, none);
     }
 
     @Test
@@ -90,31 +90,31 @@ public class TestPluginMethodScanner {
     @Test
     public void voidReturnListArgsInputPipeOk() {
         gotFunk(scanner.scanPluginMethods(new VoidReturnListArgsInputPipe()),
-            scala.Option.apply(0), scala.Option.apply(1), none);
+            scala.Option.apply(0), scala.Option.apply(1), none, none);
     }
 
     @Test
     public void voidReturnListArgsOutputPipeOk() {
         gotFunk(scanner.scanPluginMethods(new VoidReturnListArgsOutputPipe()),
-            scala.Option.apply(0), none, scala.Option.apply(1));
+            scala.Option.apply(0), none, scala.Option.apply(1), none);
     }
     
     @Test
     public void voidReturnListArgsInputPipeOutputPipeOk() {
         gotFunk(scanner.scanPluginMethods(new VoidReturnListArgsInputPipeOutputPipe()),
-            scala.Option.apply(0), scala.Option.apply(1), scala.Option.apply(2));
+            scala.Option.apply(0), scala.Option.apply(1), scala.Option.apply(2), none);
     }
 
     @Test
     public void voidReturnListArgsOutputPipeInputPipeOk() {
         gotFunk(scanner.scanPluginMethods(new VoidReturnListArgsOutputPipeInputPipe()),
-            scala.Option.apply(0), scala.Option.apply(2), scala.Option.apply(1));
+            scala.Option.apply(0), scala.Option.apply(2), scala.Option.apply(1), none);
     }
 
     @Test
     public void voidReturnInputPipeOutputPipeListArgsOk() {
         gotFunk(scanner.scanPluginMethods(new VoidReturnInputPipeOutputPipeListArgs()),
-            scala.Option.apply(2), scala.Option.apply(0), scala.Option.apply(1));
+            scala.Option.apply(2), scala.Option.apply(0), scala.Option.apply(1), none);
     }
 
     @Test
@@ -136,7 +136,8 @@ public class TestPluginMethodScanner {
     private void gotFunk(final scala.collection.immutable.Map<String, AnalysedMethod> map,
             final scala.Option<Integer> argPos,
             final scala.Option<Integer> inputPipePos,
-            final scala.Option<Integer> outputPipePos) {
+            final scala.Option<Integer> outputPipePos,
+            final scala.Option<Integer> logPos) {
         assertThat(map.size(), equalTo(1));
         final scala.collection.Iterator<String> it = map.keysIterator();
         assertThat(it.hasNext(), equalTo(true));
@@ -145,6 +146,7 @@ public class TestPluginMethodScanner {
         assertThat(analysedMethod.getArgumentsPosition(), equalTo(argPos));
         assertThat(analysedMethod.getInputPipePosition(), equalTo(inputPipePos));
         assertThat(analysedMethod.getOutputPipePosition(), equalTo(outputPipePos));
+        assertThat(analysedMethod.getLogPosition(), equalTo(logPos));
     }
 
     private void noMethods(scala.collection.immutable.Map<String, AnalysedMethod> map) {
