@@ -17,6 +17,7 @@ package org.devzendo.shell.interpreter;
 
 import org.devzendo.commoncode.logging.LoggingUnittestHelper;
 import org.devzendo.shell.PluginVariations.*;
+import org.devzendo.shell.ScalaListHelper;
 import org.devzendo.shell.pipe.InputPipe;
 import org.devzendo.shell.pipe.OutputPipe;
 import org.jmock.Mockery;
@@ -26,6 +27,8 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -37,7 +40,9 @@ public class TestCommandHandlerFactory {
     private final PluginMethodScanner scanner = new PluginMethodScanner();
     private final CommandHandlerFactory factory = new CommandHandlerFactory();
     @SuppressWarnings("unchecked")
-    private final List<Object> args = context.mock(List.class);
+    private final List<Object> args = Arrays.<Object>asList("foo");
+    @SuppressWarnings("unchecked")
+    private final scala.collection.immutable.List<Object> scalaArgs = ScalaListHelper.<Object>createList("foo");
     private final InputPipe inputPipe = context.mock(InputPipe.class);
     private final OutputPipe outputPipe = context.mock(OutputPipe.class);
     private final Log log = context.mock(Log.class);
@@ -48,10 +53,17 @@ public class TestCommandHandlerFactory {
     }
     
     @Test
-    public void voidReturnListArgsInputPipeOutputPipeLog() throws CommandExecutionException {
+    public void voidReturnJavaListArgsInputPipeOutputPipeLog() throws CommandExecutionException {
         final AbstractShellPlugin plugin = new VoidReturnListArgsInputPipeOutputPipeLog();
         setupAndExecuteHandler(plugin);
         assertPluginHasBeenPassed(plugin, args, inputPipe, outputPipe, log);
+    }
+
+    @Test
+    public void voidReturnScalaListArgsInputPipeOutputPipeLog() throws CommandExecutionException {
+        final AbstractShellPlugin plugin = new VoidReturnScalaListArgsInputPipeOutputPipeLog();
+        setupAndExecuteHandler(plugin);
+        assertPluginHasBeenPassedScalaArgs(plugin, scalaArgs, inputPipe, outputPipe, log);
     }
 
     @Test
@@ -74,15 +86,32 @@ public class TestCommandHandlerFactory {
         assertPluginHasBeenPassed(plugin, null, null, null, null);
         handler.execute();
     }
-    
+
+    private void assertPluginHasBeenPassedAllExceptArgs(final AbstractShellPlugin plugin,
+                                           final InputPipe expectedInputPipe,
+                                           final OutputPipe expectedOutputPipe,
+                                           final Log expectedLog) {
+        assertThat(plugin.getInputPipe(), equalTo(expectedInputPipe));
+        assertThat(plugin.getOutputPipe(), equalTo(expectedOutputPipe));
+        assertThat(plugin.getLog(), equalTo(expectedLog));
+    }
+
     private void assertPluginHasBeenPassed(final AbstractShellPlugin plugin,
             final List<Object> expectedArgs,
             final InputPipe expectedInputPipe,
             final OutputPipe expectedOutputPipe,
             final Log expectedLog) {
         assertThat(plugin.getArgs(), equalTo(expectedArgs));
-        assertThat(plugin.getInputPipe(), equalTo(expectedInputPipe));
-        assertThat(plugin.getOutputPipe(), equalTo(expectedOutputPipe));
-        assertThat(plugin.getLog(), equalTo(expectedLog));
+        assertPluginHasBeenPassedAllExceptArgs(plugin, expectedInputPipe, expectedOutputPipe, expectedLog);
     }
+
+    private void assertPluginHasBeenPassedScalaArgs(final AbstractShellPlugin plugin,
+                                           final scala.collection.immutable.List<Object> expectedArgs,
+                                           final InputPipe expectedInputPipe,
+                                           final OutputPipe expectedOutputPipe,
+                                           final Log expectedLog) {
+        assertThat(plugin.getScalaArgs(), equalTo(expectedArgs));
+        assertPluginHasBeenPassedAllExceptArgs(plugin, expectedInputPipe, expectedOutputPipe, expectedLog);
+    }
+
 }

@@ -43,7 +43,7 @@ class ExperimentalShellPlugin extends AbstractShellPlugin with PluginHelper {
 
         first to last foreach( (x: Int) => outputPipe.push(x.asInstanceOf[Integer]) )
     }
-    
+
     // cat ---------------------------------------------------------------------
     def cat(outputPipe: OutputPipe, args: java.util.List[Object]) {
         filterString(args).foreach(catFile(_, outputPipe))

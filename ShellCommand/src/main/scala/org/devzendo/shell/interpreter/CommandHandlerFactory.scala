@@ -18,6 +18,7 @@ package org.devzendo.shell.interpreter
 
 import org.devzendo.shell.plugin.ShellPlugin
 import java.lang.reflect.InvocationTargetException
+import collection.JavaConverters._
 
 class CommandHandlerFactory {
 
@@ -49,8 +50,13 @@ class CommandHandlerFactory {
                     // held by AnalysedMethod. This can then just create the
                     // array of the correct size and insert the elements
                     var argsMap = scala.collection.immutable.Map[Integer, AnyRef]()
-                    for (pos <- analysedMethod.getArgumentsPosition)
-                        argsMap += (pos -> getArgs)
+                    for (pos <- analysedMethod.getArgumentsPosition) {
+                        val pair = if (analysedMethod.getIsScalaArgumentsList)
+                            (pos -> getArgs.asScala.toList)
+                        else
+                            (pos -> getArgs)
+                        argsMap += pair
+                    }
                     for (pos <- analysedMethod.getInputPipePosition)
                         argsMap += (pos -> getInputPipe)
                     for (pos <- analysedMethod.getOutputPipePosition)

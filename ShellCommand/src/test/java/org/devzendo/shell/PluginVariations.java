@@ -32,10 +32,15 @@ public class PluginVariations {
         protected InputPipe mInputPipe = null;
         protected OutputPipe mOutputPipe = null;
         protected List<Object> mArgs = null;
+        protected scala.collection.immutable.List<Object> mScalaArgs = null;
         protected Log mLog = null;
         
         public final List<Object> getArgs() {
             return mArgs;
+        }
+
+        public final scala.collection.immutable.List<Object> getScalaArgs() {
+            return mScalaArgs;
         }
 
         public final InputPipe getInputPipe() {
@@ -81,6 +86,21 @@ public class PluginVariations {
                 final Log log) {
             mExecuted = true;
             mArgs = args;
+            mInputPipe = input;
+            mOutputPipe = output;
+            mLog = log;
+        }
+    }
+
+    public static class VoidReturnScalaListArgsInputPipeOutputPipeLog extends
+            AbstractShellPlugin {
+        public void funk(
+                final scala.collection.immutable.List<Object> args,
+                final InputPipe input,
+                final OutputPipe output,
+                final Log log) {
+            mExecuted = true;
+            mScalaArgs = args;
             mInputPipe = input;
             mOutputPipe = output;
             mLog = log;

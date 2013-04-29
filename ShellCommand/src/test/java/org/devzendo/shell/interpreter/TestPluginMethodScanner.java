@@ -58,9 +58,17 @@ public class TestPluginMethodScanner {
     }
     
     @Test
-    public void voidReturnListArgsInputPipeOutputPipeOk() {
+    public void voidReturnJavaListArgsInputPipeOutputPipeLogOk() {
         final AnalysedMethod analysedMethod = getAnalysedMethod(scanner.scanPluginMethods(new VoidReturnListArgsInputPipeOutputPipeLog()));
         positionsAre(analysedMethod, scala.Option.apply(0), scala.Option.apply(1), scala.Option.apply(2), scala.Option.apply(3));
+        assertThat(analysedMethod.isScalaArgumentsList(), equalTo(false));
+    }
+
+    @Test
+    public void voidReturnScalaListArgsInputPipeOutputPipeLogOk() {
+        final AnalysedMethod analysedMethod = getAnalysedMethod(scanner.scanPluginMethods(new VoidReturnScalaListArgsInputPipeOutputPipeLog()));
+        positionsAre(analysedMethod, scala.Option.apply(0), scala.Option.apply(1), scala.Option.apply(2), scala.Option.apply(3));
+        assertThat(analysedMethod.isScalaArgumentsList(), equalTo(true));
     }
 
     @Test

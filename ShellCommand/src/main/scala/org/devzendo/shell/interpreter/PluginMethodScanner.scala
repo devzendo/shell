@@ -85,6 +85,7 @@ class PluginMethodScanner {
     private def validParameterTypes(method: Method): Boolean = {
         method.getParameterTypes forall(c => {
             c == classOf[java.util.List[_]] ||
+            c == classOf[scala.collection.immutable.List[_]] ||
             c == classOf[InputPipe] ||
             c == classOf[OutputPipe] ||
             c == classOf[Log]
@@ -110,10 +111,23 @@ class MethodAnalyser {
         }
     }
 
+    private def storeFirstSomeArguments(analysedMethod: AnalysedMethod)(o: Option[Integer], isScalaList: Boolean) {
+        analysedMethod.getArgumentsPosition match {
+            case None =>
+                analysedMethod.setArgumentsPosition(o)
+                analysedMethod.setIsScalaArgumentsList(isScalaList)
+            case Some(_) => // first arguments position stored that's 'Some', 'sticks'
+        }
+    }
     private def optionalArguments(analysedMethod: AnalysedMethod,
             parameterTypes: Array[Class[_]]): Boolean = {
+        // the args can be a Java or Scala List; need to know which so the appropriate
+        // type is passed into the command at runtime
+        val storeFn = storeFirstSomeArguments(analysedMethod) _
         optionalParameter(parameterTypes, classOf[java.util.List[_]],
-            (o: Option[Integer]) => analysedMethod.setArgumentsPosition(o))
+            (o: Option[Integer]) => storeFn(o, false))
+        optionalParameter(parameterTypes, classOf[scala.collection.immutable.List[_]],
+            (o: Option[Integer]) => storeFn(o, true))
     }
 
     private def optionalLog(analysedMethod: AnalysedMethod,

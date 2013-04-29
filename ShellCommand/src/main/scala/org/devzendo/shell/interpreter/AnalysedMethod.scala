@@ -25,6 +25,8 @@ final class AnalysedMethod(val meth: Method) {
 
     @scala.reflect.BeanProperty
     var argumentsPosition: Option[Integer] = None
+    @scala.reflect.BeanProperty
+    var isScalaArgumentsList: Boolean = false // only makes sense if argumentsPosition is Some
 
     @scala.reflect.BeanProperty
     var inputPipePosition: Option[Integer] = None
