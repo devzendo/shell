@@ -74,14 +74,14 @@ public class TestCommandHandlerWirer {
         CommandHandler commandHandler = handlers.apply(0);
         assertThat(commandHandler.getVerbose(), equalTo(true));
         assertThat(commandHandler.getLog().isVerboseEnabled(), equalTo(true));
-        final List<Object> args = commandHandler.getArgs();
+        final scala.collection.immutable.List<Object> args = commandHandler.getArgs();
         assertThat(args.size(), equalTo(3));
-        assertThat(args.get(0), instanceOf(String.class));
-        assertThat(args.get(0).toString(), equalTo("One"));
-        assertThat(args.get(1), instanceOf(Switch.class));
-        assertThat((Switch) args.get(1), equalTo(new Switch("Two")));
-        assertThat(args.get(2), instanceOf(Switch.class));
-        assertThat((Switch) args.get(2), equalTo(new Switch("Three")));
+        assertThat(args.apply(0), instanceOf(String.class));
+        assertThat(args.apply(0).toString(), equalTo("One"));
+        assertThat(args.apply(1), instanceOf(Switch.class));
+        assertThat((Switch) args.apply(1), equalTo(new Switch("Two")));
+        assertThat(args.apply(2), instanceOf(Switch.class));
+        assertThat((Switch) args.apply(2), equalTo(new Switch("Three")));
     }
 
     @Test
@@ -210,7 +210,7 @@ public class TestCommandHandlerWirer {
         scala.collection.immutable.List<CommandHandler> handlers = wirer.wire(pipeline);
         assertThat(handlers.size(), equalTo(1));
         final CommandHandler commandHandler = handlers.apply(0);
-        final List<Object> args = commandHandler.getArgs();
+        final scala.collection.immutable.List<Object> args = commandHandler.getArgs();
         assertThat(args.size(), equalTo(0));
     }
     
@@ -223,10 +223,10 @@ public class TestCommandHandlerWirer {
         scala.collection.immutable.List<CommandHandler> handlers = wirer.wire(pipeline);
         assertThat(handlers.size(), equalTo(1));
         final CommandHandler commandHandler = handlers.apply(0);
-        final List<Object> args = commandHandler.getArgs();
+        final scala.collection.immutable.List<Object> args = commandHandler.getArgs();
         assertThat(args.size(), equalTo(2));
-        assertThat((Integer) args.get(0), equalTo(5));
-        assertThat((String) args.get(1), equalTo("hello"));
+        assertThat((Integer) args.apply(0), equalTo(5));
+        assertThat((String) args.apply(1), equalTo("hello"));
     }
     
     @Test(expected = CommandNotFoundException.class)

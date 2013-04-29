@@ -79,7 +79,7 @@ public class TestCommandHandlerFactory {
         assertThat(methods.size(), equalTo(1));
         final AnalysedMethod analysedMethod = methods.values().iterator().next();
         final CommandHandler handler = factory.createHandler(plugin, analysedMethod);
-        handler.setArgs(args);
+        handler.setArgs(scalaArgs);
         handler.setInputPipe(inputPipe);
         handler.setOutputPipe(outputPipe);
         handler.setLog(log);

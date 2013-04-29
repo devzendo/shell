@@ -52,9 +52,9 @@ class CommandHandlerFactory {
                     var argsMap = scala.collection.immutable.Map[Integer, AnyRef]()
                     for (pos <- analysedMethod.getArgumentsPosition) {
                         val pair = if (analysedMethod.getIsScalaArgumentsList)
-                            (pos -> getArgs.asScala.toList)
-                        else
                             (pos -> getArgs)
+                        else
+                            (pos -> getArgs.toList.asJava)
                         argsMap += pair
                     }
                     for (pos <- analysedMethod.getInputPipePosition)

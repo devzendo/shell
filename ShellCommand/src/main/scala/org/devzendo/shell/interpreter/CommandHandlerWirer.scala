@@ -51,7 +51,7 @@ case class CommandHandlerWirer(commandRegistry: CommandRegistry, variableRegistr
             val handler = commandRegistry.getHandler(command.getName)
             val args = command.getArgs
             val verbose = args.exists( isFilterSwitch )
-            val filteredArgs = args.filterNot( isFilterSwitch )
+            val filteredArgs = args.filterNot( isFilterSwitch ).toList
             handler.setVerbose(verbose)
             handler.setArgs(filteredArgs)
             handler.setLog(if (verbose) CommandHandlerWirer.verboseLog else CommandHandlerWirer.nonverboseLog)

@@ -54,9 +54,8 @@ abstract class CommandHandler(
     @scala.reflect.BeanProperty
     final var log: Log = null
 
-    // TODO use a Scala List here
     @scala.reflect.BeanProperty
-    final var args: java.util.List[AnyRef] = new util.ArrayList[AnyRef]()
+    final var args: List[AnyRef] = List[AnyRef]()
 
     @scala.reflect.BeanProperty
     var verbose: Boolean = false
