@@ -29,6 +29,10 @@ import scala.collection.JavaConversions._
  * @author matt
  *
  */
+object CommandHandlerWirer {
+    val verboseLog = new Log4JLog(true)
+    val nonverboseLog = new Log4JLog(false)
+}
 case class CommandHandlerWirer(commandRegistry: CommandRegistry, variableRegistry: VariableRegistry) {
 
     private[this] def isFilterSwitch(p: AnyRef) = p match {
@@ -50,6 +54,7 @@ case class CommandHandlerWirer(commandRegistry: CommandRegistry, variableRegistr
             val filteredArgs = args.filterNot( isFilterSwitch )
             handler.setVerbose(verbose)
             handler.setArgs(filteredArgs)
+            handler.setLog(if (verbose) CommandHandlerWirer.verboseLog else CommandHandlerWirer.nonverboseLog)
             handlers += handler
         }
         // TODO convert this null to Option

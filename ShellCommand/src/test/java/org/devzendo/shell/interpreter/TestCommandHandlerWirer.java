@@ -60,6 +60,7 @@ public class TestCommandHandlerWirer {
         assertThat(handlers.size(), equalTo(1));
         CommandHandler commandHandler = handlers.apply(0);
         assertThat(commandHandler.getVerbose(), equalTo(false));
+        assertThat(commandHandler.getLog().isVerboseEnabled(), equalTo(false));
     }
 
     @Test
@@ -72,6 +73,7 @@ public class TestCommandHandlerWirer {
         assertThat(handlers.size(), equalTo(1));
         CommandHandler commandHandler = handlers.apply(0);
         assertThat(commandHandler.getVerbose(), equalTo(true));
+        assertThat(commandHandler.getLog().isVerboseEnabled(), equalTo(true));
         final List<Object> args = commandHandler.getArgs();
         assertThat(args.size(), equalTo(3));
         assertThat(args.get(0), instanceOf(String.class));

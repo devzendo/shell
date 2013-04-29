@@ -19,6 +19,7 @@ package org.devzendo.shell.plugin
 import org.apache.log4j.Level
 import org.devzendo.shell.pipe.InputPipe
 import org.devzendo.shell.ShellMain.LOGGER
+import org.devzendo.shell.interpreter.Log
 
 class LoggingShellPlugin extends AbstractShellPlugin with PluginHelper {
     def getName() = {
@@ -30,19 +31,23 @@ class LoggingShellPlugin extends AbstractShellPlugin with PluginHelper {
     }
 
     // Log each InputPipe object at various levels...
-    def logDebug(inputPipe: InputPipe) = {
+    def logDebug(inputPipe: InputPipe) {
         logInputPipeAtLevel(inputPipe, Level.DEBUG)
     }
-    def logInfo(inputPipe: InputPipe) = {
+    def logInfo(inputPipe: InputPipe) {
         logInputPipeAtLevel(inputPipe, Level.INFO)
     }
-    def logWarn(inputPipe: InputPipe) = {
+    def logWarn(inputPipe: InputPipe) {
         logInputPipeAtLevel(inputPipe, Level.WARN)
     }
-    def logError(inputPipe: InputPipe) = {
+    def logError(inputPipe: InputPipe) {
         logInputPipeAtLevel(inputPipe, Level.ERROR)
     }
-    def logFatal(inputPipe: InputPipe) = {
+    def logFatal(inputPipe: InputPipe) {
         logInputPipeAtLevel(inputPipe, Level.FATAL)
+    }
+
+    def logVerbose(inputPipe: InputPipe, log: Log) {
+        streamForeach(inputPipe.next(), (a: Object) => log.logVerbose(a))
     }
 }
