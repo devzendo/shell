@@ -13,14 +13,20 @@ command "quotes bind | a string"                < quoting
 some internal commands and syntactic sugar
 
 command [args] > variable
+variable = command [args]
+variable = command1 [args] | command2 [args] | ... | commandN [args]
   same as command [args] | varstore variable
   input iterator to varstore is stored as variable in the variable store.
   output iterator to varstore is null-iterator, which ignores all input.
-  
+  (haven't implemented varstore yet)
+
+  Can't do var = command > var, as this is ambiguous.
+
 args:
   numbers
   strings
   variable references
+  switches
                                               _ buffer-it2 stored in foo var
 execution mechanics:                         /
       command1      command2     varstore foo

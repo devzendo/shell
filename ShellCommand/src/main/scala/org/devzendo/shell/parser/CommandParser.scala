@@ -41,25 +41,32 @@ class CommandParser {
     
     private class CommandCombinatorParser extends JavaTokenParsers {
         def pipeline: Parser[CommandPipeline] = (
+                opt(variable <~ "=") ~
                 command ~ opt("<" ~> variable)
               ~ opt("|" ~> repsep(command, "|")) 
               ~ opt(">" ~> variable)
-              ) ^^ {
-            case firstCommand ~ from ~ restCommandList ~ to =>
-                val pipeline = new CommandPipeline()
-                pipeline.addCommand(firstCommand)
-                if (!from.isEmpty) {
-                    pipeline.setInputVariable(from.get)
+              ) ^? ({
+            case store ~ firstCommand ~ from ~ restCommandList ~ to
+                if (! (store.isDefined && to.isDefined)) => {
+                    val pipeline = new CommandPipeline()
+                    pipeline.addCommand(firstCommand)
+                    if (store.isDefined) {
+                        pipeline.setOutputVariable(store.get)
+                    }
+                    if (from.isDefined) {
+                        pipeline.setInputVariable(from.get)
+                    }
+                    if (to.isDefined) {
+                        pipeline.setOutputVariable(to.get)
+                    }
+                    if (restCommandList.isDefined) {
+                        pipeline.addCommands(restCommandList.get)
+                    }
+                    pipeline
                 }
-                if (!to.isEmpty) {
-                    pipeline.setOutputVariable(to.get)
-                }
-                if (!restCommandList.isEmpty) {
-                    pipeline.addCommands(restCommandList.get)
-                }
-                pipeline
-        }
-        
+            }, ( _ => "Use one of = and >, but not both" )
+            )
+
         def command: Parser[Command] = ident ~ rep(argument) ^^ {
             case name ~ argumentList => 
                 val argumentJavaList = new java.util.ArrayList[Object]

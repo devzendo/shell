@@ -20,7 +20,9 @@ import org.devzendo.shell.ast.CommandPipeline;
 import org.devzendo.shell.ast.Switch;
 import org.devzendo.shell.ast.VariableReference;
 import org.hamcrest.Matchers;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 
 import java.util.List;
 
@@ -30,6 +32,9 @@ import static org.hamcrest.Matchers.*;
 
 public class TestCommandParser {
     final CommandParser parser = new CommandParser();
+
+    @Rule
+    public ExpectedException exception = ExpectedException.none();
 
     @Test
     public void nullCommands() throws CommandParserException {
@@ -67,7 +72,7 @@ public class TestCommandParser {
         final List<Object> args = cmd.getArgs();
         assertThat(args.size(), equalTo(2));
         assertThat(args.get(0), instanceOf(Switch.class));
-        assertThat( ((Switch)args.get(0)).switchName(), equalTo("Minus"));
+        assertThat(((Switch) args.get(0)).switchName(), equalTo("Minus"));
         assertThat(args.get(1), instanceOf(Switch.class));
         assertThat( ((Switch)args.get(1)).switchName(), equalTo("Slash"));
     }
@@ -100,9 +105,7 @@ public class TestCommandParser {
         assertThat(pipeline.getOutputVariable(), nullValue());
     }
 
-    @Test
-    public void storeIntoVariable() throws CommandParserException {
-        final CommandPipeline pipeline = parser.parse("foo > var");
+    private void checkVariableStoring(CommandPipeline pipeline) {
         final scala.collection.immutable.List<Command> cmds = pipeline.getCommands();
         assertThat(cmds.size(), equalTo(1));
         final Command cmd = cmds.apply(0);
@@ -110,6 +113,24 @@ public class TestCommandParser {
         assertNoArgs(cmd);
         assertThat(pipeline.getInputVariable(), nullValue());
         assertThat(pipeline.getOutputVariable().variableName(), equalTo("var"));
+    }
+
+    @Test
+    public void storeIntoVariableWithDirectTo() throws CommandParserException {
+        checkVariableStoring(parser.parse("foo > var"));
+    }
+
+    @Test
+    public void storeIntoVariableWithAssignment() throws CommandParserException {
+        checkVariableStoring(parser.parse("var = foo"));
+    }
+
+    @Test
+    public void storeIntoVariableWithAssignmentAndDirectToFails() throws CommandParserException {
+        exception.expect(CommandParserException.class);
+        exception.expectMessage("Use one of = and >, but not both");
+
+        checkVariableStoring(parser.parse("var = foo > var"));
     }
 
     @Test
