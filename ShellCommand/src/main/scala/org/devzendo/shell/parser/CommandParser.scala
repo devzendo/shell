@@ -79,8 +79,8 @@ class CommandParser {
         def wholeIntegerNumber: Parser[String] = """-?\d+(?!\.)""".r
         
         def argument: Parser[Any] = (
-                "true" ^^ (x => true)
-              | "false" ^^ (x => false)
+                "true" ^^^ true
+              | "false" ^^^ false
               | "[-/]".r ~> ident ^^ ( x => new Switch(x.toString) )
               | wholeIntegerNumber ^^ (_.toInt)
               | floatingPointNumber ^^ (_.toDouble)
