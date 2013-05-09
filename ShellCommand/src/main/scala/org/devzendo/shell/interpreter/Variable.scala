@@ -41,4 +41,10 @@ final class Variable {
             store.toList
         }
     }
+
+    def close() {
+        store.synchronized {
+            store.clear()
+        }
+    }
 }

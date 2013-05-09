@@ -32,3 +32,30 @@ execution mechanics:                         /
       command1      command2     varstore foo
      /        \    /       \     /          \
 empty-it     buffer-it1   buffer-it2        null-it
+
+
+Scope control
+The outermost level is the global scope. Each new { ... } block gets a new
+scope, which can have definitions created and used within it. This is
+destructed when all commands in the block end. New scopes chain from their
+parent; all defns in the chain up to the parent can be seen.
+
+command0 | { command1 | command2 } | { command3       } |   command4
+^          ^                     ^    ^               ^      ^
+global     scope1>global         |    scope2>global  |      global
+                           s1 destructor             |
+                                                   s2 destructor
+
+command0 | {        { command1 } }
+^          ^        ^
+global     |        |
+      scope1>global |
+                scope2>scope1>global
+
+So, lookups by command1 will first search scope2, then scope1, then global.
+
+command { /* block */ } | { command | command } |
+
+Rough ideas
+findFiles -Under /tmp -SuchThat { (_.absolutePath =~ /foo/) && (_.size > 1024MB) }
+_ is aliased to refer to the iterator. The block is called foreach file found.

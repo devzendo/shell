@@ -33,7 +33,7 @@ import org.devzendo.shell.interpreter.CommandHandlerWirer
 
 class ShellMain(val argList: List[String]) {
     val commandRegistry = new CommandRegistry()
-    val variableRegistry = new VariableRegistry()
+    val variableRegistry = new VariableRegistry(None)
     val pluginRegistry = new DefaultPluginRegistry(ShellMain.SHELLPLUGIN_PROPERTIES, commandRegistry, variableRegistry, argList)
 
     private var quitShell = false

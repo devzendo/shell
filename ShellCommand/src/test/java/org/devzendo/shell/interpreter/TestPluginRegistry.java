@@ -28,8 +28,9 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.fail;
 
 public class TestPluginRegistry {
+    private static final scala.Option<VariableRegistry> noneVariableRegistry = scala.Option.apply(null);
     private CommandRegistry mCommandRegistry = new CommandRegistry();
-    private VariableRegistry mVariableRegistry = new VariableRegistry();
+    private VariableRegistry mVariableRegistry = new VariableRegistry(noneVariableRegistry);
     
     @BeforeClass
     public static void setupLogging() {

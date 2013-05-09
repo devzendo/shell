@@ -18,7 +18,7 @@ package org.devzendo.shell.interpreter
 
 import org.devzendo.shell.ast.VariableReference
 
-class VariableRegistry {
+class VariableRegistry(parentScope: Option[VariableRegistry]) {
     private var vars = scala.collection.mutable.Map[String, Variable]()
 
     def exists(varRef: VariableReference): Boolean = {
@@ -50,6 +50,13 @@ class VariableRegistry {
         vars.synchronized {
             val mut = vars.map( (p: (String, Variable)) => (p._1, p._2.get))
             return Map.empty ++ mut // signature seems to mandate an immutable map
+        }
+    }
+
+    def close() {
+        vars.synchronized {
+            vars.values.foreach( _.close() )
+            vars.clear()
         }
     }
 }

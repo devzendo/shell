@@ -35,8 +35,9 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.instanceOf;
 
 public class TestCommandHandlerWirer {
+    private static final scala.Option<VariableRegistry> noneVariableRegistry = scala.Option.apply(null);
     final CommandRegistry commandRegistry = new CommandRegistry();
-    final VariableRegistry variableRegistry = new VariableRegistry();
+    final VariableRegistry variableRegistry = new VariableRegistry(noneVariableRegistry);
     final CommandHandlerWirer wirer = new CommandHandlerWirer(commandRegistry, variableRegistry);
     final CommandPipeline pipeline = new CommandPipeline();
     private AnalysedMethod mAnalysedMethod;

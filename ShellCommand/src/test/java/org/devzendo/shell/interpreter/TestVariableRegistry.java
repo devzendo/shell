@@ -23,7 +23,8 @@ import static org.hamcrest.Matchers.equalTo;
 
 
 public class TestVariableRegistry {
-    final VariableRegistry registry = new VariableRegistry();
+    private static final scala.Option<VariableRegistry> noneVariableRegistry = scala.Option.apply(null);
+    final VariableRegistry registry = new VariableRegistry(noneVariableRegistry);
     private static final scala.Option<scala.collection.immutable.List<Object>> none = scala.Option.apply(null);
 
 
@@ -58,8 +59,8 @@ public class TestVariableRegistry {
 
         final VariableReference vr2 = new VariableReference("v2");
         final Variable val2 = new Variable();
-        val2.add(new Integer(10));
-        val2.add(new Integer(20));
+        val2.add(10);
+        val2.add(20);
         registry.setVariable(vr2, val2);
 
         final scala.collection.immutable.Map<String, scala.collection.immutable.List<Object>> vars = registry.getVariables();
@@ -69,10 +70,25 @@ public class TestVariableRegistry {
 
         assertThat(vars.contains("v2"), equalTo(true));
         assertThat(vars.get("v2").get().size(), equalTo(2));
-        assertThat((Integer) vars.get("v2").get().apply(0), equalTo(new Integer(10)));
-        assertThat((Integer) vars.get("v2").get().apply(1), equalTo(new Integer(20)));
+        assertThat((Integer) vars.get("v2").get().apply(0), equalTo(10));
+        assertThat((Integer) vars.get("v2").get().apply(1), equalTo(20));
 
         assertThat(vars.contains("vnone"), equalTo(false));
         assertThat(vars.get("vnone"), equalTo(none));
+    }
+
+    @Test
+    public void closeRemovesAllVariables() {
+        final VariableReference vr1 = new VariableReference("v1");
+        final Variable val1 = new Variable();
+        val1.add("hello");
+        registry.setVariable(vr1, val1);
+        assertThat(registry.exists(vr1), equalTo(true));
+        assertThat(registry.getVariables().size(), equalTo(1));
+
+        registry.close();
+
+        assertThat(registry.exists(vr1), equalTo(false));
+        assertThat(registry.getVariables().size(), equalTo(0));
     }
 }
