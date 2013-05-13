@@ -23,7 +23,19 @@ class VariableRegistry(parentScope: Option[VariableRegistry]) {
 
     def exists(varRef: VariableReference): Boolean = {
         vars.synchronized {
-            vars.contains(varRef.variableName)
+            vars.contains(varRef.variableName) ||
+                (parentScope map { _.exists(varRef) } getOrElse false)
+        }
+    }
+
+    private def getVariableInScopeHierarchy(varRef: VariableReference): Option[Variable] = {
+        vars.synchronized {
+            val varName = varRef.variableName
+            if (vars.contains(varName)) {
+                Some(vars(varName))
+            } else {
+                (parentScope map { _.getVariableInScopeHierarchy(varRef) } getOrElse None)
+            }
         }
     }
 
@@ -33,9 +45,12 @@ class VariableRegistry(parentScope: Option[VariableRegistry]) {
             if (vars.contains(varName)) {
                 vars(varName)
             } else {
-                val newVar = new Variable()
-                vars += (varName -> newVar)
-                newVar
+                val parentVar = parentScope map { _.getVariableInScopeHierarchy(varRef) } getOrElse None
+                parentVar.getOrElse {
+                    val newVar = new Variable()
+                    vars += (varName -> newVar)
+                    newVar
+                }
             }
         }
     }
@@ -48,8 +63,10 @@ class VariableRegistry(parentScope: Option[VariableRegistry]) {
 
     def getVariables: Map[String, List[AnyRef]] = {
         vars.synchronized {
-            val mut = vars.map( (p: (String, Variable)) => (p._1, p._2.get))
-            return Map.empty ++ mut // signature seems to mandate an immutable map
+            val localMap = vars.map( (p: (String, Variable)) => (p._1, p._2.get))
+            val parentMap = parentScope map { _.getVariables } getOrElse Map.empty
+            // local takes precendence over parent, in case of shadowed variables
+            return Map.empty ++ parentMap ++ localMap
         }
     }
 
