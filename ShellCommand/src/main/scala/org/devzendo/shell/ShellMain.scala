@@ -30,6 +30,7 @@ import collection.JavaConverters._
 import org.devzendo.shell.parser.{CommandParserException, CommandParser}
 import org.devzendo.shell.interpreter._
 import org.devzendo.shell.interpreter.CommandHandlerWirer
+import org.devzendo.shell.ast.{BlockCommandPipeline, CommandPipeline}
 
 class ShellMain(val argList: List[String]) {
     val commandRegistry = new CommandRegistry()
@@ -91,14 +92,19 @@ class ShellMain(val argList: List[String]) {
                 ShellMain.LOGGER.debug("input: [" + input + "]")
                 for (line <- input) {
                     try {
-                        val commandPipeline = parser.parse(line.trim())
-                        if (!commandPipeline.isEmpty) {
-                            val commandHandlers = wirer.wire(commandPipeline)
-                            if (ShellMain.LOGGER.isDebugEnabled) {
-                                dumpHandlers(commandHandlers)
-                            }
-                            val executionContainer = new ExecutionContainer(commandHandlers)
-                            executionContainer.execute()
+                        val statement = parser.parse(line.trim())
+                        statement match {
+                            case commandPipeline: CommandPipeline =>
+                                if (!commandPipeline.isEmpty) {
+                                    val commandHandlers = wirer.wire(commandPipeline)
+                                    if (ShellMain.LOGGER.isDebugEnabled) {
+                                        dumpHandlers(commandHandlers)
+                                    }
+                                    val executionContainer = new ExecutionContainer(commandHandlers)
+                                    executionContainer.execute()
+                                }
+                            case blockCommandPipeline: BlockCommandPipeline =>
+                                ShellMain.LOGGER.warn("Block pipeline not finished yet")
                         }
                     } catch {
                         case cpe: CommandParserException =>

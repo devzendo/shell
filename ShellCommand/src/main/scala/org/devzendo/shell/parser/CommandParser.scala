@@ -17,16 +17,19 @@
 package org.devzendo.shell.parser
 
 import scala.util.parsing.combinator._
-import org.devzendo.shell.ast.{Switch, Command, CommandPipeline, VariableReference}
+import org.devzendo.shell.ast._
+import org.devzendo.shell.ast.VariableReference
+import org.devzendo.shell.ast.Switch
+import org.devzendo.shell.ast.Command
 
 class CommandParser {
     
     @throws(classOf[CommandParserException])
-    def parse(inputLine: String): CommandPipeline = {
+    def parse(inputLine: String): Statement = {
         def sanitizedInput = nullToEmpty(inputLine).trim()
         if (sanitizedInput.size > 0) {
-            val ccp = new CommandCombinatorParser()
-            val parserOutput = ccp.parsePipeline(sanitizedInput)
+            val ccp = new StatementCombinatorParser()
+            val parserOutput = ccp.parseStatement(sanitizedInput)
             parserOutput match {
                 case ccp.Success(r, _) => return r
                 case x => throw new CommandParserException(x.toString)
@@ -39,7 +42,20 @@ class CommandParser {
         if (input == null) "" else input
     }
     
-    private class CommandCombinatorParser extends JavaTokenParsers {
+    private class StatementCombinatorParser extends JavaTokenParsers {
+        def statement: Parser[Statement] = (
+                blockPipeline | pipeline
+            )
+
+        def blockPipeline: Parser[BlockCommandPipeline] = (
+                "{" ~> pipeline <~ "}"
+            ) ^^ {
+            case innerPipeline =>
+                val blockPipeline = new BlockCommandPipeline()
+                blockPipeline.setCommandPipeline(innerPipeline)
+                blockPipeline
+        }
+
         def pipeline: Parser[CommandPipeline] = (
                 opt(variable <~ "=") ~
                 command ~ opt("<" ~> variable)
@@ -88,8 +104,8 @@ class CommandParser {
               | stringLiteral ^^ (x => x.substring(1, x.length - 1))
               )
         
-        def parsePipeline(input: String) = {
-            parseAll(pipeline, input)
+        def parseStatement(input: String) = {
+            parseAll(statement, input)
         }
     }
 }

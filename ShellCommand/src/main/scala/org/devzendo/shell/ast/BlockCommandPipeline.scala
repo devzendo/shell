@@ -16,28 +16,15 @@
 
 package org.devzendo.shell.ast
 
-final class CommandPipeline extends Statement {
-    var commands = scala.collection.mutable.ArrayBuffer[Command]()
+import org.devzendo.shell.interpreter.VariableRegistry
+
+/**
+ * A CommandPipeline that has its own local VariableRegistry
+ */
+final class BlockCommandPipeline extends Statement {
+    @scala.reflect.BeanProperty
+    var variableRegistry: VariableRegistry = null
 
     @scala.reflect.BeanProperty
-    var inputVariable: VariableReference = null
-
-    @scala.reflect.BeanProperty
-    var outputVariable: VariableReference = null
-
-    def getCommands: List[Command] = {
-        commands.toList
-    }
-
-    def addCommands(commandsToAdd: List[Command]) {
-        commands ++= commandsToAdd
-    }
-
-    def addCommand(commandToAdd: Command) {
-        commands += commandToAdd
-    }
-
-    def isEmpty: Boolean = {
-        commands.isEmpty
-    }
+    var commandPipeline: CommandPipeline = null
 }

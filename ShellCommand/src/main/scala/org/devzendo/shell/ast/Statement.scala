@@ -16,28 +16,9 @@
 
 package org.devzendo.shell.ast
 
-final class CommandPipeline extends Statement {
-    var commands = scala.collection.mutable.ArrayBuffer[Command]()
+/**
+ * Marker class for the top-level AST objects.
+ */
+abstract class Statement {
 
-    @scala.reflect.BeanProperty
-    var inputVariable: VariableReference = null
-
-    @scala.reflect.BeanProperty
-    var outputVariable: VariableReference = null
-
-    def getCommands: List[Command] = {
-        commands.toList
-    }
-
-    def addCommands(commandsToAdd: List[Command]) {
-        commands ++= commandsToAdd
-    }
-
-    def addCommand(commandToAdd: Command) {
-        commands += commandToAdd
-    }
-
-    def isEmpty: Boolean = {
-        commands.isEmpty
-    }
 }
