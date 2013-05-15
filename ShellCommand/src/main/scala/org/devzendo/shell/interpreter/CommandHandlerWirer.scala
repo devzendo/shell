@@ -33,7 +33,7 @@ object CommandHandlerWirer {
     val verboseLog = new Log4JLog(true)
     val nonverboseLog = new Log4JLog(false)
 }
-case class CommandHandlerWirer(commandRegistry: CommandRegistry, variableRegistry: VariableRegistry) {
+case class CommandHandlerWirer(commandRegistry: CommandRegistry) {
 
     private[this] def isFilterSwitch(p: AnyRef) = p match {
         case sw: Switch =>
@@ -43,7 +43,7 @@ case class CommandHandlerWirer(commandRegistry: CommandRegistry, variableRegistr
     }
 
     @throws[CommandNotFoundException]
-    def wire(commandPipeline: CommandPipeline): List[CommandHandler] = {
+    def wire(variableRegistry: VariableRegistry, commandPipeline: CommandPipeline): List[CommandHandler] = {
         val handlers = scala.collection.mutable.ArrayBuffer[CommandHandler]()
         val commands = commandPipeline.getCommands
         assert(commands.size > 0)

@@ -86,7 +86,7 @@ class ShellMain(val argList: List[String]) {
             )
 
             val parser = new CommandParser()
-            val wirer = new CommandHandlerWirer(commandRegistry, variableRegistry)
+            val wirer = new CommandHandlerWirer(commandRegistry)
             while (!quitShell) {
                 val input = lineReader.readLine("] ")
                 ShellMain.LOGGER.debug("input: [" + input + "]")
@@ -96,7 +96,7 @@ class ShellMain(val argList: List[String]) {
                         statement match {
                             case commandPipeline: CommandPipeline =>
                                 if (!commandPipeline.isEmpty) {
-                                    val commandHandlers = wirer.wire(commandPipeline)
+                                    val commandHandlers = wirer.wire(variableRegistry, commandPipeline)
                                     if (ShellMain.LOGGER.isDebugEnabled) {
                                         dumpHandlers(commandHandlers)
                                     }
