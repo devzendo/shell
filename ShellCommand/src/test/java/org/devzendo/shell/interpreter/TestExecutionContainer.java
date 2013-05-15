@@ -55,7 +55,17 @@ public class TestExecutionContainer {
             mCommandExecutionException = new CommandExecutionException("fail!!");
         }
     }
-    
+
+    @Test
+    public void zeroCommandsDoNothing() throws CommandExecutionException {
+        final scala.collection.immutable.List<CommandHandler> handlers = ScalaListHelper.createList();
+        final ExecutionContainer executionContainer = new ExecutionContainer(handlers);
+
+        executionContainer.execute();
+
+        // and nothing happens, blows up, etc.
+    }
+
     @Test
     public void singleCommandExecutesOnCurrentThread() throws CommandExecutionException {
         final TestCommandHandler testCommandHandler = new TestCommandHandler("one");

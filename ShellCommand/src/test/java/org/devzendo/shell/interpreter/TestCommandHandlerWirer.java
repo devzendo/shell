@@ -53,6 +53,12 @@ public class TestCommandHandlerWirer {
     }
 
     @Test
+    public void emptyPipeLineYieldsSaneCommandHandlers() throws DuplicateCommandException, CommandNotFoundException {
+        scala.collection.immutable.List<CommandHandler> handlers = wirer.wire(variableRegistry, pipeline);
+        assertThat(handlers.size(), equalTo(0));
+    }
+
+    @Test
     public void verboseFlagDisabledByDefault() throws DuplicateCommandException, CommandNotFoundException {
         commandRegistry.registerCommand("foo", null, mAnalysedMethod);
         @SuppressWarnings("unchecked")

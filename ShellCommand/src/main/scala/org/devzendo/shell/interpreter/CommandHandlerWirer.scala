@@ -46,7 +46,6 @@ case class CommandHandlerWirer(commandRegistry: CommandRegistry) {
     def wire(variableRegistry: VariableRegistry, commandPipeline: CommandPipeline): List[CommandHandler] = {
         val handlers = scala.collection.mutable.ArrayBuffer[CommandHandler]()
         val commands = commandPipeline.getCommands
-        assert(commands.size > 0)
         for (command <- commands) {
             val handler = commandRegistry.getHandler(command.getName)
             val args = command.getArgs
@@ -60,32 +59,34 @@ case class CommandHandlerWirer(commandRegistry: CommandRegistry) {
         }
         // TODO convert this null to Option
         // cat /dev/null > first, unless storing in a variable
-        val pipelineInputVariable = commandPipeline.getInputVariable
-        if (pipelineInputVariable == null) {
-            handlers.head.setInputPipe(new NullInputPipe())
-        } else {
-            val inputVariable = variableRegistry.getVariable(pipelineInputVariable)
-            handlers.head.setInputPipe(new VariableInputPipe(inputVariable))
-        }
-        // last | echo, unless storing in a variable
-        val pipelineOutputVariable = commandPipeline.getOutputVariable
-        if (pipelineOutputVariable == null) {
-            handlers.last.setOutputPipe(new LogInfoOutputPipe())
-        } else {
-            val outputVariable = variableRegistry.getVariable(pipelineOutputVariable)
-            handlers.head.setOutputPipe(new VariableOutputPipe(outputVariable))
-        }
-        // left | right
-        for (i <- 0 until (handlers.size - 1)) {
-            val left = handlers(i)
-            val right = handlers(i + 1)
-
-            if (right.getInputPipePos.isEmpty || left.getOutputPipePos.isEmpty) {
-                left.setOutputPipe(new NullOutputPipe())
-                right.setInputPipe(new NullInputPipe())
+        if (handlers.size > 0) {
+            val pipelineInputVariable = commandPipeline.getInputVariable
+            if (pipelineInputVariable == null) {
+                handlers.head.setInputPipe(new NullInputPipe())
             } else {
-                // In cases where left has output, and right has input:
-                connectByRendezvousPipe(left, right)
+                val inputVariable = variableRegistry.getVariable(pipelineInputVariable)
+                handlers.head.setInputPipe(new VariableInputPipe(inputVariable))
+            }
+            // last | echo, unless storing in a variable
+            val pipelineOutputVariable = commandPipeline.getOutputVariable
+            if (pipelineOutputVariable == null) {
+                handlers.last.setOutputPipe(new LogInfoOutputPipe())
+            } else {
+                val outputVariable = variableRegistry.getVariable(pipelineOutputVariable)
+                handlers.head.setOutputPipe(new VariableOutputPipe(outputVariable))
+            }
+            // left | right
+            for (i <- 0 until (handlers.size - 1)) {
+                val left = handlers(i)
+                val right = handlers(i + 1)
+
+                if (right.getInputPipePos.isEmpty || left.getOutputPipePos.isEmpty) {
+                    left.setOutputPipe(new NullOutputPipe())
+                    right.setInputPipe(new NullInputPipe())
+                } else {
+                    // In cases where left has output, and right has input:
+                    connectByRendezvousPipe(left, right)
+                }
             }
         }
         handlers.toList

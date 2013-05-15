@@ -95,14 +95,12 @@ class ShellMain(val argList: List[String]) {
                         val statement = parser.parse(line.trim())
                         statement match {
                             case commandPipeline: CommandPipeline =>
-                                if (!commandPipeline.isEmpty) {
-                                    val commandHandlers = wirer.wire(variableRegistry, commandPipeline)
-                                    if (ShellMain.LOGGER.isDebugEnabled) {
-                                        dumpHandlers(commandHandlers)
-                                    }
-                                    val executionContainer = new ExecutionContainer(commandHandlers)
-                                    executionContainer.execute()
+                                val commandHandlers = wirer.wire(variableRegistry, commandPipeline)
+                                if (ShellMain.LOGGER.isDebugEnabled) {
+                                    dumpHandlers(commandHandlers)
                                 }
+                                val executionContainer = new ExecutionContainer(commandHandlers)
+                                executionContainer.execute()
                             case blockCommandPipeline: BlockCommandPipeline =>
                                 ShellMain.LOGGER.warn("Block pipeline not finished yet")
                         }
@@ -162,7 +160,9 @@ class ShellMain(val argList: List[String]) {
 
             sb.append(" ")
         })
-        sb.deleteCharAt(sb.length -1)
+        if (sb.length > 0) {
+            sb.deleteCharAt(sb.length -1)
+        }
         ShellMain.LOGGER.debug("pipeline: " + sb.toString())
     }
 

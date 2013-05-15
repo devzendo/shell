@@ -30,10 +30,13 @@ case class ExecutionContainer(commandHandlers: List[CommandHandler]) {
 
     @throws[CommandExecutionException]
     def execute() {
-        if (commandHandlers.size == 1) {
-            executeOnCurrentThread()
-        } else {
-            executeOnMultipleThreads()
+        commandHandlers.size match {
+            case 0 =>
+                // do nothing
+            case 1 =>
+                executeOnCurrentThread()
+            case _ =>
+                executeOnMultipleThreads()
         }
     }
 
