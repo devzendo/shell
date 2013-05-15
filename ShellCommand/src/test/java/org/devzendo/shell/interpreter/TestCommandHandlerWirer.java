@@ -30,6 +30,7 @@ import java.util.Collections;
 import java.util.List;
 
 import static java.util.Arrays.asList;
+import static java.util.Collections.EMPTY_LIST;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.instanceOf;
@@ -55,7 +56,7 @@ public class TestCommandHandlerWirer {
     public void verboseFlagDisabledByDefault() throws DuplicateCommandException, CommandNotFoundException {
         commandRegistry.registerCommand("foo", null, mAnalysedMethod);
         @SuppressWarnings("unchecked")
-        final Command command = new Command("foo", Collections.EMPTY_LIST);
+        final Command command = new Command("foo", EMPTY_LIST);
         pipeline.addCommand(command);
         scala.collection.immutable.List<CommandHandler> handlers = wirer.wire(pipeline);
         assertThat(handlers.size(), equalTo(1));
@@ -89,7 +90,7 @@ public class TestCommandHandlerWirer {
     public void noPipelineInputOrOutput() throws DuplicateCommandException, CommandNotFoundException {
         commandRegistry.registerCommand("foo", null, mAnalysedMethod);
         @SuppressWarnings("unchecked")
-        final Command command = new Command("foo", Collections.EMPTY_LIST);
+        final Command command = new Command("foo", EMPTY_LIST);
         pipeline.addCommand(command);
         scala.collection.immutable.List<CommandHandler> handlers = wirer.wire(pipeline);
         assertThat(handlers.size(), equalTo(1));
@@ -104,9 +105,9 @@ public class TestCommandHandlerWirer {
         commandRegistry.registerCommand("foo", null, mAnalysedMethod);
         commandRegistry.registerCommand("bar", null, mAnalysedMethod);
 
-        final Command fooCommand = new Command("foo", Collections.EMPTY_LIST);
+        final Command fooCommand = new Command("foo", EMPTY_LIST);
         pipeline.addCommand(fooCommand);
-        final Command barCommand = new Command("bar", Collections.EMPTY_LIST);
+        final Command barCommand = new Command("bar", EMPTY_LIST);
         pipeline.addCommand(barCommand);
         scala.collection.immutable.List<CommandHandler> handlers = wirer.wire(pipeline);
         assertThat(handlers.size(), equalTo(2));
@@ -124,7 +125,7 @@ public class TestCommandHandlerWirer {
     public void inputToPipelineFromVariable() throws DuplicateCommandException, CommandNotFoundException {
         commandRegistry.registerCommand("foo", null, mAnalysedMethod);
         @SuppressWarnings("unchecked")
-        final Command command = new Command("foo", Collections.EMPTY_LIST);
+        final Command command = new Command("foo", EMPTY_LIST);
         pipeline.addCommand(command);
         pipeline.setInputVariable(new VariableReference("var")); // variable registry autocreates
         scala.collection.immutable.List<CommandHandler> handlers = wirer.wire(pipeline);
@@ -137,7 +138,7 @@ public class TestCommandHandlerWirer {
     public void outputFromPipelineToVariable() throws CommandNotFoundException, DuplicateCommandException {
         commandRegistry.registerCommand("foo", null, mAnalysedMethod);
         @SuppressWarnings("unchecked")
-        final Command command = new Command("foo", Collections.EMPTY_LIST);
+        final Command command = new Command("foo", EMPTY_LIST);
         pipeline.addCommand(command);
         pipeline.setOutputVariable(new VariableReference("var")); // variable registry autocreates
         scala.collection.immutable.List<CommandHandler> handlers = wirer.wire(pipeline);
@@ -206,7 +207,7 @@ public class TestCommandHandlerWirer {
     public void noArgsInCommandYieldsEmptyListPassedToCommandHandlers() throws CommandNotFoundException, DuplicateCommandException {
         commandRegistry.registerCommand("foo", null, mAnalysedMethod);
         @SuppressWarnings("unchecked")
-        final Command command = new Command("foo", Collections.EMPTY_LIST);
+        final Command command = new Command("foo", EMPTY_LIST);
         pipeline.addCommand(command);
         scala.collection.immutable.List<CommandHandler> handlers = wirer.wire(pipeline);
         assertThat(handlers.size(), equalTo(1));
@@ -233,16 +234,29 @@ public class TestCommandHandlerWirer {
     @Test(expected = CommandNotFoundException.class)
     public void commandNotFound() throws CommandNotFoundException {
         @SuppressWarnings("unchecked")
-        final Command command = new Command("foo", Collections.EMPTY_LIST);
+        final Command command = new Command("foo", EMPTY_LIST);
         pipeline.addCommand(command);
         wirer.wire(pipeline);
     }
+
+    @Test
+    public void variableRegistryPassedToCommandHandlers() throws CommandNotFoundException, DuplicateCommandException {
+        commandRegistry.registerCommand("foo", null, mAnalysedMethod);
+        @SuppressWarnings("unchecked")
+        final Command command = new Command("foo", EMPTY_LIST);
+        pipeline.addCommand(command);
+        scala.collection.immutable.List<CommandHandler> handlers = wirer.wire(pipeline);
+        assertThat(handlers.size(), equalTo(1));
+        final CommandHandler commandHandler = handlers.apply(0);
+        assertThat(commandHandler.getVariableRegistry(), equalTo(variableRegistry));
+    }
+
 
     @SuppressWarnings("unchecked")
     private void registerMethodAsCommandAndAddToPipeline(final String methodName)
             throws DuplicateCommandException {
         commandRegistry.registerCommand(methodName, null, analyseMethodNamed(methodName));
-        pipeline.addCommand(new Command(methodName, Collections.EMPTY_LIST));
+        pipeline.addCommand(new Command(methodName, EMPTY_LIST));
     }
 
     private AnalysedMethod analyseMethodNamed(final String methodName) {

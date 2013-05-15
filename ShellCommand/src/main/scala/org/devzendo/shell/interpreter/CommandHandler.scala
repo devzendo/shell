@@ -60,6 +60,9 @@ abstract class CommandHandler(
     @scala.reflect.BeanProperty
     var verbose: Boolean = false
 
+    @scala.reflect.BeanProperty
+    final var variableRegistry: VariableRegistry = null
+
     @throws[CommandExecutionException]
     def execute()
 

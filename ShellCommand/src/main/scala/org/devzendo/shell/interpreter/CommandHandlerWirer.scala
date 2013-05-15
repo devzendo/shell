@@ -55,6 +55,7 @@ case class CommandHandlerWirer(commandRegistry: CommandRegistry, variableRegistr
             handler.setVerbose(verbose)
             handler.setArgs(filteredArgs)
             handler.setLog(if (verbose) CommandHandlerWirer.verboseLog else CommandHandlerWirer.nonverboseLog)
+            handler.setVariableRegistry(variableRegistry)
             handlers += handler
         }
         // TODO convert this null to Option
