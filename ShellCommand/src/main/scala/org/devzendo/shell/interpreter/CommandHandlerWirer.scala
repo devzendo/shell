@@ -70,8 +70,6 @@ case class CommandHandlerWirer(commandRegistry: CommandRegistry) {
             handler.setArgs(filteredArgs)
             handler.setLog(if (verbose) CommandHandlerWirer.verboseLog else CommandHandlerWirer.nonverboseLog)
             handler.setVariableRegistry(variableRegistry)
-            // TODO variableRegistry.increaseCommandHandlerUsageCount
-            // for the scope closing code in ExecutionContainer
             handlers += handler
         }
         // TODO convert this null to Option

@@ -27,6 +27,12 @@ object ExecutionContainer {
 }
 
 case class ExecutionContainer(commandHandlers: List[CommandHandler]) {
+    commandHandlers.foreach { (handler: CommandHandler) =>
+        val variableRegistry = handler.getVariableRegistry
+        if (variableRegistry != null) {
+            variableRegistry.incrementUsage()
+        }
+    }
 
     @throws[CommandExecutionException]
     def execute() {
@@ -54,9 +60,11 @@ case class ExecutionContainer(commandHandlers: List[CommandHandler]) {
                             case e: CommandExecutionException =>
                                 exceptions.add(e)
                         } finally {
+                            var variableRegistry = handler.getVariableRegistry
+                            if (variableRegistry != null) {
+                                variableRegistry.decrementUsage()
+                            }
                             latch.countDown()
-                            // TODO this command handler has finished with the variable registry
-                            //handler.getVariableRegistry.countdown
                         }
                     }
                 })
@@ -92,7 +100,10 @@ case class ExecutionContainer(commandHandlers: List[CommandHandler]) {
         try {
             commandHandler.executeAndTerminatePipes()
         } finally {
-            commandHandler.getVariableRegistry.decrementUsage()
+            var variableRegistry = commandHandler.getVariableRegistry
+            if (variableRegistry != null) {
+                variableRegistry.decrementUsage()
+            }
         }
     }
 }

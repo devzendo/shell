@@ -78,15 +78,22 @@ class VariableRegistry(@scala.reflect.BeanProperty val parentScope: Option[Varia
 
     def close() {
         vars.synchronized {
-            VariableRegistry.LOGGER.debug("Closing variable registry")
+            VariableRegistry.LOGGER.debug("Closing variable registry with parent scope " + parentScope)
             vars.values.foreach( _.close() )
             vars.clear()
+        }
+    }
+
+    def currentUsageCount() = {
+        vars.synchronized {
+            usageCount
         }
     }
 
     def incrementUsage() {
         vars.synchronized {
             usageCount = usageCount + 1
+            VariableRegistry.LOGGER.debug("Variable registry usage count incremented to " + usageCount + " in registry with parent scope " + parentScope)
         }
     }
 
@@ -94,6 +101,7 @@ class VariableRegistry(@scala.reflect.BeanProperty val parentScope: Option[Varia
         vars.synchronized {
             if (usageCount > 0) {
                 usageCount = usageCount - 1
+                VariableRegistry.LOGGER.debug("Variable registry usage count decremented to " + usageCount + " in registry with parent scope " + parentScope)
                 if (usageCount == 0) {
                     close()
                 }

@@ -199,21 +199,56 @@ public class TestExecutionContainer {
     }
 
     @Test
+    public void variableRegistryUsageCountIncrementedForEachHandler() {
+        final TestCommandHandler testCommandHandlerOne = new TestCommandHandler("one");
+        testCommandHandlerOne.setVariableRegistry(globalRegistry);
+        final TestCommandHandler testCommandHandlerTwo = new TestCommandHandler("two");
+        testCommandHandlerTwo.setVariableRegistry(globalRegistry);
+
+        final scala.collection.immutable.List<CommandHandler> handlers = ScalaListHelper.createList((CommandHandler) testCommandHandlerOne, (CommandHandler) testCommandHandlerTwo);
+        final ExecutionContainer executionContainer = new ExecutionContainer(handlers); // increments the usage counts
+
+        assertThat(globalRegistry.currentUsageCount(), equalTo(2));
+    }
+
+    @Test
     public void commandExecutingOnSingleThreadDecrementsVariableRegistryAtEnd() throws CommandExecutionException {
-        final VariableReference varRef = new VariableReference("localvar");
-        final Variable varContents = new Variable();
-        varContents.add("local");
-        globalRegistry.setVariable(varRef, varContents);
+        final VariableReference varRef = addVariable();
         final TestCommandHandler testCommandHandler = new TestCommandHandler("one");
         testCommandHandler.setVariableRegistry(globalRegistry);
-        globalRegistry.incrementUsage();
         assertTrue(globalRegistry.exists(varRef)); // yes, we have a variable
 
         final scala.collection.immutable.List<CommandHandler> handlers = ScalaListHelper.createList((CommandHandler) testCommandHandler);
-        final ExecutionContainer executionContainer = new ExecutionContainer(handlers);
+        final ExecutionContainer executionContainer = new ExecutionContainer(handlers);  // increments
 
         executionContainer.execute();
 
         assertFalse(globalRegistry.exists(varRef)); // sense the auto-closure
+    }
+
+    @Test
+    public void commandsExecutingOnMultipleThreadDecrementsVariableRegistryAtEnd() throws CommandExecutionException {
+        final VariableReference varRef = addVariable();
+
+        final TestCommandHandler testCommandHandlerOne = new TestCommandHandler("one");
+        testCommandHandlerOne.setVariableRegistry(globalRegistry);
+        final TestCommandHandler testCommandHandlerTwo = new TestCommandHandler("two");
+        testCommandHandlerTwo.setVariableRegistry(globalRegistry);
+        assertTrue(globalRegistry.exists(varRef)); // yes, we have a variable
+
+        final scala.collection.immutable.List<CommandHandler> handlers = ScalaListHelper.createList((CommandHandler) testCommandHandlerOne, (CommandHandler) testCommandHandlerTwo);
+        final ExecutionContainer executionContainer = new ExecutionContainer(handlers);  // increments
+
+        executionContainer.execute();
+
+        assertFalse(globalRegistry.exists(varRef)); // sense the auto-closure
+    }
+
+    private VariableReference addVariable() {
+        final VariableReference varRef = new VariableReference("localvar");
+        final Variable varContents = new Variable();
+        varContents.add("local");
+        globalRegistry.setVariable(varRef, varContents);
+        return varRef;
     }
 }

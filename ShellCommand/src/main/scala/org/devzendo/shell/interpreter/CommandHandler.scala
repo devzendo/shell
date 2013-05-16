@@ -60,6 +60,7 @@ abstract class CommandHandler(
     @scala.reflect.BeanProperty
     var verbose: Boolean = false
 
+    // TODO use Option[VariableRegistry] here instead of null
     @scala.reflect.BeanProperty
     final var variableRegistry: VariableRegistry = null
 
