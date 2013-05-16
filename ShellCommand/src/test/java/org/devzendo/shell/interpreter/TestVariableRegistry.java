@@ -181,4 +181,24 @@ public class TestVariableRegistry {
         assertThat(localRegistry.getVariables().size(), equalTo(1));
         assertThat(localRegistry.getVariables().valuesIterator().next().head().toString(), equalTo("shadowed"));
     }
+
+    @Test
+    public void automaticCloseHappensWhenUsageCountDecrementsToZero() {
+        final VariableRegistry localRegistry = new VariableRegistry(scala.Option.apply(globalRegistry));
+        final VariableReference localRef = new VariableReference("localvar");
+        final Variable localContents = new Variable();
+        localContents.add("local");
+        localRegistry.setVariable(localRef, localContents);
+
+        assertTrue(localRegistry.exists(localRef));
+        // instead of ...
+        // localRegistry.close();
+        // increment the usage count, and then decrement it
+        localRegistry.incrementUsage();
+        // still exists?
+        assertTrue(localRegistry.exists(localRef));
+        localRegistry.decrementUsage();
+        // now it doesn't.
+        assertFalse(localRegistry.exists(localRef));
+    }
 }

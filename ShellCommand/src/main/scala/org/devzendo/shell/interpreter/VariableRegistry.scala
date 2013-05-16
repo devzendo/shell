@@ -17,9 +17,15 @@
 package org.devzendo.shell.interpreter
 
 import org.devzendo.shell.ast.VariableReference
+import org.apache.log4j.Logger
+
+object VariableRegistry {
+    private val LOGGER = Logger.getLogger(classOf[VariableRegistry])
+}
 
 class VariableRegistry(@scala.reflect.BeanProperty val parentScope: Option[VariableRegistry]) {
     private var vars = scala.collection.mutable.Map[String, Variable]()
+    private var usageCount = 0
 
     def exists(varRef: VariableReference): Boolean = {
         vars.synchronized {
@@ -72,8 +78,26 @@ class VariableRegistry(@scala.reflect.BeanProperty val parentScope: Option[Varia
 
     def close() {
         vars.synchronized {
+            VariableRegistry.LOGGER.debug("Closing variable registry")
             vars.values.foreach( _.close() )
             vars.clear()
+        }
+    }
+
+    def incrementUsage() {
+        vars.synchronized {
+            usageCount = usageCount + 1
+        }
+    }
+
+    def decrementUsage() {
+        vars.synchronized {
+            if (usageCount > 0) {
+                usageCount = usageCount - 1
+                if (usageCount == 0) {
+                    close()
+                }
+            }
         }
     }
 }
