@@ -17,7 +17,7 @@
 package org.devzendo.shell.interpreter
 
 import org.devzendo.shell.pipe._
-import org.devzendo.shell.ast.{Switch, CommandPipeline}
+import org.devzendo.shell.ast.{Statement, BlockCommandPipeline, Switch, CommandPipeline}
 import scala.collection.JavaConversions._
 
 /**
@@ -43,6 +43,21 @@ case class CommandHandlerWirer(commandRegistry: CommandRegistry) {
     }
 
     @throws[CommandNotFoundException]
+    def wire(parentVariableRegistry: VariableRegistry, statement: Statement): List[CommandHandler] = {
+        statement match {
+            case blockCommandPipeline: BlockCommandPipeline => wire(parentVariableRegistry, blockCommandPipeline)
+            case commandPipeline: CommandPipeline => wire(parentVariableRegistry, commandPipeline)
+        }
+    }
+
+    @throws[CommandNotFoundException]
+    def wire(parentVariableRegistry: VariableRegistry, blockCommandPipeline: BlockCommandPipeline): List[CommandHandler] = {
+        val childVariableRegistry = new VariableRegistry(Some(parentVariableRegistry))
+        blockCommandPipeline.setVariableRegistry(childVariableRegistry)
+        wire(childVariableRegistry, blockCommandPipeline.getCommandPipeline)
+    }
+
+    @throws[CommandNotFoundException]
     def wire(variableRegistry: VariableRegistry, commandPipeline: CommandPipeline): List[CommandHandler] = {
         val handlers = scala.collection.mutable.ArrayBuffer[CommandHandler]()
         val commands = commandPipeline.getCommands
@@ -55,6 +70,8 @@ case class CommandHandlerWirer(commandRegistry: CommandRegistry) {
             handler.setArgs(filteredArgs)
             handler.setLog(if (verbose) CommandHandlerWirer.verboseLog else CommandHandlerWirer.nonverboseLog)
             handler.setVariableRegistry(variableRegistry)
+            // TODO variableRegistry.increaseCommandHandlerUsageCount
+            // for the scope closing code in ExecutionContainer
             handlers += handler
         }
         // TODO convert this null to Option

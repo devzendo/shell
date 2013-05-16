@@ -93,17 +93,13 @@ class ShellMain(val argList: List[String]) {
                 for (line <- input) {
                     try {
                         val statement = parser.parse(line.trim())
-                        statement match {
-                            case commandPipeline: CommandPipeline =>
-                                val commandHandlers = wirer.wire(variableRegistry, commandPipeline)
-                                if (ShellMain.LOGGER.isDebugEnabled) {
-                                    dumpHandlers(commandHandlers)
-                                }
-                                val executionContainer = new ExecutionContainer(commandHandlers)
-                                executionContainer.execute()
-                            case blockCommandPipeline: BlockCommandPipeline =>
-                                ShellMain.LOGGER.warn("Block pipeline not finished yet")
+                        val commandHandlers = wirer.wire(variableRegistry, statement)
+                        if (ShellMain.LOGGER.isDebugEnabled) {
+                            dumpHandlers(commandHandlers)
                         }
+
+                        val executionContainer = new ExecutionContainer(commandHandlers)
+                        executionContainer.execute()
                     } catch {
                         case cpe: CommandParserException =>
                             ShellMain.LOGGER.warn(cpe.getMessage)

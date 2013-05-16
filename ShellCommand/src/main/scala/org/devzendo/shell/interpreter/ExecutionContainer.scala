@@ -55,6 +55,8 @@ case class ExecutionContainer(commandHandlers: List[CommandHandler]) {
                                 exceptions.add(e)
                         } finally {
                             latch.countDown()
+                            // TODO this command handler has finished with the variable registry
+                            //handler.getVariableRegistry.countdown
                         }
                     }
                 })
@@ -86,6 +88,12 @@ case class ExecutionContainer(commandHandlers: List[CommandHandler]) {
 
     @throws[CommandExecutionException]
     private def executeOnCurrentThread() {
-        commandHandlers.head.executeAndTerminatePipes()
+        var commandHandler = commandHandlers.head
+        try {
+            commandHandler.executeAndTerminatePipes()
+        } finally {
+            // TODO this command handler has finished with the variable registry
+            //handler.getVariableRegistry.countdown
+        }
     }
 }

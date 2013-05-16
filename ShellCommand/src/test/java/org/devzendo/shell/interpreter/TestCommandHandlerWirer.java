@@ -15,11 +15,10 @@
  */
 package org.devzendo.shell.interpreter;
 
-import org.devzendo.shell.ast.Command;
-import org.devzendo.shell.ast.CommandPipeline;
-import org.devzendo.shell.ast.Switch;
-import org.devzendo.shell.ast.VariableReference;
+import org.devzendo.shell.ast.*;
 import org.devzendo.shell.pipe.*;
+import org.hamcrest.MatcherAssert;
+import org.hamcrest.Matchers;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -34,6 +33,8 @@ import static java.util.Collections.EMPTY_LIST;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.instanceOf;
+import static org.hamcrest.Matchers.not;
+import static org.junit.Assert.assertTrue;
 
 public class TestCommandHandlerWirer {
     private static final scala.Option<VariableRegistry> noneVariableRegistry = scala.Option.apply(null);
@@ -255,6 +256,23 @@ public class TestCommandHandlerWirer {
         assertThat(handlers.size(), equalTo(1));
         final CommandHandler commandHandler = handlers.apply(0);
         assertThat(commandHandler.getVariableRegistry(), equalTo(variableRegistry));
+        assertTrue(commandHandler.getVariableRegistry().getParentScope().isEmpty());
+    }
+
+    @Test
+    public void childVariableRegistryPassedToBlockPipelineCommandHandlers() throws CommandNotFoundException, DuplicateCommandException {
+        commandRegistry.registerCommand("foo", null, mAnalysedMethod);
+        @SuppressWarnings("unchecked")
+        final Command command = new Command("foo", EMPTY_LIST);
+        pipeline.addCommand(command);
+        final BlockCommandPipeline blockCommandPipeline = new BlockCommandPipeline();
+        blockCommandPipeline.setCommandPipeline(pipeline);
+        scala.collection.immutable.List<CommandHandler> handlers = wirer.wire(variableRegistry, blockCommandPipeline);
+        assertThat(handlers.size(), equalTo(1));
+        final CommandHandler commandHandler = handlers.apply(0);
+        assertThat(commandHandler.getVariableRegistry(), not(equalTo(variableRegistry))); // some new child
+        assertTrue(commandHandler.getVariableRegistry().getParentScope().isDefined());
+        assertThat(commandHandler.getVariableRegistry().getParentScope().get(), equalTo(variableRegistry));
     }
 
 
