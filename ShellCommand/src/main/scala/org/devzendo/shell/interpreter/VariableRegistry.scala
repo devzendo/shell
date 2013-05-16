@@ -18,7 +18,7 @@ package org.devzendo.shell.interpreter
 
 import org.devzendo.shell.ast.VariableReference
 
-class VariableRegistry(parentScope: Option[VariableRegistry]) {
+class VariableRegistry(@scala.reflect.BeanProperty val parentScope: Option[VariableRegistry]) {
     private var vars = scala.collection.mutable.Map[String, Variable]()
 
     def exists(varRef: VariableReference): Boolean = {

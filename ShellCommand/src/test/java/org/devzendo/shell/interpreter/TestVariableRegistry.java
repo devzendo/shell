@@ -94,6 +94,18 @@ public class TestVariableRegistry {
     }
 
     @Test
+    public void globalVariableRegistryHasNoParent() {
+        assertTrue(globalRegistry.getParentScope().isEmpty());
+    }
+
+    @Test
+    public void parentOfChildVariableRegistryIsParent() {
+        final VariableRegistry localRegistry = new VariableRegistry(scala.Option.apply(globalRegistry));
+        assertTrue(localRegistry.getParentScope().isDefined());
+        assertThat(localRegistry.getParentScope().get(), equalTo(globalRegistry));
+    }
+
+    @Test
     public void variableInParentRegistryIsVisibleInChildren() {
         final VariableReference vr1 = new VariableReference("v1");
         final Variable val1 = new Variable();
