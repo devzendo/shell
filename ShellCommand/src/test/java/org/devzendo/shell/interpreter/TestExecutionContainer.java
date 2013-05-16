@@ -16,19 +16,25 @@
 package org.devzendo.shell.interpreter;
 
 import org.devzendo.shell.ScalaListHelper;
+import org.devzendo.shell.ast.VariableReference;
 import org.devzendo.shell.pipe.InputPipe;
 import org.devzendo.shell.pipe.OutputPipe;
 import org.devzendo.shell.pipe.Pipe;
+import org.junit.Assert;
 import org.junit.Test;
 import scala.Option;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.not;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 public class TestExecutionContainer {
     private static final Option<Integer> none = Option.apply(null);
+    private static final scala.Option<VariableRegistry> noneVariableRegistry = scala.Option.apply(null);
+    private final VariableRegistry globalRegistry = new VariableRegistry(noneVariableRegistry);
 
     final class TestCommandHandler extends CommandHandler {
         private Thread mCurrentThread;
@@ -69,6 +75,7 @@ public class TestExecutionContainer {
     @Test
     public void singleCommandExecutesOnCurrentThread() throws CommandExecutionException {
         final TestCommandHandler testCommandHandler = new TestCommandHandler("one");
+        testCommandHandler.setVariableRegistry(globalRegistry);
         final scala.collection.immutable.List<CommandHandler> handlers = ScalaListHelper.createList((CommandHandler) testCommandHandler);
         final ExecutionContainer executionContainer = new ExecutionContainer(handlers);
         
@@ -106,6 +113,7 @@ public class TestExecutionContainer {
     @Test
     public void pipesAreTerminatedAfterExecutionOfSingleCommand() throws CommandExecutionException {
         final TestCommandHandler testCommandHandler = new TestCommandHandler("one");
+        testCommandHandler.setVariableRegistry(globalRegistry);
         final TerminationRecordingInputPipe terminationRecordingInputPipe = new TerminationRecordingInputPipe();
         final TerminationRecordingOutputPipe terminationRecordingOutputPipe = new TerminationRecordingOutputPipe();
         testCommandHandler.setInputPipe(terminationRecordingInputPipe);
@@ -177,6 +185,7 @@ public class TestExecutionContainer {
     @Test
     public void exceptionThrownOnFailureOfSingleCommand() {
         final TestCommandHandler testCommandHandler = new TestCommandHandler("one");
+        testCommandHandler.setVariableRegistry(globalRegistry);
         testCommandHandler.injectCommandFailure();
         final scala.collection.immutable.List<CommandHandler> handlers = ScalaListHelper.createList((CommandHandler) testCommandHandler);
         final ExecutionContainer executionContainer = new ExecutionContainer(handlers);
@@ -187,5 +196,24 @@ public class TestExecutionContainer {
         } catch (CommandExecutionException e) {
             assertThat(e.getMessage(), equalTo("fail!!"));
         }
+    }
+
+    @Test
+    public void commandExecutingOnSingleThreadDecrementsVariableRegistryAtEnd() throws CommandExecutionException {
+        final VariableReference varRef = new VariableReference("localvar");
+        final Variable varContents = new Variable();
+        varContents.add("local");
+        globalRegistry.setVariable(varRef, varContents);
+        final TestCommandHandler testCommandHandler = new TestCommandHandler("one");
+        testCommandHandler.setVariableRegistry(globalRegistry);
+        globalRegistry.incrementUsage();
+        assertTrue(globalRegistry.exists(varRef)); // yes, we have a variable
+
+        final scala.collection.immutable.List<CommandHandler> handlers = ScalaListHelper.createList((CommandHandler) testCommandHandler);
+        final ExecutionContainer executionContainer = new ExecutionContainer(handlers);
+
+        executionContainer.execute();
+
+        assertFalse(globalRegistry.exists(varRef)); // sense the auto-closure
     }
 }

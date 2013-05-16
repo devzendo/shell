@@ -92,8 +92,7 @@ case class ExecutionContainer(commandHandlers: List[CommandHandler]) {
         try {
             commandHandler.executeAndTerminatePipes()
         } finally {
-            // TODO this command handler has finished with the variable registry
-            //handler.getVariableRegistry.countdown
+            commandHandler.getVariableRegistry.decrementUsage()
         }
     }
 }

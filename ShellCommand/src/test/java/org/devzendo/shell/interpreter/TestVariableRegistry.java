@@ -18,7 +18,7 @@ package org.devzendo.shell.interpreter;
 import org.devzendo.shell.ast.VariableReference;
 import org.junit.Test;
 
-import static junit.framework.Assert.assertFalse;
+import static org.junit.Assert.assertFalse;
 import static org.hamcrest.MatcherAssert.*;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertTrue;
