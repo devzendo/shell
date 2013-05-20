@@ -59,3 +59,66 @@ command { /* block */ } | { command | command } |
 Rough ideas
 findFiles -Under /tmp -SuchThat { (_.absolutePath =~ /foo/) && (_.size > 1024MB) }
 _ is aliased to refer to the iterator. The block is called foreach file found.
+
+Grammar
+funcdef ::= 'def' functionname '(' [argname [':' typename] [',' argname [':' typename]]*] ')' [':' return-typename]
+(statement | block)
+
+block ::= '{' statement* '}'
+
+statement ::= funcdef | pipeline
+
+pipeline ::= [variablename '='] command ['<' variablename] ['|' command]* ['>' variablename]
+
+command ::= postfix-function | postfix-command | infix-command
+
+prefix-command ::= commandname argument*
+prefix-function ::= commandname '(' [argument [',' argument]*] ')'
+infix-command ::= argument1 commandname argument*
+
+x = x + 1 // pipeline with infix-command + and args x, 1
+x = (3 + x) * 5 // pipeline *(+(3, x), 5)
+x = ((2 * 3) + (y / 7)) // +(*(2, 3), /(y, 7))
+x = 1 + 2 + 3 // parse error - must use parentheses
+
+argument ::=
+  '(' command ')' |     // parenthesis handling e.g. (3 + 5)
+  true | false |
+  -Switch |
+  wholeIntegerNumber |
+  floatingPointNumber |
+  '"' string literal '"' |
+  variableName |
+  block
+
+Core commands
+Need a 'return' command that takes args and pushes to the output pipe.
+New - creates an object:
+  new classname argument*
+  new '(' classname [, argument [',' argument]*] ')'
+  classname new argument*
+
+  e.g.
+  new java.io.File "/tmp"
+  new(java.io.File, "/tmp")
+  java.io.File new "/tmp"
+
+Var - creates an optionally typed variable
+
+External commands
+Args are passed verbatim (-Switch is not tokenised as a switch); variables are expanded;
+Only postfix-external-command makes sense: you wouldn't call an external command in an infix or functional style.
+Need to register the set of external commands
+external touch /usr/bin/touch
+external -scan /usr/bin
+external -scan -path  // scans all the directories in $PATH
+
+Should be able to run a command directly, without special fu - just as another shell. Everything after the command
+is passed verbatim.
+
+Need to control/sense:
+  Standard output of external command is converted to Strings, and goes output pipe (or redirected to a variable).
+  Input pipe goes to standard input of external command.
+  Standard error should be redirectable (with "2> variable", or "2| command " ?)
+  Run in background with & ? Need to introduce job control..
+  Obtain exit code.
