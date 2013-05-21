@@ -61,8 +61,8 @@ class CommandParser(commandExists: CommandExists) {
 
         def pipeline: Parser[CommandPipeline] = (
                 opt(variable <~ "=") ~
-                (infixCommand | prefixFunction | prefixCommand) ~ opt("<" ~> variable)
-              ~ opt("|" ~> repsep((infixCommand | prefixFunction | prefixCommand), "|"))
+                command ~ opt("<" ~> variable)
+              ~ opt("|" ~> repsep(command, "|"))
               ~ opt(">" ~> variable)
               ) ^? ({
             case store ~ firstCommand ~ from ~ restCommandList ~ to
@@ -85,6 +85,8 @@ class CommandParser(commandExists: CommandExists) {
                 }
             }, ( _ => "Use one of = and >, but not both" )
             )
+
+        def command: Parser[Command] = (infixCommand | prefixFunction | prefixCommand)
 
         def infixCommand: Parser[Command] = argument ~ existingCommandName ~ rep(argument) ^^ {
             case firstArgument ~ name ~ remainingArgumentList =>
