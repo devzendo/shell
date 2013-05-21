@@ -77,8 +77,33 @@ public class TestCommandParser {
     }
 
     @Test
+    public void singleWordFunction() throws CommandParserException {
+        final CommandPipeline pipeline = (CommandPipeline) parser.parse("foo()");
+        final scala.collection.immutable.List<Command> cmds = pipeline.getCommands();
+        assertThat(cmds.size(), equalTo(1));
+        final Command cmd = cmds.apply(0);
+        assertThat(cmd.getName(), equalTo("foo"));
+        assertNoArgs(cmd);
+        assertThat(pipeline.isEmpty(), equalTo(false));
+    }
+
+    @Test
     public void singleWordCommandWithSwitches() throws CommandParserException {
         final CommandPipeline pipeline = (CommandPipeline) parser.parse("foo -Minus /Slash");
+        final scala.collection.immutable.List<Command> cmds = pipeline.getCommands();
+        assertThat(cmds.size(), equalTo(1));
+        final Command cmd = cmds.apply(0);
+        final List<Object> args = cmd.getArgs();
+        assertThat(args.size(), equalTo(2));
+        assertThat(args.get(0), instanceOf(Switch.class));
+        assertThat(((Switch) args.get(0)).switchName(), equalTo("Minus"));
+        assertThat(args.get(1), instanceOf(Switch.class));
+        assertThat( ((Switch)args.get(1)).switchName(), equalTo("Slash"));
+    }
+
+    @Test
+    public void singleWordFunctionWithSwitches() throws CommandParserException {
+        final CommandPipeline pipeline = (CommandPipeline) parser.parse("foo(-Minus, /Slash)");
         final scala.collection.immutable.List<Command> cmds = pipeline.getCommands();
         assertThat(cmds.size(), equalTo(1));
         final Command cmd = cmds.apply(0);
@@ -151,6 +176,34 @@ public class TestCommandParser {
         final CommandPipeline pipeline = (CommandPipeline) parser.parse(
             "cmd1 2.0 \"string 'hello' \" 2.3e5 6.8 ident < invar| cmd2 | cmd3 5 true false > outvar");
 
+        checkComplex(pipeline);
+    }
+
+    @Test
+    public void complexFunction() throws CommandParserException {
+        final CommandPipeline pipeline = (CommandPipeline) parser.parse(
+                "cmd1(2.0, \"string 'hello' \", 2.3e5, 6.8, ident) < invar| cmd2() | cmd3(5, true, false) > outvar");
+
+        checkComplex(pipeline);
+    }
+
+    @Test
+    public void complexCommandFunction() throws CommandParserException {
+        final CommandPipeline pipeline = (CommandPipeline) parser.parse(
+                "cmd1 2.0 \"string 'hello' \" 2.3e5 6.8 ident < invar| cmd2() | cmd3 5 true false > outvar");
+
+        checkComplex(pipeline);
+    }
+
+    @Test
+    public void complexFunctionCommand() throws CommandParserException {
+        final CommandPipeline pipeline = (CommandPipeline) parser.parse(
+                "cmd1(2.0, \"string 'hello' \", 2.3e5, 6.8, ident) < invar| cmd2 | cmd3(5, true, false) > outvar");
+
+        checkComplex(pipeline);
+    }
+
+    private void checkComplex(final CommandPipeline pipeline) {
         assertThat(pipeline.getInputVariable().variableName(), equalTo("invar"));
         assertThat(pipeline.getOutputVariable().variableName(), equalTo("outvar"));
 
