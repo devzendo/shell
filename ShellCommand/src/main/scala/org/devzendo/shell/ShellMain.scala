@@ -27,7 +27,7 @@ import java.util
 import org.devzendo.shell.plugin._
 import org.devzendo.shell.pipe.{VariableOutputPipe, VariableInputPipe}
 import collection.JavaConverters._
-import org.devzendo.shell.parser.{CommandParserException, CommandParser}
+import org.devzendo.shell.parser.{CommandExists, CommandParserException, CommandParser}
 import org.devzendo.shell.interpreter._
 import org.devzendo.shell.interpreter.CommandHandlerWirer
 import org.devzendo.shell.ast.{BlockCommandPipeline, CommandPipeline}
@@ -85,7 +85,11 @@ class ShellMain(val argList: List[String]) {
                 new ExperimentalShellPlugin())
             )
 
-            val parser = new CommandParser()
+            val commandExists = new CommandExists {
+                def commandExists(name: String) = commandRegistry.exists(name)
+            }
+
+            val parser = new CommandParser(commandExists)
             val wirer = new CommandHandlerWirer(commandRegistry)
             while (!quitShell) {
                 val input = lineReader.readLine("] ")

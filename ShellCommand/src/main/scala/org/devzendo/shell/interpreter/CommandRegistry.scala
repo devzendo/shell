@@ -36,6 +36,9 @@ class CommandRegistry {
         }
     }
 
+    def exists(name: String): Boolean =
+        nameToPluginMethod.contains(name)
+
     @throws[CommandNotFoundException]
     def getHandler(name: String): CommandHandler = {
         nameToPluginMethod.get(name) match {

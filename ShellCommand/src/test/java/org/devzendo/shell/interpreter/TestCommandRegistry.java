@@ -16,6 +16,7 @@
 package org.devzendo.shell.interpreter;
 
 import org.devzendo.shell.plugin.ShellPlugin;
+import org.junit.Assert;
 import org.junit.Test;
 
 import java.lang.reflect.Method;
@@ -23,6 +24,8 @@ import java.lang.reflect.Method;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.notNullValue;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 public class TestCommandRegistry {
@@ -58,6 +61,18 @@ public class TestCommandRegistry {
         } catch (CommandNotFoundException cnfe) {
             assertThat(cnfe.getMessage(), equalTo("'doesntexist' not found"));
         }
+    }
+
+    @Test
+    public void unregisteredCommandDoesNotExist() {
+        assertFalse(registry.exists("doesntexist"));
+    }
+
+    @Test
+    public void registeredCommandExists() throws NoSuchMethodException, DuplicateCommandException {
+        final AnalysedMethod method = analyseMethod(this.getClass().getMethod("registeredCommandExists"));
+        registry.registerCommand("exists", shellPluginOne, method);
+        assertTrue(registry.exists("exists"));
     }
 
     @Test

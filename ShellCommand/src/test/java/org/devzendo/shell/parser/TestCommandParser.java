@@ -28,7 +28,15 @@ import static org.hamcrest.Matchers.*;
 
 
 public class TestCommandParser {
-    final CommandParser parser = new CommandParser();
+    private Boolean commandExistsFlag = true;
+    final CommandExists commandExists = new CommandExists() {
+
+        @Override
+        public boolean commandExists(String name) {
+            return commandExistsFlag;
+        }
+    };
+    final CommandParser parser = new CommandParser(commandExists);
 
     @Rule
     public ExpectedException exception = ExpectedException.none();
@@ -48,7 +56,15 @@ public class TestCommandParser {
         assertThat(cmds.size(), equalTo(0));
         assertThat(pipeline.isEmpty(), equalTo(true));
     }
-    
+
+    @Test
+    public void commandThatIsNotDefined() throws CommandParserException {
+        commandExistsFlag = false;
+        exception.expect(CommandParserException.class);
+        exception.expectMessage("Command 'foo' is not defined");
+        parser.parse("foo");
+    }
+
     @Test
     public void singleWordCommand() throws CommandParserException {
         final CommandPipeline pipeline = (CommandPipeline) parser.parse("foo");

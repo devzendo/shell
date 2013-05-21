@@ -22,7 +22,10 @@ import org.devzendo.shell.ast.VariableReference
 import org.devzendo.shell.ast.Switch
 import org.devzendo.shell.ast.Command
 
-class CommandParser {
+trait CommandExists {
+    def commandExists(name: String): Boolean
+}
+class CommandParser(commandExists: CommandExists) {
     
     @throws(classOf[CommandParserException])
     def parse(inputLine: String): Statement = {
@@ -83,12 +86,20 @@ class CommandParser {
             }, ( _ => "Use one of = and >, but not both" )
             )
 
-        def command: Parser[Command] = ident ~ rep(argument) ^^ {
+        def command: Parser[Command] = existingCommand ~ rep(argument) ^^ {
             case name ~ argumentList => 
                 val argumentJavaList = new java.util.ArrayList[Object]
                 argumentList.foreach (x => argumentJavaList.add(x.asInstanceOf[Object]))
                 new Command(name, argumentJavaList)
         }
+
+        def existingCommand: Parser[String] = ident ^? ({
+            case possibleCommand
+                if (commandExists.commandExists(possibleCommand)) => {
+                    possibleCommand
+                }
+            }, ( badCommand => "Command '" + badCommand + "' is not defined")
+        )
         
         def variable: Parser[VariableReference] = ident ^^ (x => new VariableReference(x.toString))
         
