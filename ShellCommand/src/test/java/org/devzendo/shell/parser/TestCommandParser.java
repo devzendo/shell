@@ -21,8 +21,11 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
+import static java.util.Arrays.asList;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 
@@ -288,5 +291,31 @@ public class TestCommandParser {
 
     private void assertNoArgs(final Command cmd) {
         assertThat(cmd.getArgs().size(), equalTo(0));
+    }
+
+    @Test
+    public void subCommandsAreEmbeddedInArguments() throws CommandParserException {
+        final CommandPipeline pipeline = (CommandPipeline) parser.parse(
+                "(2 mult 3) plus (y div 7)");
+        final scala.collection.immutable.List<Command> cmds = pipeline.getCommands();
+
+        assertThat(cmds.size(), equalTo(1));
+        final Command command = cmds.apply(0);
+        assertThat(command.getName(), equalTo("plus"));
+
+        final List<Object> args = command.getArgs();
+        assertThat(args.size(), equalTo(2));
+
+        final Command times = (Command) args.get(0);
+        assertThat(times.getName(), equalTo("mult"));
+        final List<Object> timesExpectedArgs = new ArrayList<Object>();
+        timesExpectedArgs.addAll(asList(new Integer(2), new Integer(3)));
+        assertThat(times.getArgs(), equalTo(timesExpectedArgs));
+
+        final Command div = (Command) args.get(1);
+        assertThat(div.getName(), equalTo("div"));
+        final List<Object> divExpectedArgs = new ArrayList<Object>();
+        divExpectedArgs.addAll(asList(new VariableReference("y"), new Integer(7)));
+        assertThat(div.getArgs(), equalTo(divExpectedArgs));
     }
 }

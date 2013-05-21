@@ -125,10 +125,11 @@ class CommandParser(commandExists: CommandExists) {
         def argument: Parser[Any] = (
                 "true" ^^^ true
               | "false" ^^^ false
+              | "(" ~> command <~ ")"
               | "[-/]".r ~> ident ^^ ( x => new Switch(x.toString) )
               | wholeIntegerNumber ^^ (_.toInt)
               | floatingPointNumber ^^ (_.toDouble)
-              | variable 
+              | variable
               | stringLiteral ^^ (x => x.substring(1, x.length - 1))
               )
         
