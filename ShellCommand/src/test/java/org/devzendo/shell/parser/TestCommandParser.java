@@ -188,17 +188,17 @@ public class TestCommandParser {
     }
 
     @Test
-    public void complexCommandFunction() throws CommandParserException {
+    public void complexInfixCommand() throws CommandParserException {
         final CommandPipeline pipeline = (CommandPipeline) parser.parse(
-                "cmd1 2.0 \"string 'hello' \" 2.3e5 6.8 ident < invar| cmd2() | cmd3 5 true false > outvar");
+                "2.0 cmd1 \"string 'hello' \" 2.3e5 6.8 ident < invar| cmd2 | 5 cmd3 true false > outvar");
 
         checkComplex(pipeline);
     }
 
     @Test
-    public void complexFunctionCommand() throws CommandParserException {
+    public void complexMixThreeStyles() throws CommandParserException {
         final CommandPipeline pipeline = (CommandPipeline) parser.parse(
-                "cmd1(2.0, \"string 'hello' \", 2.3e5, 6.8, ident) < invar| cmd2 | cmd3(5, true, false) > outvar");
+                "2.0 cmd1 \"string 'hello' \" 2.3e5 6.8 ident < invar| cmd2() | cmd3 5 true false > outvar");
 
         checkComplex(pipeline);
     }
