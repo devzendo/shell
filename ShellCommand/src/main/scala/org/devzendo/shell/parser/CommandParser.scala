@@ -61,8 +61,8 @@ class CommandParser(commandExists: CommandExists) {
 
         def pipeline: Parser[CommandPipeline] = (
                 opt(variable <~ "=") ~
-                command ~ opt("<" ~> variable)
-              ~ opt("|" ~> repsep(command, "|")) 
+                prefixCommand ~ opt("<" ~> variable)
+              ~ opt("|" ~> repsep(prefixCommand, "|"))
               ~ opt(">" ~> variable)
               ) ^? ({
             case store ~ firstCommand ~ from ~ restCommandList ~ to
@@ -86,14 +86,14 @@ class CommandParser(commandExists: CommandExists) {
             }, ( _ => "Use one of = and >, but not both" )
             )
 
-        def command: Parser[Command] = existingCommand ~ rep(argument) ^^ {
+        def prefixCommand: Parser[Command] = existingCommandName ~ rep(argument) ^^ {
             case name ~ argumentList => 
                 val argumentJavaList = new java.util.ArrayList[Object]
                 argumentList.foreach (x => argumentJavaList.add(x.asInstanceOf[Object]))
                 new Command(name, argumentJavaList)
         }
 
-        def existingCommand: Parser[String] = ident ^? ({
+        def existingCommandName: Parser[String] = ident ^? ({
             case possibleCommand
                 if (commandExists.commandExists(possibleCommand)) => {
                     possibleCommand
