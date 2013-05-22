@@ -110,7 +110,18 @@ class CommandParser(commandExists: CommandExists) {
                 new Command(name, argumentJavaList)
         }
 
-        def existingCommandName: Parser[String] = ident ^? ({
+        def operatorIdentifier: Parser[String] =
+            """[\p{Sm}\p{So}\p{Punct}&&[^()\[\]{}'"_.;`|]]*""".r
+        // Inspired initially from Scala's operator identifier; Odersky et al,
+        // Programming in Scala, 2ed, p152.
+        // I added _ to the exclusion above, but it is accepted as
+        // the first character of an ident, so it is a valid identifier in
+        // Shell. | is also an invalid operator command for reasons that should
+        // be obvious :)
+
+        def identifier: Parser[String] = (ident | operatorIdentifier)
+
+        def existingCommandName: Parser[String] = identifier ^? ({
             case possibleCommand
                 if (commandExists.commandExists(possibleCommand)) => {
                     possibleCommand

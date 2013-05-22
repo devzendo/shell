@@ -17,6 +17,7 @@ package org.devzendo.shell.parser;
 
 import org.devzendo.shell.ast.*;
 import org.hamcrest.Matchers;
+import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -26,6 +27,7 @@ import java.util.*;
 import static java.util.Arrays.asList;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
+import static org.junit.Assert.fail;
 
 
 public class TestCommandParser {
@@ -327,30 +329,82 @@ public class TestCommandParser {
     }
 
     @Test
+    public void validOperatorIdentifiers() throws CommandParserException {
+        final String[] valids = new String[] {
+                "*",
+                "+",
+                "++",
+                ":::",
+                "<?>",
+                ":->",
+                "!",
+                "/",
+                ":",
+                "@",
+                "_"
+        };
+        addValidCommands(valids);
+        for (String valid: valids) {
+            final CommandPipeline pipeline = (CommandPipeline) parser.parse(valid);
+            assertThat(pipeline.getCommands().size(), equalTo(1));
+            assertThat(pipeline.getCommands().apply(0).getName(), equalTo(valid));
+        }
+    }
+
+    @Test
+    public void invalidOperatorIdentifiers() {
+        final String[] invalids = new String[] {
+                "\"",
+                "'",
+                "(",
+                ")",
+                "[",
+                "]",
+                "{",
+                "}",
+                ".",
+                ";",
+                "`",
+                "|"
+        };
+        addValidCommands(invalids); // so they won't be rejected immediately, but parsed
+        for (String invalid: invalids) {
+            try {
+                parser.parse(invalid);
+                fail("Invalid operator identifier '" + invalid + "' was not parsed as invalid");
+            } catch (CommandParserException cpe) {
+                assertThat(cpe.getMessage(), containsString(invalid)); // bit of a weak test...
+            }
+        }
+    }
+
+    @Test
     public void subCommandsAreEmbeddedInArguments() throws CommandParserException {
-        addValidCommands("mult", "plus", "div");
+        addValidCommands("*", "+", "/");
 
         final CommandPipeline pipeline = (CommandPipeline) parser.parse(
-                "(2 mult 3) plus (y div 7)");
+                "(2 * 3) + (y / 7)");
         final scala.collection.immutable.List<Command> cmds = pipeline.getCommands();
 
         assertThat(cmds.size(), equalTo(1));
         final Command command = cmds.apply(0);
-        assertThat(command.getName(), equalTo("plus"));
+        assertThat(command.getName(), equalTo("+"));
 
         final List<Object> args = command.getArgs();
         assertThat(args.size(), equalTo(2));
 
         final Command times = (Command) args.get(0);
-        assertThat(times.getName(), equalTo("mult"));
+        assertThat(times.getName(), equalTo("*"));
         final List<Object> timesExpectedArgs = new ArrayList<Object>();
         timesExpectedArgs.addAll(asList(2, 3));
         assertThat(times.getArgs(), equalTo(timesExpectedArgs));
 
         final Command div = (Command) args.get(1);
-        assertThat(div.getName(), equalTo("div"));
+        assertThat(div.getName(), equalTo("/"));
         final List<Object> divExpectedArgs = new ArrayList<Object>();
         divExpectedArgs.addAll(asList(new VariableReference("y"), 7));
         assertThat(div.getArgs(), equalTo(divExpectedArgs));
     }
+
+
 }
