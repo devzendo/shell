@@ -21,9 +21,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
 import static java.util.Arrays.asList;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -31,12 +29,15 @@ import static org.hamcrest.Matchers.*;
 
 
 public class TestCommandParser {
-    private Boolean commandExistsFlag = true;
+    private Set<String> validCommands = new HashSet<String>();
+    private void addValidCommands(String ... commands) {
+        validCommands.addAll(asList(commands));
+    }
     final CommandExists commandExists = new CommandExists() {
 
         @Override
         public boolean commandExists(String name) {
-            return commandExistsFlag;
+            return validCommands.contains(name);
         }
     };
     final CommandParser parser = new CommandParser(commandExists);
@@ -62,7 +63,6 @@ public class TestCommandParser {
 
     @Test
     public void commandThatIsNotDefined() throws CommandParserException {
-        commandExistsFlag = false;
         exception.expect(CommandParserException.class);
         exception.expectMessage("Command 'foo' is not defined");
         parser.parse("foo");
@@ -70,6 +70,8 @@ public class TestCommandParser {
 
     @Test
     public void singleWordCommand() throws CommandParserException {
+        addValidCommands("foo");
+
         final CommandPipeline pipeline = (CommandPipeline) parser.parse("foo");
         final scala.collection.immutable.List<Command> cmds = pipeline.getCommands();
         assertThat(cmds.size(), equalTo(1));
@@ -81,6 +83,8 @@ public class TestCommandParser {
 
     @Test
     public void singleWordFunction() throws CommandParserException {
+        addValidCommands("foo");
+
         final CommandPipeline pipeline = (CommandPipeline) parser.parse("foo()");
         final scala.collection.immutable.List<Command> cmds = pipeline.getCommands();
         assertThat(cmds.size(), equalTo(1));
@@ -92,6 +96,8 @@ public class TestCommandParser {
 
     @Test
     public void singleWordCommandWithSwitches() throws CommandParserException {
+        addValidCommands("foo");
+
         final CommandPipeline pipeline = (CommandPipeline) parser.parse("foo -Minus /Slash");
         final scala.collection.immutable.List<Command> cmds = pipeline.getCommands();
         assertThat(cmds.size(), equalTo(1));
@@ -106,6 +112,8 @@ public class TestCommandParser {
 
     @Test
     public void singleWordFunctionWithSwitches() throws CommandParserException {
+        addValidCommands("foo");
+
         final CommandPipeline pipeline = (CommandPipeline) parser.parse("foo(-Minus, /Slash)");
         final scala.collection.immutable.List<Command> cmds = pipeline.getCommands();
         assertThat(cmds.size(), equalTo(1));
@@ -120,6 +128,8 @@ public class TestCommandParser {
 
     @Test
     public void takeFromVariable() throws CommandParserException {
+        addValidCommands("foo");
+
         final CommandPipeline pipeline = (CommandPipeline) parser.parse(" foo < var ");
         final scala.collection.immutable.List<Command> cmds = pipeline.getCommands();
         assertThat(cmds.size(), equalTo(1));
@@ -132,6 +142,8 @@ public class TestCommandParser {
 
     @Test
     public void takeFromVariableAndPipe() throws CommandParserException {
+        addValidCommands("foo", "bar");
+
         final CommandPipeline pipeline = (CommandPipeline) parser.parse(" foo < var | bar");
         final scala.collection.immutable.List<Command> cmds = pipeline.getCommands();
         assertThat(cmds.size(), equalTo(2));
@@ -158,16 +170,22 @@ public class TestCommandParser {
 
     @Test
     public void storeIntoVariableWithDirectTo() throws CommandParserException {
+        addValidCommands("foo");
+
         checkVariableStoring((CommandPipeline) parser.parse("foo > var"));
     }
 
     @Test
     public void storeIntoVariableWithAssignment() throws CommandParserException {
+        addValidCommands("foo");
+
         checkVariableStoring((CommandPipeline) parser.parse("var = foo"));
     }
 
     @Test
     public void storeIntoVariableWithAssignmentAndDirectToFails() throws CommandParserException {
+        addValidCommands("foo");
+
         exception.expect(CommandParserException.class);
         exception.expectMessage("Use one of = and >, but not both");
 
@@ -176,6 +194,8 @@ public class TestCommandParser {
 
     @Test
     public void complexCommand() throws CommandParserException {
+        addValidCommands("cmd1", "cmd2", "cmd3");
+
         final CommandPipeline pipeline = (CommandPipeline) parser.parse(
             "cmd1 2.0 \"string 'hello' \" 2.3e5 6.8 ident < invar| cmd2 | cmd3 5 true false > outvar");
 
@@ -184,6 +204,8 @@ public class TestCommandParser {
 
     @Test
     public void complexFunction() throws CommandParserException {
+        addValidCommands("cmd1", "cmd2", "cmd3");
+
         final CommandPipeline pipeline = (CommandPipeline) parser.parse(
                 "cmd1(2.0, \"string 'hello' \", 2.3e5, 6.8, ident) < invar| cmd2() | cmd3(5, true, false) > outvar");
 
@@ -192,6 +214,8 @@ public class TestCommandParser {
 
     @Test
     public void complexInfixCommand() throws CommandParserException {
+        addValidCommands("cmd1", "cmd2", "cmd3");
+
         final CommandPipeline pipeline = (CommandPipeline) parser.parse(
                 "2.0 cmd1 \"string 'hello' \" 2.3e5 6.8 ident < invar| cmd2 | 5 cmd3 true false > outvar");
 
@@ -200,6 +224,8 @@ public class TestCommandParser {
 
     @Test
     public void complexMixThreeStyles() throws CommandParserException {
+        addValidCommands("cmd1", "cmd2", "cmd3");
+
         final CommandPipeline pipeline = (CommandPipeline) parser.parse(
                 "2.0 cmd1 \"string 'hello' \" 2.3e5 6.8 ident < invar| cmd2() | cmd3 5 true false > outvar");
 
@@ -246,6 +272,8 @@ public class TestCommandParser {
 
     @Test
     public void parsingIntegerArguments() throws CommandParserException {
+        addValidCommands("cmd1");
+
         final CommandPipeline pipeline = (CommandPipeline) parser.parse(
             "cmd1 3 2.5 5");
 
@@ -262,6 +290,8 @@ public class TestCommandParser {
 
     @Test
     public void simpleCommandList() throws CommandParserException {
+        addValidCommands("zero", "one", "two");
+
         final CommandPipeline pipeline = (CommandPipeline) parser.parse(
             "zero | one | two");
         final scala.collection.immutable.List<Command> cmds = pipeline.getCommands();
@@ -286,7 +316,10 @@ public class TestCommandParser {
 
     @Test
     public void singleCommandInsideAScopeBlock() throws CommandParserException {
-        final BlockCommandPipeline pipeline = (BlockCommandPipeline) parser.parse("{ command }");
+        addValidCommands("command");
+
+        final Statement pipeline = parser.parse("{ command }");
+        assertThat(pipeline, instanceOf(BlockCommandPipeline.class));
     }
 
     private void assertNoArgs(final Command cmd) {
@@ -295,6 +328,8 @@ public class TestCommandParser {
 
     @Test
     public void subCommandsAreEmbeddedInArguments() throws CommandParserException {
+        addValidCommands("mult", "plus", "div");
+
         final CommandPipeline pipeline = (CommandPipeline) parser.parse(
                 "(2 mult 3) plus (y div 7)");
         final scala.collection.immutable.List<Command> cmds = pipeline.getCommands();
@@ -309,13 +344,13 @@ public class TestCommandParser {
         final Command times = (Command) args.get(0);
         assertThat(times.getName(), equalTo("mult"));
         final List<Object> timesExpectedArgs = new ArrayList<Object>();
-        timesExpectedArgs.addAll(asList(new Integer(2), new Integer(3)));
+        timesExpectedArgs.addAll(asList(2, 3));
         assertThat(times.getArgs(), equalTo(timesExpectedArgs));
 
         final Command div = (Command) args.get(1);
         assertThat(div.getName(), equalTo("div"));
         final List<Object> divExpectedArgs = new ArrayList<Object>();
-        divExpectedArgs.addAll(asList(new VariableReference("y"), new Integer(7)));
+        divExpectedArgs.addAll(asList(new VariableReference("y"), 7));
         assertThat(div.getArgs(), equalTo(divExpectedArgs));
     }
 }
