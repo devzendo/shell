@@ -17,8 +17,10 @@
 package org.devzendo.shell.interpreter
 
 import org.devzendo.shell.pipe._
-import org.devzendo.shell.ast.{Statement, BlockCommandPipeline, Switch, CommandPipeline}
+import org.devzendo.shell.ast._
 import scala.collection.JavaConversions._
+import org.devzendo.shell.ast.Switch
+import scala.Some
 
 /**
  * Given a command pipeline, create a list of command handlers for each
@@ -60,17 +62,8 @@ case class CommandHandlerWirer(commandRegistry: CommandRegistry) {
     @throws[CommandNotFoundException]
     def wire(variableRegistry: VariableRegistry, commandPipeline: CommandPipeline): List[CommandHandler] = {
         val handlers = scala.collection.mutable.ArrayBuffer[CommandHandler]()
-        val commands = commandPipeline.getCommands
-        for (command <- commands) {
-            val handler = commandRegistry.getHandler(command.getName)
-            val args = command.getArgs
-            val verbose = args.exists( isFilterVerboseSwitch )
-            val filteredArgs = args.filterNot( isFilterVerboseSwitch ).toList
-            handler.setVerbose(verbose)
-            handler.setArgs(filteredArgs)
-            handler.setLog(if (verbose) CommandHandlerWirer.verboseLog else CommandHandlerWirer.nonverboseLog)
-            handler.setVariableRegistry(variableRegistry)
-            handlers += handler
+        for (command <- commandPipeline.getCommands) {
+            handlers += initialiseCommandHandler(command, variableRegistry)
         }
         // TODO convert this null to Option
         // cat /dev/null > first, unless storing in a variable
@@ -105,6 +98,18 @@ case class CommandHandlerWirer(commandRegistry: CommandRegistry) {
             }
         }
         handlers.toList
+    }
+
+    private def initialiseCommandHandler(command: Command, variableRegistry: VariableRegistry): CommandHandler = {
+        val handler = commandRegistry.getHandler(command.getName)
+        val args = command.getArgs
+        val verbose = args.exists(isFilterVerboseSwitch)
+        val filteredArgs = args.filterNot(isFilterVerboseSwitch).toList
+        handler.setVerbose(verbose)
+        handler.setArgs(filteredArgs)
+        handler.setLog(if (verbose) CommandHandlerWirer.verboseLog else CommandHandlerWirer.nonverboseLog)
+        handler.setVariableRegistry(variableRegistry)
+        handler
     }
 
     private def connectByRendezvousPipe(left: CommandHandler, right: CommandHandler) {
