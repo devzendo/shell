@@ -90,7 +90,7 @@ class CommandParser(commandExists: CommandExists) {
 
         def command: Parser[Command] = (
             commandVariant |
-            ("(" ~> commandVariant <~ ")")
+            ("(" ~> command <~ ")")
         )
 
         def infixCommand: Parser[Command] = argument ~ existingCommandName ~ rep(argument) ^^ {

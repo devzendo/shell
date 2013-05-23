@@ -398,6 +398,31 @@ public class TestCommandParser {
 
         final CommandPipeline pipeline = (CommandPipeline) parser.parse(
                 "(2 * 3) + (y / 7)");
+
+        checkSubCommandsAreEmbeddedInArguments(pipeline);
+    }
+
+    @Test
+    public void subCommandsAreEmbeddedInArgumentsAllowingSuperfluousParenthesesAroundCommmand() throws CommandParserException {
+        addValidCommands("*", "+", "/");
+
+        final CommandPipeline pipeline = (CommandPipeline) parser.parse(
+                "(((2 * 3) + (y / 7)))");
+
+        checkSubCommandsAreEmbeddedInArguments(pipeline);
+    }
+
+    @Test
+    public void subCommandsAreEmbeddedInArgumentsAllowingSuperfluousParenthesesAroundArguments() throws CommandParserException {
+        addValidCommands("*", "+", "/");
+
+        final CommandPipeline pipeline = (CommandPipeline) parser.parse(
+                "((2 * 3) + (((y / 7))))");
+
+        checkSubCommandsAreEmbeddedInArguments(pipeline);
+    }
+
+    private void checkSubCommandsAreEmbeddedInArguments(final CommandPipeline pipeline) {
         final scala.collection.immutable.List<Command> cmds = pipeline.getCommands();
 
         assertThat(cmds.size(), equalTo(1));
