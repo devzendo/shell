@@ -60,7 +60,7 @@ case class ExecutionContainer(commandHandlers: List[CommandHandler]) {
                             case e: CommandExecutionException =>
                                 exceptions.add(e)
                         } finally {
-                            var variableRegistry = handler.getVariableRegistry
+                            val variableRegistry = handler.getVariableRegistry
                             if (variableRegistry != null) {
                                 variableRegistry.decrementUsage()
                             }

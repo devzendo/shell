@@ -35,7 +35,7 @@ object CommandHandlerWirer {
 }
 case class CommandHandlerWirer(commandRegistry: CommandRegistry) {
 
-    private[this] def isFilterSwitch(p: AnyRef) = p match {
+    private[this] def isFilterVerboseSwitch(p: AnyRef) = p match {
         case sw: Switch =>
             sw.switchName.equals("Verbose")
         case _ =>
@@ -64,8 +64,8 @@ case class CommandHandlerWirer(commandRegistry: CommandRegistry) {
         for (command <- commands) {
             val handler = commandRegistry.getHandler(command.getName)
             val args = command.getArgs
-            val verbose = args.exists( isFilterSwitch )
-            val filteredArgs = args.filterNot( isFilterSwitch ).toList
+            val verbose = args.exists( isFilterVerboseSwitch )
+            val filteredArgs = args.filterNot( isFilterVerboseSwitch ).toList
             handler.setVerbose(verbose)
             handler.setArgs(filteredArgs)
             handler.setLog(if (verbose) CommandHandlerWirer.verboseLog else CommandHandlerWirer.nonverboseLog)
