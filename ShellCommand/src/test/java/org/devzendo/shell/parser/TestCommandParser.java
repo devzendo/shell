@@ -83,6 +83,7 @@ public class TestCommandParser {
         assertThat(pipeline.isEmpty(), equalTo(false));
     }
 
+
     @Test
     public void singleWordFunction() throws CommandParserException {
         addValidCommands("foo");
@@ -126,6 +127,19 @@ public class TestCommandParser {
         assertThat(((Switch) args.get(0)).switchName(), equalTo("Minus"));
         assertThat(args.get(1), instanceOf(Switch.class));
         assertThat( ((Switch)args.get(1)).switchName(), equalTo("Slash"));
+    }
+
+    @Test
+    public void singleWordCommandWithSuperfluousParentheses() throws CommandParserException {
+        addValidCommands("foo");
+
+        final CommandPipeline pipeline = (CommandPipeline) parser.parse("(foo)");
+        final scala.collection.immutable.List<Command> cmds = pipeline.getCommands();
+        assertThat(cmds.size(), equalTo(1));
+        final Command cmd = cmds.apply(0);
+        assertThat(cmd.getName(), equalTo("foo"));
+        assertNoArgs(cmd);
+        assertThat(pipeline.isEmpty(), equalTo(false));
     }
 
     @Test
@@ -406,5 +420,39 @@ public class TestCommandParser {
         assertThat(div.getArgs(), equalTo(divExpectedArgs));
     }
 
+    @Test
+    public void subCommandsAreArbitrarilyNestedInArguments() throws CommandParserException {
+        addValidCommands("*", "+", "/");
 
+        final CommandPipeline pipeline = (CommandPipeline) parser.parse(
+                "(2 * (3 + (8 / var))) + 1");
+        final scala.collection.immutable.List<Command> cmds = pipeline.getCommands();
+
+        assertThat(cmds.size(), equalTo(1));
+        final Command plusCommand = cmds.apply(0);
+        assertThat(plusCommand.getName(), equalTo("+"));
+
+        final List<Object> plusCommandArgs = plusCommand.getArgs();
+        assertThat(plusCommandArgs.size(), equalTo(2));
+
+        final Command plusLhs = (Command) plusCommandArgs.get(0);
+        assertThat(plusLhs.getName(), equalTo("*"));
+        final Integer two = (Integer) plusLhs.getArgs().get(0);
+        assertThat(two, equalTo(2));
+        final Command innerPlus = (Command) plusLhs.getArgs().get(1);
+        assertThat(innerPlus.getName(), equalTo("+"));
+        assertThat(innerPlus.getArgs().size(), equalTo(2));
+        final Integer three = (Integer) innerPlus.getArgs().get(0);
+        assertThat(three, equalTo(3));
+        final Command div = (Command) innerPlus.getArgs().get(1);
+        assertThat(div.getName(), equalTo("/"));
+        assertThat(div.getArgs().size(), equalTo(2));
+        final Integer eight = (Integer) div.getArgs().get(0);
+        assertThat(eight, equalTo(8));
+        final VariableReference varRef = (VariableReference) div.getArgs().get(1);
+        assertThat(varRef.variableName(), equalTo("var"));
+
+        final Integer plusRhs = (Integer) plusCommandArgs.get(1);
+        assertThat(plusRhs, equalTo(1));
+    }
 }

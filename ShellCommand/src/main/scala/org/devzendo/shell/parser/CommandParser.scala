@@ -86,7 +86,12 @@ class CommandParser(commandExists: CommandExists) {
             }, ( _ => "Use one of = and >, but not both" )
             )
 
-        def command: Parser[Command] = (infixCommand | prefixFunction | prefixCommand)
+        def commandVariant: Parser[Command] = (infixCommand | prefixFunction | prefixCommand)
+
+        def command: Parser[Command] = (
+            commandVariant |
+            ("(" ~> commandVariant <~ ")")
+        )
 
         def infixCommand: Parser[Command] = argument ~ existingCommandName ~ rep(argument) ^^ {
             case firstArgument ~ name ~ remainingArgumentList =>
