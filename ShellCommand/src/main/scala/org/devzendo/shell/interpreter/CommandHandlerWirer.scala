@@ -44,6 +44,13 @@ case class CommandHandlerWirer(commandRegistry: CommandRegistry) {
             false
     }
 
+    private[this] def argToSubCommandHandler(arg: AnyRef): Option[CommandHandler] = arg match {
+        case command: Command =>
+            Some(null)
+        case _ =>
+            None
+    }
+
     @throws[CommandNotFoundException]
     def wire(parentVariableRegistry: VariableRegistry, statement: Statement): List[CommandHandler] = {
         statement match {
@@ -107,6 +114,7 @@ case class CommandHandlerWirer(commandRegistry: CommandRegistry) {
         val filteredArgs = args.filterNot(isFilterVerboseSwitch).toList
         handler.setVerbose(verbose)
         handler.setArgs(filteredArgs)
+        handler.setSubCommandHandlers(filteredArgs.map(argToSubCommandHandler))
         handler.setLog(if (verbose) CommandHandlerWirer.verboseLog else CommandHandlerWirer.nonverboseLog)
         handler.setVariableRegistry(variableRegistry)
         handler

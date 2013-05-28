@@ -96,11 +96,11 @@ case class ExecutionContainer(commandHandlers: List[CommandHandler]) {
 
     @throws[CommandExecutionException]
     private def executeOnCurrentThread() {
-        var commandHandler = commandHandlers.head
+        val handler = commandHandlers.head
         try {
-            commandHandler.executeAndTerminatePipes()
+            handler.executeAndTerminatePipes()
         } finally {
-            var variableRegistry = commandHandler.getVariableRegistry
+            val variableRegistry = handler.getVariableRegistry
             if (variableRegistry != null) {
                 variableRegistry.decrementUsage()
             }

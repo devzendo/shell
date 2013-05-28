@@ -64,6 +64,9 @@ abstract class CommandHandler(
     @scala.reflect.BeanProperty
     final var variableRegistry: VariableRegistry = null
 
+    @scala.reflect.BeanProperty
+    final var subCommandHandlers = List[Option[CommandHandler]]()
+
     @throws[CommandExecutionException]
     def execute()
 

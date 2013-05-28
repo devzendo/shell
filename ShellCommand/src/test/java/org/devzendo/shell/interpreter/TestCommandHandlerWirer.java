@@ -17,15 +17,13 @@ package org.devzendo.shell.interpreter;
 
 import org.devzendo.shell.ast.*;
 import org.devzendo.shell.pipe.*;
-import org.hamcrest.MatcherAssert;
-import org.hamcrest.Matchers;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import scala.Option;
 
 import java.lang.reflect.Method;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 import static java.util.Arrays.asList;
@@ -38,6 +36,7 @@ import static org.junit.Assert.assertTrue;
 
 public class TestCommandHandlerWirer {
     private static final scala.Option<VariableRegistry> noneVariableRegistry = scala.Option.apply(null);
+    private static final scala.Option<CommandHandler> noneCommandHandler = scala.Option.apply(null);
     final CommandRegistry commandRegistry = new CommandRegistry();
     final VariableRegistry variableRegistry = new VariableRegistry(noneVariableRegistry);
     final CommandHandlerWirer wirer = new CommandHandlerWirer(commandRegistry);
@@ -83,6 +82,7 @@ public class TestCommandHandlerWirer {
         CommandHandler commandHandler = handlers.apply(0);
         assertThat(commandHandler.getVerbose(), equalTo(true));
         assertThat(commandHandler.getLog().isVerboseEnabled(), equalTo(true));
+
         final scala.collection.immutable.List<Object> args = commandHandler.getArgs();
         assertThat(args.size(), equalTo(3));
         assertThat(args.apply(0), instanceOf(String.class));
@@ -91,6 +91,9 @@ public class TestCommandHandlerWirer {
         assertThat((Switch) args.apply(1), equalTo(new Switch("Two")));
         assertThat(args.apply(2), instanceOf(Switch.class));
         assertThat((Switch) args.apply(2), equalTo(new Switch("Three")));
+
+        final scala.collection.immutable.List<Option<CommandHandler>> subCommandHandlers = commandHandler.getSubCommandHandlers();
+        assertThat(subCommandHandlers.size(), equalTo(3));
     }
 
     @Test
@@ -219,25 +222,42 @@ public class TestCommandHandlerWirer {
         scala.collection.immutable.List<CommandHandler> handlers = wirer.wire(variableRegistry, pipeline);
         assertThat(handlers.size(), equalTo(1));
         final CommandHandler commandHandler = handlers.apply(0);
-        final scala.collection.immutable.List<Object> args = commandHandler.getArgs();
-        assertThat(args.size(), equalTo(0));
+        assertThat(commandHandler.getArgs().size(), equalTo(0));
+        assertThat(commandHandler.getSubCommandHandlers().size(), equalTo(0));
     }
-    
-    @Test
-    public void argsPassedToCommandHandlers() throws CommandNotFoundException, DuplicateCommandException {
+
+
+    private CommandHandler addCommandWithSimpleArgs() throws CommandNotFoundException, DuplicateCommandException {
         commandRegistry.registerCommand("foo", null, mAnalysedMethod);
-        final List<Object> inputArgs = asList(new Object[] { (Integer)5, "hello"});
+        final List<Object> inputArgs = asList(new Object[] { 5, "hello"});
         final Command command = new Command("foo", inputArgs);
         pipeline.addCommand(command);
         scala.collection.immutable.List<CommandHandler> handlers = wirer.wire(variableRegistry, pipeline);
         assertThat(handlers.size(), equalTo(1));
-        final CommandHandler commandHandler = handlers.apply(0);
+        return handlers.apply(0);
+    }
+
+    @Test
+    public void argsPassedToCommandHandlers() throws CommandNotFoundException, DuplicateCommandException {
+        final CommandHandler commandHandler = addCommandWithSimpleArgs();
+
         final scala.collection.immutable.List<Object> args = commandHandler.getArgs();
         assertThat(args.size(), equalTo(2));
         assertThat((Integer) args.apply(0), equalTo(5));
         assertThat((String) args.apply(1), equalTo("hello"));
     }
-    
+
+    @Test
+    public void nonCommandArgsGenerateNoneSubCommandHandlers() throws CommandNotFoundException, DuplicateCommandException {
+        final CommandHandler commandHandler = addCommandWithSimpleArgs();
+
+        final scala.collection.immutable.List<Option<CommandHandler>> subCommandHandlers = commandHandler.getSubCommandHandlers();
+        assertThat(subCommandHandlers.size(), equalTo(2));
+        assertThat(subCommandHandlers.apply(0), equalTo(noneCommandHandler));
+        assertThat(subCommandHandlers.apply(1), equalTo(noneCommandHandler));
+    }
+
+
     @Test(expected = CommandNotFoundException.class)
     public void commandNotFound() throws CommandNotFoundException {
         @SuppressWarnings("unchecked")
@@ -294,6 +314,6 @@ public class TestCommandHandlerWirer {
     }
     
     private AnalysedMethod analyseMethod(Method method) {
-        return (AnalysedMethod) new MethodAnalyser().analyseMethod(method).get();
+        return new MethodAnalyser().analyseMethod(method).get();
     }
 }

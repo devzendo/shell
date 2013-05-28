@@ -70,7 +70,7 @@ statement ::= funcdef | pipeline
 
 pipeline ::= [variablename '='] command ['<' variablename] ['|' command]* ['>' variablename]
 
-command ::= postfix-function | postfix-command | infix-command
+command ::= prefix-function | prefix-command | infix-command
 
 prefix-command ::= commandname argument*
 prefix-function ::= commandname '(' [argument [',' argument]*] ')'
