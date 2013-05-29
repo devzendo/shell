@@ -29,9 +29,7 @@ import java.util.List;
 import static java.util.Arrays.asList;
 import static java.util.Collections.EMPTY_LIST;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.instanceOf;
-import static org.hamcrest.Matchers.not;
+import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertTrue;
 
 public class TestCommandHandlerWirer {
@@ -255,6 +253,27 @@ public class TestCommandHandlerWirer {
         assertThat(subCommandHandlers.size(), equalTo(2));
         assertThat(subCommandHandlers.apply(0), equalTo(noneCommandHandler));
         assertThat(subCommandHandlers.apply(1), equalTo(noneCommandHandler));
+    }
+
+
+    @Test
+    public void subCommandArgsGenerateSomeSubCommandHandlers() throws CommandNotFoundException, DuplicateCommandException {
+        commandRegistry.registerCommand("+", null, mAnalysedMethod);
+        commandRegistry.registerCommand("main", null, mAnalysedMethod);
+        final Command subCommand = new Command("+", Arrays.<Object>asList(1, 2));
+        final Command mainCommand = new Command("main", Arrays.<Object>asList(subCommand));
+        pipeline.addCommand(mainCommand);
+        scala.collection.immutable.List<CommandHandler> handlers = wirer.wire(variableRegistry, pipeline);
+        assertThat(handlers.size(), equalTo(1));
+        final CommandHandler handler = handlers.apply(0);
+        assertThat(handler.getArgs().size(), equalTo(1));
+
+        final scala.collection.immutable.List<Option<CommandHandler>> subCommandHandlers = handler.getSubCommandHandlers();
+        assertThat(subCommandHandlers.size(), equalTo(1));
+        final Option<CommandHandler> plusHandler = subCommandHandlers.apply(0);
+        assertThat(plusHandler, not(equalTo(noneCommandHandler)));
+
+        assertThat(plusHandler.get(), nullValue());
     }
 
 
