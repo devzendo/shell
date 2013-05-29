@@ -266,7 +266,9 @@ public class TestCommandHandlerWirer {
         scala.collection.immutable.List<CommandHandler> handlers = wirer.wire(variableRegistry, pipeline);
         assertThat(handlers.size(), equalTo(1));
         final CommandHandler handler = handlers.apply(0);
-        assertThat(handler.getArgs().size(), equalTo(1));
+        final scala.collection.immutable.List<Object> handlerArgs = handler.getArgs();
+        assertThat(handlerArgs.size(), equalTo(1));
+        assertThat(handlerArgs.apply(0), instanceOf(Command.class)); // to be Variable eventually
 
         final scala.collection.immutable.List<Option<CommandHandler>> subCommandHandlers = handler.getSubCommandHandlers();
         assertThat(subCommandHandlers.size(), equalTo(1));
