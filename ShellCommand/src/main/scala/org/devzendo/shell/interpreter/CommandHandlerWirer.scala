@@ -109,8 +109,11 @@ case class CommandHandlerWirer(commandRegistry: CommandRegistry) {
         val (subCommandHandlers, arguments) = filteredArgs.map((arg: AnyRef) =>
             arg match {
                 case subCommand: Command =>
+                    val subCommandHandler = initialiseCommandHandler(subCommand, variableRegistry)
                     val avp = new AnonymousVariablePipe()
-                    (Some(null), avp.contents)
+                    subCommandHandler.setInputPipe(new NullInputPipe())
+                    subCommandHandler.setOutputPipe(avp)
+                    (Some(subCommandHandler), avp.contents)
                 case x: AnyRef =>
                     (None, x)
             }

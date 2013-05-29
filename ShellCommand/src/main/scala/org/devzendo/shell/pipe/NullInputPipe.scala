@@ -22,6 +22,7 @@ package org.devzendo.shell.pipe
  *
  */
 class NullInputPipe extends InputPipe {
+    // TODO can't this be an object?
     def next() = None
 
     def setTerminated() {

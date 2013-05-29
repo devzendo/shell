@@ -272,10 +272,13 @@ public class TestCommandHandlerWirer {
 
         final scala.collection.immutable.List<Option<CommandHandler>> subCommandHandlers = handler.getSubCommandHandlers();
         assertThat(subCommandHandlers.size(), equalTo(1));
-        final Option<CommandHandler> plusHandler = subCommandHandlers.apply(0);
-        assertThat(plusHandler, not(equalTo(noneCommandHandler)));
+        final Option<CommandHandler> plusHandlerOption = subCommandHandlers.apply(0);
+        assertThat(plusHandlerOption, not(equalTo(noneCommandHandler)));
 
-        assertThat(plusHandler.get(), nullValue());
+        final CommandHandler plusHandler = plusHandlerOption.get();
+        assertThat(plusHandler.getInputPipe(), instanceOf(NullInputPipe.class));
+        assertThat(plusHandler.getOutputPipe(), instanceOf(AnonymousVariablePipe.class));
+
     }
 
 
