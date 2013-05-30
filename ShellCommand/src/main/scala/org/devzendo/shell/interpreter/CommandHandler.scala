@@ -73,13 +73,24 @@ abstract class CommandHandler(
     @throws[CommandExecutionException]
     final def executeAndTerminatePipes() {
         try {
-            CommandHandler.LOGGER.debug("executing...")
+            CommandHandler.LOGGER.debug(name + ": executing subcommands...")
+            executeSubCommands()
+            CommandHandler.LOGGER.debug(name + ": executing...")
             execute()
         } finally {
-            CommandHandler.LOGGER.debug("terminating pipes")
+            CommandHandler.LOGGER.debug(name + ": terminating pipes")
             terminatePipes()
-            CommandHandler.LOGGER.debug("pipes terminated")
-            CommandHandler.LOGGER.debug("...executed")
+            CommandHandler.LOGGER.debug(name + ": pipes terminated")
+            CommandHandler.LOGGER.debug(name + ": ...executed")
+        }
+    }
+
+    @throws[CommandExecutionException]
+    final def executeSubCommands() {
+        for (optionalCommandHandler <- subCommandHandlers) {
+            for (commandHandler <- optionalCommandHandler) {
+                commandHandler.executeAndTerminatePipes()
+            }
         }
     }
 

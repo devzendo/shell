@@ -15,6 +15,8 @@
  */
 package org.devzendo.shell.interpreter;
 
+import org.apache.log4j.BasicConfigurator;
+import org.devzendo.shell.ScalaListHelper;
 import org.devzendo.shell.pipe.InputPipe;
 import org.devzendo.shell.pipe.OutputPipe;
 import org.jmock.Expectations;
@@ -23,6 +25,12 @@ import org.jmock.integration.junit4.JMock;
 import org.jmock.integration.junit4.JUnit4Mockery;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import scala.Option;
+import scala.Option$;
+import scala.collection.immutable.List;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.equalTo;
 
 @RunWith(JMock.class)
 public class TestCommandHandler {
@@ -52,5 +60,39 @@ public class TestCommandHandler {
         } });
 
         handler.executeAndTerminatePipes();
+    }
+
+    private static int sequence = 0;
+    private static class SequencedCommandHandler extends CommandHandler {
+        private int executionSequence = -1;
+
+        public SequencedCommandHandler(final String name) {
+            super(name, none, none, none, none);
+        }
+
+        @Override
+        public void execute() {
+            executionSequence = sequence++;
+        }
+    }
+
+    @Test
+    public void subCommandsAreExecutedLeftToRight() throws CommandExecutionException {
+        BasicConfigurator.configure();
+        final SequencedCommandHandler main = new SequencedCommandHandler("main");
+        final SequencedCommandHandler first = new SequencedCommandHandler("first");
+        final SequencedCommandHandler second = new SequencedCommandHandler("second");
+        main.setSubCommandHandlers(
+                ScalaListHelper.createList(
+                        Option$.MODULE$.apply((CommandHandler)first),
+                        Option$.MODULE$.apply((CommandHandler)second)));
+
+        main.executeAndTerminatePipes();
+
+        // subcommands executed first...
+        assertThat(first.executionSequence, equalTo(0));
+        assertThat(second.executionSequence, equalTo(1));
+        // then...
+        assertThat(main.executionSequence, equalTo(2));
     }
 }
