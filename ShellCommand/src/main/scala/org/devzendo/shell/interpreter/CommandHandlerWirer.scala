@@ -103,9 +103,12 @@ case class CommandHandlerWirer(commandRegistry: CommandRegistry) {
     private def initialiseCommandHandler(command: Command, variableRegistry: VariableRegistry): CommandHandler = {
         val handler = commandRegistry.getHandler(command.getName)
         val args = command.getArgs
+
         val verbose = args.exists(isFilterVerboseSwitch)
-        val filteredArgs = args.filterNot(isFilterVerboseSwitch).toList
         handler.setVerbose(verbose)
+        handler.setLog(if (verbose) CommandHandlerWirer.verboseLog else CommandHandlerWirer.nonverboseLog)
+
+        val filteredArgs = args.filterNot(isFilterVerboseSwitch).toList
         val (subCommandHandlers, arguments) = filteredArgs.map((arg: AnyRef) =>
             arg match {
                 case subCommand: Command =>
@@ -120,7 +123,7 @@ case class CommandHandlerWirer(commandRegistry: CommandRegistry) {
         ).unzip
         handler.setArgs(arguments)
         handler.setSubCommandHandlers(subCommandHandlers)
-        handler.setLog(if (verbose) CommandHandlerWirer.verboseLog else CommandHandlerWirer.nonverboseLog)
+
         handler.setVariableRegistry(variableRegistry)
         handler
     }
