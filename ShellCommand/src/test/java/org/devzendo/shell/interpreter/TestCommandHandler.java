@@ -16,7 +16,6 @@
 package org.devzendo.shell.interpreter;
 
 import org.apache.log4j.BasicConfigurator;
-import org.devzendo.shell.ScalaListHelper;
 import org.devzendo.shell.pipe.InputPipe;
 import org.devzendo.shell.pipe.OutputPipe;
 import org.jmock.Expectations;
@@ -27,8 +26,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import scala.Option;
 import scala.Option$;
-import scala.collection.immutable.List;
 
+import static org.devzendo.shell.ScalaListHelper.createList;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 
@@ -76,16 +75,22 @@ public class TestCommandHandler {
         }
     }
 
+    private void setSubCommandHandlers(final CommandHandler parent, final CommandHandler ... children)
+    {
+        final Option<CommandHandler>[] options = new Option[children.length];
+        for (int i=0; i<children.length; i++)
+            options[i] = Option$.MODULE$.apply(children[i]);
+
+        parent.setSubCommandHandlers(createList(options));
+    }
+
     @Test
     public void subCommandsAreExecutedLeftToRight() throws CommandExecutionException {
-        BasicConfigurator.configure();
+        sequence = 0;
         final SequencedCommandHandler main = new SequencedCommandHandler("main");
         final SequencedCommandHandler first = new SequencedCommandHandler("first");
         final SequencedCommandHandler second = new SequencedCommandHandler("second");
-        main.setSubCommandHandlers(
-                ScalaListHelper.createList(
-                        Option$.MODULE$.apply((CommandHandler)first),
-                        Option$.MODULE$.apply((CommandHandler)second)));
+        setSubCommandHandlers(main, first, second);
 
         main.executeAndTerminatePipes();
 
@@ -94,5 +99,41 @@ public class TestCommandHandler {
         assertThat(second.executionSequence, equalTo(1));
         // then...
         assertThat(main.executionSequence, equalTo(2));
+    }
+
+    @Test
+    public void subCommandsAreExecutedDepthFirst() throws CommandExecutionException {
+        sequence = 0;
+        BasicConfigurator.configure();
+
+        final SequencedCommandHandler first = new SequencedCommandHandler("first"); // 2
+        final SequencedCommandHandler first_first = new SequencedCommandHandler("first_first"); // 0
+        final SequencedCommandHandler first_second = new SequencedCommandHandler("first_second"); // 1
+        setSubCommandHandlers(first, first_first, first_second);
+
+        final SequencedCommandHandler second = new SequencedCommandHandler("second"); // 7
+        final SequencedCommandHandler second_first = new SequencedCommandHandler("second_first"); // 5
+        final SequencedCommandHandler second_first_first = new SequencedCommandHandler("second_first_first"); // 3
+        final SequencedCommandHandler second_first_second = new SequencedCommandHandler("second_first_second"); // 4
+        setSubCommandHandlers(second_first, second_first_first, second_first_second);
+        final SequencedCommandHandler second_second = new SequencedCommandHandler("second_second"); // 6
+        setSubCommandHandlers(second, second_first, second_second);
+
+        final SequencedCommandHandler main = new SequencedCommandHandler("last"); // 8
+        setSubCommandHandlers(main, first, second);
+
+        main.executeAndTerminatePipes();
+
+        // subcommands executed first...
+        assertThat(first_first.executionSequence, equalTo(0));
+        assertThat(first_second.executionSequence, equalTo(1));
+        assertThat(first.executionSequence, equalTo(2));
+        assertThat(second_first_first.executionSequence, equalTo(3));
+        assertThat(second_first_second.executionSequence, equalTo(4));
+        assertThat(second_first.executionSequence, equalTo(5));
+        assertThat(second_second.executionSequence, equalTo(6));
+        assertThat(second.executionSequence, equalTo(7));
+        // then...
+        assertThat(main.executionSequence, equalTo(8));
     }
 }
