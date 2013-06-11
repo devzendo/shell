@@ -15,6 +15,7 @@
  */
 package org.devzendo.shell;
 
+import org.devzendo.shell.interpreter.CommandExecutionException;
 import org.devzendo.shell.interpreter.ExecutionEnvironment;
 import org.devzendo.shell.interpreter.Log;
 import org.devzendo.shell.pipe.InputPipe;
@@ -74,6 +75,13 @@ public class PluginVariations {
         public void funk(final ArrayList<Object> args) {
             mExecuted = true;
             mArgs = args;
+        }
+    }
+
+    public static class VoidReturnArrayListArgsThrows extends AbstractShellPlugin {
+        public void funk(final List<Object> args) throws CommandExecutionException {
+            mExecuted = true;
+            throw new CommandExecutionException("bang");
         }
     }
 

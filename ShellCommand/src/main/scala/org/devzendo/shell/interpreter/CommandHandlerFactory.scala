@@ -71,8 +71,11 @@ class CommandHandlerFactory {
                         throw new CommandExecutionException("Illegal arguments: " + iae.getMessage)
                     case e: IllegalAccessException =>
                         throw new CommandExecutionException("Illegal access: " + e.getMessage)
-                    case ite: InvocationTargetException =>
-                        throw new CommandExecutionException("Invocation target exception: " + ite.getMessage)
+                    case ite: InvocationTargetException => {
+                        val cee = new CommandExecutionException(ite.getCause.getMessage, ite.getCause)
+                        cee.setStackTrace(ite.getCause.getStackTrace)
+                        throw cee
+                    }
                 }
             }
         }

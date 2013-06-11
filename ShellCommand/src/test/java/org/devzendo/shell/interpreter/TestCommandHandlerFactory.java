@@ -23,6 +23,7 @@ import org.devzendo.shell.pipe.OutputPipe;
 import org.jmock.Mockery;
 import org.jmock.integration.junit4.JMock;
 import org.jmock.integration.junit4.JUnit4Mockery;
+import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -33,6 +34,7 @@ import java.util.List;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
+import static org.junit.Assert.fail;
 
 @RunWith(JMock.class)
 public class TestCommandHandlerFactory {
@@ -71,6 +73,20 @@ public class TestCommandHandlerFactory {
         final AbstractShellPlugin plugin = new VoidReturnNoArgs();
         setupAndExecuteHandler(plugin);
         assertPluginHasBeenPassed(plugin, null, null, null, null);
+    }
+
+    @Test
+    public void commandExecutionExceptionIsPropagatedCorrectly() {
+        final AbstractShellPlugin plugin = new VoidReturnArrayListArgsThrows();
+        try {
+            setupAndExecuteHandler(plugin);
+            fail("Expected a CommandExecutionException that wasn't thrown");
+        } catch (final CommandExecutionException e) {
+            assertThat(e.getMessage(), equalTo("bang"));
+            final StackTraceElement firstStackTraceElement = e.getStackTrace()[0];
+            assertThat(firstStackTraceElement.getClassName(), equalTo("org.devzendo.shell.PluginVariations$VoidReturnArrayListArgsThrows"));
+            assertThat(firstStackTraceElement.getMethodName(), equalTo("funk"));
+        }
     }
 
     private void setupAndExecuteHandler(final AbstractShellPlugin plugin)

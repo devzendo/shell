@@ -48,7 +48,7 @@ class PluginMethodScanner {
             }
         }
 
-        PluginMethodScanner.LOGGER.debug("Plugin scanned")
+        PluginMethodScanner.LOGGER.debug("Plugin scanned; " + namedAnalysedMethods.size + " plugin methods found")
         namedAnalysedMethods.toMap
     }
 

@@ -16,5 +16,6 @@
 
 package org.devzendo.shell.interpreter
 
-class CommandExecutionException(warning: String) extends Exception(warning) {
+class CommandExecutionException(warning: String, cause: Throwable) extends Exception(warning, cause) {
+    def this(warning: String) = this(warning, null)
 }
