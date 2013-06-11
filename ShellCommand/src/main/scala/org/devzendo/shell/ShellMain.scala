@@ -82,6 +82,7 @@ class ShellMain(val argList: List[String]) {
                 new PluginsShellPlugin(),
                 new CommandsShellPlugin(),
                 new LoggingShellPlugin(),
+                new BasicOperatorsPlugin(),
                 new ExperimentalShellPlugin())
             )
 

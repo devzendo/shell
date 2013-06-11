@@ -259,10 +259,10 @@ public class TestCommandParser {
         assertThat(command1.getName(), equalTo("cmd1"));
         final List<Object> cmd1args = command1.getArgs();
         assertThat(cmd1args.size(), equalTo(5));
-        assertThat(((Double)cmd1args.get(0)), closeTo(2.0, 0.001));
+        assertThat(((java.lang.Double)cmd1args.get(0)), closeTo(2.0, 0.001));
         assertThat(((String)cmd1args.get(1)), Matchers.equalTo("string 'hello' "));
-        assertThat(((Double)cmd1args.get(2)), closeTo(230000.0, 1));
-        assertThat(((Double)cmd1args.get(3)), closeTo(6.8, 0.001));
+        assertThat(((java.lang.Double)cmd1args.get(2)), closeTo(230000.0, 1));
+        assertThat(((java.lang.Double)cmd1args.get(3)), closeTo(6.8, 0.001));
         assertThat(((VariableReference)cmd1args.get(4)).variableName(), equalTo("ident"));
         
         final Command command2 = cmds.apply(1);

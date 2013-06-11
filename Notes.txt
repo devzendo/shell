@@ -122,3 +122,6 @@ Need to control/sense:
   Standard error should be redirectable (with "2> variable", or "2| command " ?)
   Run in background with & ? Need to introduce job control..
   Obtain exit code.
+
+Extra semantics needed:
+  Blocks executed lazily for 'if' and short-circuiting (by-name parameters)

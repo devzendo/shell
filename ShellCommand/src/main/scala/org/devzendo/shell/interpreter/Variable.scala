@@ -47,4 +47,10 @@ final class Variable {
             store.clear()
         }
     }
+
+    def asList(): List[AnyRef] = {
+        store.synchronized {
+            store.toList
+        }
+    }
 }

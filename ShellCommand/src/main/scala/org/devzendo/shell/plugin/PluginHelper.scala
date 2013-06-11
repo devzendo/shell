@@ -29,4 +29,5 @@ trait PluginHelper {
 
     def filterInt(objects: Seq[Object]):Seq[Integer] = objects.filter(_.isInstanceOf[Integer]).asInstanceOf[Seq[Integer]] 
 
+    def filterBoolean(objects: Seq[Object]):Seq[Boolean] = objects.filter(_.isInstanceOf[Boolean]).asInstanceOf[Seq[Boolean]]
 }
