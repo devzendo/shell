@@ -21,6 +21,8 @@ import org.devzendo.shell.interpreter.{CommandExecutionException, Variable}
 import org.devzendo.shell.ast.VariableReference
 import org.apache.log4j.Logger
 import scala.annotation.tailrec
+import scala.throws
+import org.devzendo.shell.parser.CommandParserException
 
 object BasicOperatorsPlugin {
     private val LOGGER = Logger.getLogger(classOf[BasicOperatorsPlugin])
@@ -113,7 +115,7 @@ class BasicOperatorsPlugin extends AbstractShellPlugin with PluginHelper {
             case (aDbl: java.lang.Double, bBoo: java.lang.Boolean) => throw new CommandExecutionException("Cannot add Double '" + aDbl + "' to Boolean '" + bBoo + "'")
                 // what about truthiness of doubles? addition of booleans means disjunction
 
-            case (aBoo: java.lang.Boolean, bStr: String) => throw new CommandExecutionException("Cannot add boolean '" + aBoo + "' to String '" + bStr + "'")
+            case (aBoo: java.lang.Boolean, bStr: String) => throw new CommandExecutionException("Cannot add Boolean '" + aBoo + "' to String '" + bStr + "'")
             case (aBoo: java.lang.Boolean, bInt: java.lang.Integer) => throw new CommandExecutionException("Cannot add Boolean '" + aBoo + "' to Integer '" + bInt + "'")
             case (aBoo: java.lang.Boolean, bDbl: java.lang.Double) => throw new CommandExecutionException("Cannot add Boolean '" + aBoo + "' to Double '" + bDbl + "'")
             case (aBoo: java.lang.Boolean, bBoo: java.lang.Boolean) => new java.lang.Boolean(aBoo || bBoo)
@@ -123,6 +125,7 @@ class BasicOperatorsPlugin extends AbstractShellPlugin with PluginHelper {
 
 
     @CommandName(name = "+")
+    @throws(classOf[CommandExecutionException])
     def plus(inputPipe: InputPipe, outputPipe: OutputPipe, args: List[AnyRef]) {
         reduceArgsThenPipeOut(outputPipe, args, new Integer(0), plusElem)
     }

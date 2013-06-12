@@ -1,9 +1,11 @@
 package org.devzendo.shell.plugin;
 
+import org.apache.log4j.BasicConfigurator;
 import org.devzendo.shell.ast.VariableReference;
 import org.devzendo.shell.interpreter.*;
 import org.devzendo.shell.pipe.NullInputPipe;
 import org.devzendo.shell.pipe.VariableOutputPipe;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import scala.collection.immutable.List;
@@ -38,6 +40,7 @@ public class TestBasicOperatorsPlugin {
 
     @Before
     public void setUp() throws Exception {
+        BasicConfigurator.configure();
         final ExecutionEnvironment execEnv = new ExecutionEnvironment() {
             @Override
             public List<String> argList() {
@@ -62,47 +65,144 @@ public class TestBasicOperatorsPlugin {
         plugin.initialise(execEnv);
     }
 
-    @Test
-    public void additionOfIntegers() {
-        plugin.plus(inputPipe, outputPipe, createObjectList(1, 2));
-
-        assertThat(outputVariable.get(), equalTo(createObjectList(3)));
+    private void assertAddition(List<Object> inputs, List<Object> outputs) throws CommandExecutionException {
+        plugin.plus(inputPipe, outputPipe, inputs);
+        assertThat(outputVariable.get(), equalTo(outputs));
     }
 
+    private void assertAdditionFails(List<Object> inputs, String message) {
+        try {
+            plugin.plus(inputPipe, outputPipe, inputs);
+            Assert.fail("Expected a CommandExecutionException");
+        } catch (CommandExecutionException e) {
+            assertThat(e.getMessage(), equalTo(message));
+        }
+    }
+
+
+    // these two tests test the basic operator framework via addition; the
+    // actual addition of different types is covered below...
     @Test
-    public void additionVariablesExpandedAndOtherArgsConvertedToListsPaddedWithZero() {
+    public void additionVariablesExpandedAndOtherArgsConvertedToListsPaddedWithZero() throws CommandExecutionException {
         final Variable argVar = new Variable();
         argVar.add(1);
         argVar.add(2);
         argVar.add(3);
-        plugin.plus(inputPipe, outputPipe, createObjectList(argVar, 4));
         // the 1 of 1,2,3 is added to 4, and the 2 and 3 of 2,3 are added to
         // zeroes:
         //   +   =
         // 1   4   5
         // 2   0   2
         // 3   0   3
-
-        assertThat(outputVariable.get(), equalTo(createObjectList(5, 2, 3)));
+        assertAddition(createObjectList(argVar, 4), createObjectList(5, 2, 3));
     }
 
     @Test
-    public void additionVariableReferencesExpandedAndOtherArgsConvertedToListsPaddedWithZero() {
+    public void additionVariableReferencesExpandedAndOtherArgsConvertedToListsPaddedWithZero() throws CommandExecutionException {
         final Variable argVar = new Variable();
         argVar.add(1);
         argVar.add(2);
         argVar.add(3);
         final VariableReference argVarRef = new VariableReference("myvar");
         varReg.setVariable(argVarRef, argVar);
-        plugin.plus(inputPipe, outputPipe, createObjectList(argVarRef, 4));
         // the 1 of 1,2,3 is added to 4, and the 2 and 3 of 2,3 are added to
         // zeroes:
         //   +   =
         // 1   4   5
         // 2   0   2
         // 3   0   3
-
-        assertThat(outputVariable.get(), equalTo(createObjectList(5, 2, 3)));
+        assertAddition(createObjectList(argVarRef, 4), createObjectList(5, 2, 3));
     }
 
+    @Test
+    public void additionOfStrings() throws CommandExecutionException {
+        assertAddition(createObjectList("one", "two"), createObjectList("onetwo"));
+    }
+
+    @Test
+    public void additionOfStringAndInteger() throws CommandExecutionException {
+        assertAddition(createObjectList("one", 1), createObjectList("one1"));
+    }
+
+    @Test
+    public void additionOfStringAndDouble() throws CommandExecutionException {
+        assertAddition(createObjectList("one", 1.3), createObjectList("one1.3"));
+    }
+
+    @Test
+    public void additionOfStringAndBoolean() {
+        assertAdditionFails(createObjectList("one", false), "Cannot add String 'one' to Boolean 'false'");
+    }
+
+    @Test
+    public void additionOfIntegerAndString() throws CommandExecutionException {
+        assertAddition(createObjectList(1, "one"), createObjectList("1one"));
+    }
+
+    @Test
+    public void additionOfIntegers() throws CommandExecutionException {
+        assertAddition(createObjectList(1, 2), createObjectList(3));
+    }
+
+    @Test
+    public void additionOfIntegerAndDouble() throws CommandExecutionException {
+        assertAddition(createObjectList(1, 3.2), createObjectList(4.2));
+    }
+
+    @Test
+    public void additionOfIntegerAndBoolean() {
+        assertAdditionFails(createObjectList(1, true), "Cannot add Integer '1' to Boolean 'true'");
+    }
+
+    @Test
+    public void additionOfDoubleAndString() throws CommandExecutionException {
+        assertAddition(createObjectList(1.3, "one"), createObjectList("1.3one"));
+    }
+
+    @Test
+    public void additionOfDoubleAndInteger() throws CommandExecutionException {
+        assertAddition(createObjectList(4.1, 1), createObjectList(5.1));
+    }
+
+    @Test
+    public void additionOfDoubles() throws CommandExecutionException {
+        assertAddition(createObjectList(4.1, 3.5), createObjectList(7.6));
+    }
+
+    @Test
+    public void additionOfDoubleAndBoolean() {
+        assertAdditionFails(createObjectList(1.5, true), "Cannot add Double '1.5' to Boolean 'true'");
+    }
+
+    @Test
+    public void additionOfBooleanAndString() throws CommandExecutionException {
+        assertAdditionFails(createObjectList(false, "food"), "Cannot add Boolean 'false' to String 'food'");
+    }
+
+    @Test
+    public void additionOfBooleanAndInteger() {
+        assertAdditionFails(createObjectList(true, 1), "Cannot add Boolean 'true' to Integer '1'");
+    }
+
+    @Test
+    public void additionOfBooleanAndDouble() {
+        assertAdditionFails(createObjectList(true, 1.5), "Cannot add Boolean 'true' to Double '1.5'");
+    }
+
+    @Test
+    public void additionOfBooleans1() throws CommandExecutionException { // it's disjunction
+        assertAddition(createObjectList(false, false), createObjectList(false));
+    }
+    @Test
+    public void additionOfBooleans2() throws CommandExecutionException { // it's disjunction
+        assertAddition(createObjectList(false, true), createObjectList(true));
+    }
+    @Test
+    public void additionOfBooleans3() throws CommandExecutionException { // it's disjunction
+        assertAddition(createObjectList(true, false), createObjectList(true));
+    }
+    @Test
+    public void additionOfBooleans4() throws CommandExecutionException { // it's disjunction
+        assertAddition(createObjectList(true, true), createObjectList(true));
+    }
 }
