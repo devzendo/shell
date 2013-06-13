@@ -68,6 +68,9 @@ public class TestBasicOperatorsPlugin {
         plugin.initialise(execEnv);
     }
 
+
+    // operator framework ------------------------------------------------------
+
     private void assertAddition(List<Object> inputs, List<Object> outputs) throws CommandExecutionException {
         plugin.plus(inputPipe, outputPipe, inputs);
         assertThat(outputVariable.get(), equalTo(outputs));
@@ -81,7 +84,6 @@ public class TestBasicOperatorsPlugin {
             assertThat(e.getMessage(), equalTo(message));
         }
     }
-
 
     // these two tests test the basic operator framework via addition; the
     // actual addition of different types is covered below...
@@ -116,6 +118,8 @@ public class TestBasicOperatorsPlugin {
         // 3   0   3
         assertAddition(createObjectList(argVarRef, 4), createObjectList(5, 2, 3));
     }
+
+    // plus --------------------------------------------------------------------
 
     @Test
     public void additionOfStrings() throws CommandExecutionException {
@@ -218,5 +222,65 @@ public class TestBasicOperatorsPlugin {
                 "Cannot add the Switch 'Switch(Whatever)', Regex '/foo/'");
     }
 
-    // TODO unary +
+    // minus -------------------------------------------------------------------
+    private void assertSubtraction(List<Object> inputs, List<Object> outputs) throws CommandExecutionException {
+        plugin.minus(inputPipe, outputPipe, inputs);
+        assertThat(outputVariable.get(), equalTo(outputs));
+    }
+
+    private void assertSubtractionFails(List<Object> inputs, String message) {
+        try {
+            plugin.minus(inputPipe, outputPipe, inputs);
+            Assert.fail("Expected a CommandExecutionException");
+        } catch (CommandExecutionException e) {
+            assertThat(e.getMessage(), equalTo(message));
+        }
+    }
+
+    @Test
+    public void subtractionOfIntegers() throws CommandExecutionException {
+        assertSubtraction(createObjectList(1, 2), createObjectList(-1));
+    }
+
+    @Test
+    public void subtractionOfIntegerAndDouble() throws CommandExecutionException {
+        assertSubtraction(createObjectList(1, 3.2), createObjectList(-2.2));
+    }
+
+    @Test
+    public void subtractionOfDoubleAndInteger() throws CommandExecutionException {
+        assertSubtraction(createObjectList(4.5, 1), createObjectList(3.5));
+    }
+
+    @Test
+    public void subtractionOfDoubles() throws CommandExecutionException {
+        assertSubtraction(createObjectList(4.8, 3.4), createObjectList(1.4));
+    }
+
+    @Test
+    public void subtractionDoesNotAllowSwitchesStringsOrBooleans() {
+        assertSubtractionFails(
+                createObjectList(
+                        new Switch("Whatever"),
+                        new Regex("/foo/", createList(new String[0])),
+                        "String",
+                        true
+                ),
+                "Cannot subtract the Switch 'Switch(Whatever)', Regex '/foo/', String 'String', Boolean 'true'");
+    }
+
+    @Test
+    public void negationOfDouble() throws CommandExecutionException {
+        assertSubtraction(createObjectList(3.5), createObjectList(-3.5));
+    }
+
+    @Test
+    public void negationOfInteger() throws CommandExecutionException {
+        assertSubtraction(createObjectList(9), createObjectList(-9));
+    }
+
+
+
+
+    // TODO what about variables that hold types that the disallow check would filter out?
 }

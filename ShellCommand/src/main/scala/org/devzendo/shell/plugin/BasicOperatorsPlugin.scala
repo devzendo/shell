@@ -33,21 +33,22 @@ import BasicOperatorsPlugin._
 class BasicOperatorsPlugin extends AbstractShellPlugin with PluginHelper {
     def getName = "Operators"
 
+    // Convert an arg to a list, expanding variable references.
+    private def wrapArgAsList(arg: AnyRef): List[AnyRef] = arg match {
+        case v: Variable =>
+            v.asList()
+        case vr: VariableReference =>
+            executionEnvironment().variableRegistry().getVariable(vr).asList()
+        case null => // unsure...
+            List[AnyRef]()
+        case x: AnyRef =>
+            List(x)
+    }
+
     // Convert all args to lists, expanding variable references.
     private def wrapAsList(args: List[AnyRef]): List[List[AnyRef]] = {
         LOGGER.debug("Wrapping args as lists: " + args)
-        val out = args.map( (arg: AnyRef) => {
-            arg match {
-                case v: Variable =>
-                    v.asList()
-                case vr: VariableReference =>
-                    executionEnvironment().variableRegistry().getVariable(vr).asList()
-                case null => // unsure...
-                    List[AnyRef]()
-                case x: AnyRef =>
-                    List(x)
-            }
-        } )
+        val out = args.map( wrapArgAsList )
         LOGGER.debug("Wrapped args as lists: " + out)
         out
     }
@@ -96,8 +97,23 @@ class BasicOperatorsPlugin extends AbstractShellPlugin with PluginHelper {
         reduced.foreach( outputPipe.push(_) )
     }
 
-    val argumentTypes = Seq(
+    // Map expanded argument to a single list transformed by an operation, and pipe the results out.
+    private def mapArgThenPipeOut(outputPipe: OutputPipe, arg: AnyRef, op: ((AnyRef) => AnyRef)) {
+        LOGGER.debug("Wrapping arg: " + arg)
+        val argList = wrapArgAsList(arg)
+        LOGGER.debug("Wrapped arg: " + argList + "... mapping...")
+        val mapped = argList map op
+        LOGGER.debug("Mapped arg: " + mapped)
+        mapped.foreach( outputPipe.push(_) )
+    }
+
+    val allArgumentTypes = Seq(
         classOf[String], classOf[java.lang.Integer], classOf[java.lang.Double], classOf[java.lang.Boolean],
+        classOf[Variable], classOf[VariableReference]
+    )
+
+    val numericArgumentTypes = Seq(
+        classOf[java.lang.Integer], classOf[java.lang.Double],
         classOf[Variable], classOf[VariableReference]
     )
 
@@ -128,16 +144,56 @@ class BasicOperatorsPlugin extends AbstractShellPlugin with PluginHelper {
         }
     }
 
+    /**
+     * Addition is defined for Integers, Doubles, Strings and Booleans.
+     * Differing numerics are converted to the type that loses less.
+     * If Strings are involved, addition is concatenation.
+     * Numerics concatenated to Strings are first converted to Strings.
+     * Boolean addition is disjunction. Booleans can only be ored with Booleans.
+     * @param inputPipe
+     * @param outputPipe
+     * @param args
+     * @throws org.devzendo.shell.interpreter.CommandExecutionException
+     */
     @CommandName(name = "+")
     @throws(classOf[CommandExecutionException])
     def plus(inputPipe: InputPipe, outputPipe: OutputPipe, args: List[AnyRef]) {
-        onlyAllowArgumentTypes("add", args, argumentTypes)
+        onlyAllowArgumentTypes("add", args, allArgumentTypes)
         reduceArgsThenPipeOut(outputPipe, args, new Integer(0), plusElem)
     }
 
-    @CommandName(name = "-")
-    def minus(inputPipe: InputPipe, outputPipe: OutputPipe, args: java.util.List[Object]) {
 
+    private def minusElem(a: AnyRef, b: AnyRef): AnyRef = {
+        val out = (a, b) match {
+            case (aInt: java.lang.Integer, bInt: java.lang.Integer) => new Integer(aInt - bInt)
+            case (aInt: java.lang.Integer, bDbl: java.lang.Double) => minusElem(new java.lang.Double(aInt.doubleValue()), bDbl)
+
+            case (aDbl: java.lang.Double, bInt: java.lang.Integer) => minusElem(aDbl, new java.lang.Double(bInt.doubleValue()))
+            case (aDbl: java.lang.Double, bDbl: java.lang.Double) => new java.lang.Double(aDbl - bDbl)
+        }
+        LOGGER.debug("(" + a + " - " + b + ") = " + out)
+        out
+    }
+
+    /**
+     * Subtraction is defined for Integers and Doubles.
+     * Differing numerics are converted to the type that loses less.
+     * Unary minus negates the inputs.
+     * @param inputPipe
+     * @param outputPipe
+     * @param args
+     * @throws org.devzendo.shell.interpreter.CommandExecutionException
+     */
+    @CommandName(name = "-")
+    @throws(classOf[CommandExecutionException])
+    def minus(inputPipe: InputPipe, outputPipe: OutputPipe, args: List[AnyRef]) {
+        onlyAllowArgumentTypes("subtract", args, numericArgumentTypes)
+        if (args.size == 1) {
+            def negate(a: AnyRef): AnyRef = { minusElem(new java.lang.Integer(0), a) }
+            mapArgThenPipeOut(outputPipe, args(0), negate)
+        } else {
+            reduceArgsThenPipeOut(outputPipe, args, new Integer(0), minusElem)
+        }
     }
 
     @CommandName(name = "*")
