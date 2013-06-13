@@ -96,6 +96,12 @@ class BasicOperatorsPlugin extends AbstractShellPlugin with PluginHelper {
         reduced.foreach( outputPipe.push(_) )
     }
 
+    val argumentTypes = Seq(
+        classOf[String], classOf[java.lang.Integer], classOf[java.lang.Double], classOf[java.lang.Boolean],
+        classOf[Variable], classOf[VariableReference]
+    )
+
+
     private def plusElem(a: AnyRef, b: AnyRef): AnyRef = {
         (a, b) match {
             case (aStr: String, bStr: String) => aStr + bStr
@@ -122,11 +128,10 @@ class BasicOperatorsPlugin extends AbstractShellPlugin with PluginHelper {
         }
     }
 
-
-
     @CommandName(name = "+")
     @throws(classOf[CommandExecutionException])
     def plus(inputPipe: InputPipe, outputPipe: OutputPipe, args: List[AnyRef]) {
+        onlyAllowArgumentTypes("add", args, argumentTypes)
         reduceArgsThenPipeOut(outputPipe, args, new Integer(0), plusElem)
     }
 

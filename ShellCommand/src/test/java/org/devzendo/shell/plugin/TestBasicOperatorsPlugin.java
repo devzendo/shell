@@ -1,6 +1,7 @@
 package org.devzendo.shell.plugin;
 
 import org.apache.log4j.BasicConfigurator;
+import org.devzendo.shell.ast.Switch;
 import org.devzendo.shell.ast.VariableReference;
 import org.devzendo.shell.interpreter.*;
 import org.devzendo.shell.pipe.NullInputPipe;
@@ -9,7 +10,9 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import scala.collection.immutable.List;
+import scala.util.matching.Regex;
 
+import static org.devzendo.shell.ScalaListHelper.createList;
 import static org.devzendo.shell.ScalaListHelper.createObjectList;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
@@ -205,4 +208,15 @@ public class TestBasicOperatorsPlugin {
     public void additionOfBooleans4() throws CommandExecutionException { // it's disjunction
         assertAddition(createObjectList(true, true), createObjectList(true));
     }
+
+    @Test
+    public void additionDoesNotAllowSwitches() {
+        assertAdditionFails(
+                createObjectList(
+                    new Switch("Whatever"),
+                    new Regex("/foo/", createList(new String[0]))),
+                "Cannot add the Switch 'Switch(Whatever)', Regex '/foo/'");
+    }
+
+    // TODO unary +
 }

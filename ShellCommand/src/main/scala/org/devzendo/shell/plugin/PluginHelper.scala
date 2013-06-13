@@ -16,6 +16,8 @@
  
 package org.devzendo.shell.plugin
 
+import org.devzendo.shell.interpreter.CommandExecutionException
+
 trait PluginHelper {
     def streamForeach(producer: => Option[Object], processor: (Object) => Unit) {
         Stream.continually(producer).takeWhile(_.isDefined).flatten.foreach(processor)
@@ -30,4 +32,27 @@ trait PluginHelper {
     def filterInt(objects: Seq[Object]):Seq[Integer] = objects.filter(_.isInstanceOf[Integer]).asInstanceOf[Seq[Integer]] 
 
     def filterBoolean(objects: Seq[Object]):Seq[Boolean] = objects.filter(_.isInstanceOf[Boolean]).asInstanceOf[Seq[Boolean]]
+
+    @throws(classOf[CommandExecutionException])
+    def onlyAllowArgumentTypes(commandNameAsVerb: String, args: List[AnyRef], allowedClasses: Seq[Class[_]]) {
+        val argsAndTheirClasses = args.map( (arg: AnyRef) => {
+            val argClass = arg match {
+                case null => classOf[Null].asInstanceOf[Class[_]]
+                case x: AnyRef => x.getClass.asInstanceOf[Class[_]]
+            }
+            (arg, argClass)
+        })
+        val allowedClassesSet = allowedClasses.toSet
+        val disallowedArgsAndTheirClasses = argsAndTheirClasses.filterNot( (aatc: (AnyRef, Class[_])) => {
+            allowedClassesSet.contains(aatc._2)
+        })
+        if (disallowedArgsAndTheirClasses.size > 0)
+        {
+            // (Switch("foo"), classOf[Switch]) => "Switch 'foo'"
+            val argDescriptions = disallowedArgsAndTheirClasses.map((aatc: (AnyRef, Class[_])) =>
+                aatc._2.getSimpleName + " '" + aatc._1 + "'"
+            )
+            throw new CommandExecutionException("Cannot " + commandNameAsVerb + " the " + argDescriptions.mkString(", "))
+        }
+    }
 }
