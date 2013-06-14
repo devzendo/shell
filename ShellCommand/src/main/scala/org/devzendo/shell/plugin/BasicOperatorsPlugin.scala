@@ -22,7 +22,6 @@ import org.devzendo.shell.ast.VariableReference
 import org.apache.log4j.Logger
 import scala.annotation.tailrec
 import scala.throws
-import org.devzendo.shell.parser.CommandParserException
 
 object BasicOperatorsPlugin {
     private val LOGGER = Logger.getLogger(classOf[BasicOperatorsPlugin])
@@ -171,16 +170,12 @@ class BasicOperatorsPlugin extends AbstractShellPlugin with PluginHelper {
         }
     }
 
-    /**
+    /*
      * Addition is defined for Integers, Doubles, Strings and Booleans.
      * Differing numerics are converted to the type that loses less.
      * If Strings are involved, addition is concatenation.
      * Numerics concatenated to Strings are first converted to Strings.
      * Boolean addition is disjunction. Booleans can only be ored with Booleans.
-     * @param inputPipe
-     * @param outputPipe
-     * @param args
-     * @throws org.devzendo.shell.interpreter.CommandExecutionException
      */
     @CommandName(name = "+")
     @throws(classOf[CommandExecutionException])
@@ -201,14 +196,10 @@ class BasicOperatorsPlugin extends AbstractShellPlugin with PluginHelper {
         }
     }
 
-    /**
+    /*
      * Subtraction is defined for Integers and Doubles.
      * Differing numerics are converted to the type that loses less.
      * Unary minus negates the inputs.
-     * @param inputPipe
-     * @param outputPipe
-     * @param args
-     * @throws org.devzendo.shell.interpreter.CommandExecutionException
      */
     @CommandName(name = "-")
     @throws(classOf[CommandExecutionException])
@@ -246,13 +237,10 @@ class BasicOperatorsPlugin extends AbstractShellPlugin with PluginHelper {
         }
     }
 
-    /**
+    /*
      * Multiplication is defined for Integers, Doubles and Strings.
      * Differing numerics are converted to the type that loses less.
      * Integer and String combinations give string replication.
-     * @param inputPipe
-     * @param outputPipe
-     * @param args
      */
     @CommandName(name = "*")
     @throws(classOf[CommandExecutionException])
