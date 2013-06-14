@@ -296,4 +296,89 @@ public class TestBasicOperatorsPlugin {
         assertSubtractionFails(createObjectList(argVar), "Cannot subtract the Switch 'Switch(baloney)'");
     }
 
+    // times -------------------------------------------------------------------
+    private void assertMultiplication(List<Object> inputs, List<Object> outputs) throws CommandExecutionException {
+        plugin.times(inputPipe, outputPipe, inputs);
+        assertThat(outputVariable.get(), equalTo(outputs));
+    }
+
+    private void assertMultiplicationFails(List<Object> inputs, String message) {
+        try {
+            plugin.times(inputPipe, outputPipe, inputs);
+            Assert.fail("Expected a CommandExecutionException");
+        } catch (CommandExecutionException e) {
+            assertThat(e.getMessage(), equalTo(message));
+        }
+    }
+
+    @Test
+    public void multiplicationOfIntegers() throws CommandExecutionException {
+        assertMultiplication(createObjectList(4, 5), createObjectList(20));
+    }
+
+    @Test
+    public void multiplicationOfIntegerAndDouble() throws CommandExecutionException {
+        assertMultiplication(createObjectList(4, 5.2), createObjectList(20.8));
+    }
+
+    @Test
+    public void multiplicationOfDoubleAndInteger() throws CommandExecutionException {
+        assertMultiplication(createObjectList(4.5, 3), createObjectList(13.5));
+    }
+
+    @Test
+    public void multiplicationOfDoubles() throws CommandExecutionException {
+        assertMultiplication(createObjectList(2.5, 4.7), createObjectList(11.75));
+    }
+
+    @Test
+    public void multiplicationDoesNotAllowSwitchesStringsOrBooleans() {
+        assertMultiplicationFails(
+                createObjectList(
+                        new Switch("Whatever"),
+                        new Regex("/foo/", createList(new String[0])),
+                        "String",
+                        true
+                ),
+                "Cannot multiply the Switch 'Switch(Whatever)'");
+        // validates each arg early, not after zip, so can't report all validation failures together
+    }
+
+    @Test
+    public void multiplicationOfStringAndIntegerReplicates() throws CommandExecutionException {
+        assertMultiplication(createObjectList("abc", 3), createObjectList("abcabcabc"));
+    }
+
+    @Test
+    public void multiplicationOfIntegerAndStringReplicates() throws CommandExecutionException {
+        assertMultiplication(createObjectList(4, "ab"), createObjectList("abababab"));
+    }
+
+    @Test
+    public void multiplicationOfZeroIntegerAndStringReplicatesToEmpty() throws CommandExecutionException {
+        assertMultiplication(createObjectList(0, "ab"), createObjectList(""));
+    }
+
+    @Test
+    public void multiplicationOfNegativeIntegerAndStringFails() throws CommandExecutionException {
+        assertMultiplicationFails(createObjectList(-1, "ab"), "Cannot replicate the String 'ab' by the negative Integer '-1'");
+    }
+
+    @Test
+    public void multiplicationOfDoubleAndStringFails() throws CommandExecutionException {
+        assertMultiplicationFails(createObjectList(2.3, "ab"), "Cannot replicate the String 'ab' by the Double '2.3'");
+    }
+
+    @Test
+    public void multiplicationOfStringAndDoubleFails() throws CommandExecutionException {
+        assertMultiplicationFails(createObjectList("ab", 2.3), "Cannot replicate the String 'ab' by the Double '2.3'");
+    }
+
+    @Test
+    public void multiplicationOfDisallowedTypesInVariablesIsDisallowed() throws CommandExecutionException {
+        final Variable argVar = new Variable();
+        argVar.add(new Switch("baloney"));
+        assertMultiplicationFails(createObjectList(argVar), "Cannot multiply the Switch 'Switch(baloney)'");
+    }
+
 }

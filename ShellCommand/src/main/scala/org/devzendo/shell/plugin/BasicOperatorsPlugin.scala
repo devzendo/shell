@@ -132,6 +132,11 @@ class BasicOperatorsPlugin extends AbstractShellPlugin with PluginHelper {
         classOf[Variable], classOf[VariableReference]
     )
 
+    val numericAndStringArgumentTypes = Seq(
+        classOf[java.lang.Integer], classOf[java.lang.Double],
+        classOf[Variable], classOf[VariableReference], classOf[String]
+    )
+
     def curriedAllowArgumentTypes(verb: String, allowed: Seq[Class[_]])(args: List[AnyRef])
     {
         onlyAllowArgumentTypes(verb, args, allowed)
@@ -218,9 +223,42 @@ class BasicOperatorsPlugin extends AbstractShellPlugin with PluginHelper {
     }
 
 
-    @CommandName(name = "*")
-    def times(inputPipe: InputPipe, outputPipe: OutputPipe, args: java.util.List[Object]) {
+    // times -------------------------------------------------------------------
+    private def replicate(n: Integer, str: String): String = {
+        if (n < 0) {
+            throw new CommandExecutionException("Cannot replicate the String '" + str + "' by the negative Integer '" + n + "'")
+        } else {
+            str * n
+        }
+    }
 
+    private def timesElem(a: AnyRef, b: AnyRef): AnyRef = {
+        (a, b) match {
+            case (aInt: java.lang.Integer, bInt: java.lang.Integer) => new Integer(aInt * bInt)
+            case (aInt: java.lang.Integer, bDbl: java.lang.Double) => timesElem(new java.lang.Double(aInt.doubleValue()), bDbl)
+            case (aInt: java.lang.Integer, bStr: java.lang.String) => replicate(aInt, bStr)
+            case (aStr: String, bInt: java.lang.Integer) => replicate(bInt, aStr)
+
+            case (aDbl: java.lang.Double, bInt: java.lang.Integer) => timesElem(aDbl, new java.lang.Double(bInt.doubleValue()))
+            case (aDbl: java.lang.Double, bDbl: java.lang.Double) => new java.lang.Double(aDbl * bDbl)
+            case (aDbl: java.lang.Double, bStr: java.lang.String) => throw new CommandExecutionException("Cannot replicate the String '" + bStr + "' by the Double '" + aDbl + "'")
+            case (aStr: String, bDbl: java.lang.Double) => throw new CommandExecutionException("Cannot replicate the String '" + aStr + "' by the Double '" + bDbl + "'")
+        }
+    }
+
+    /**
+     * Multiplication is defined for Integers, Doubles and Strings.
+     * Differing numerics are converted to the type that loses less.
+     * Integer and String combinations give string replication.
+     * @param inputPipe
+     * @param outputPipe
+     * @param args
+     */
+    @CommandName(name = "*")
+    @throws(classOf[CommandExecutionException])
+    def times(inputPipe: InputPipe, outputPipe: OutputPipe, args: List[Object]) {
+        val validator = curriedAllowArgumentTypes("multiply", numericAndStringArgumentTypes)(_)
+        reduceArgsThenPipeOut(outputPipe, args, new Integer(1), timesElem, validator)
     }
 
     @CommandName(name = "/")
