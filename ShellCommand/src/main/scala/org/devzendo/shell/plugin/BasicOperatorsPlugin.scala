@@ -249,9 +249,26 @@ class BasicOperatorsPlugin extends AbstractShellPlugin with PluginHelper {
         reduceArgsThenPipeOut(outputPipe, args, new Integer(1), timesElem, validator)
     }
 
-    @CommandName(name = "/")
-    def divide(inputPipe: InputPipe, outputPipe: OutputPipe, args: java.util.List[Object]) {
+    // divide ------------------------------------------------------------------
+    private def divideElem(a: AnyRef, b: AnyRef): AnyRef = {
+        (a, b) match {
+            case (aInt: java.lang.Integer, bInt: java.lang.Integer) => new Integer(aInt / bInt)
+            case (aInt: java.lang.Integer, bDbl: java.lang.Double) => divideElem(new java.lang.Double(aInt.doubleValue()), bDbl)
 
+            case (aDbl: java.lang.Double, bInt: java.lang.Integer) => divideElem(aDbl, new java.lang.Double(bInt.doubleValue()))
+            case (aDbl: java.lang.Double, bDbl: java.lang.Double) => new java.lang.Double(aDbl / bDbl)
+        }
+    }
+
+    /*
+     * Division is defined for Integers and Doubles.
+     * Differing numerics are converted to the type that loses less.
+     */
+    @CommandName(name = "/")
+    @throws(classOf[CommandExecutionException])
+    def divide(inputPipe: InputPipe, outputPipe: OutputPipe, args: List[Object]) {
+        val validator = curriedAllowArgumentTypes("divide", numericArgumentTypes)(_)
+        reduceArgsThenPipeOut(outputPipe, args, new Integer(1), divideElem, validator)
     }
 
     @CommandName(name = "!")

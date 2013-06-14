@@ -381,4 +381,59 @@ public class TestBasicOperatorsPlugin {
         assertMultiplicationFails(createObjectList(argVar), "Cannot multiply the Switch 'Switch(baloney)'");
     }
 
+    // divide ------------------------------------------------------------------
+    private void assertDivision(List<Object> inputs, List<Object> outputs) throws CommandExecutionException {
+        plugin.divide(inputPipe, outputPipe, inputs);
+        assertThat(outputVariable.get(), equalTo(outputs));
+    }
+
+    private void assertDivisionFails(List<Object> inputs, String message) {
+        try {
+            plugin.divide(inputPipe, outputPipe, inputs);
+            Assert.fail("Expected a CommandExecutionException");
+        } catch (CommandExecutionException e) {
+            assertThat(e.getMessage(), equalTo(message));
+        }
+    }
+
+    @Test
+    public void divisionOfIntegers() throws CommandExecutionException {
+        assertDivision(createObjectList(10, 5), createObjectList(2));
+    }
+
+    @Test
+    public void divisionOfIntegerAndDouble() throws CommandExecutionException {
+        assertDivision(createObjectList(10, 5.0), createObjectList(2.0));
+    }
+
+    @Test
+    public void divisionOfDoubleAndInteger() throws CommandExecutionException {
+        assertDivision(createObjectList(4.5, 3), createObjectList(1.5));
+    }
+
+    @Test
+    public void divisionOfDoubles() throws CommandExecutionException {
+        assertDivision(createObjectList(11.25, 2.5), createObjectList(4.5));
+    }
+
+    @Test
+    public void divisionDoesNotAllowSwitchesStringsOrBooleans() {
+        assertDivisionFails(
+                createObjectList(
+                        new Switch("Whatever"),
+                        new Regex("/foo/", createList(new String[0])),
+                        "String",
+                        true
+                ),
+                "Cannot divide the Switch 'Switch(Whatever)'");
+        // validates each arg early, not after zip, so can't report all validation failures together
+    }
+
+    @Test
+    public void divisionOfDisallowedTypesInVariablesIsDisallowed() throws CommandExecutionException {
+        final Variable argVar = new Variable();
+        argVar.add(new Switch("baloney"));
+        assertDivisionFails(createObjectList(argVar), "Cannot divide the Switch 'Switch(baloney)'");
+    }
+
 }
