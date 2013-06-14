@@ -48,7 +48,7 @@ class BasicOperatorsPlugin extends AbstractShellPlugin with PluginHelper {
     // Convert all args to lists, expanding variable references.
     private def wrapAsList(args: List[AnyRef]): List[List[AnyRef]] = {
         LOGGER.debug("Wrapping args as lists: " + args)
-        val out = args.map( wrapArgAsList )
+        val out = args map wrapArgAsList
         LOGGER.debug("Wrapped args as lists: " + out)
         out
     }
@@ -87,8 +87,17 @@ class BasicOperatorsPlugin extends AbstractShellPlugin with PluginHelper {
     }
 
     // Reduce expanded arguments to a single list transformed by an operation and identity, and pipe the results out.
-    private def reduceArgsThenPipeOut(outputPipe: OutputPipe, args: List[AnyRef], identity: AnyRef, op: ((AnyRef, AnyRef) => AnyRef)) {
+    private def reduceArgsThenPipeOut(
+             outputPipe: OutputPipe,
+             args: List[AnyRef],
+             identity: AnyRef,
+             op: ((AnyRef, AnyRef) => AnyRef),
+             validate: (List[AnyRef]) => Unit) {
+        LOGGER.debug("Wrapping args: " + args)
         val argsAsLists = wrapAsList(args)
+        LOGGER.debug("Validating wrapped args: " + argsAsLists)
+        argsAsLists foreach validate
+        LOGGER.debug("Padding validated wrapped args")
         val argsAsPaddedLists = padLists(argsAsLists, identity)
         LOGGER.debug("Reducing args: " + argsAsPaddedLists)
         val reduced = reduce(argsAsPaddedLists, op)
@@ -98,10 +107,16 @@ class BasicOperatorsPlugin extends AbstractShellPlugin with PluginHelper {
     }
 
     // Map expanded argument to a single list transformed by an operation, and pipe the results out.
-    private def mapArgThenPipeOut(outputPipe: OutputPipe, arg: AnyRef, op: ((AnyRef) => AnyRef)) {
+    private def mapArgThenPipeOut(
+             outputPipe: OutputPipe,
+             arg: AnyRef,
+             op: ((AnyRef) => AnyRef),
+             validate: (List[AnyRef]) => Unit) {
         LOGGER.debug("Wrapping arg: " + arg)
         val argList = wrapArgAsList(arg)
-        LOGGER.debug("Wrapped arg: " + argList + "... mapping...")
+        LOGGER.debug("Validating wrapped arg: " + argList)
+        validate(argList)
+        LOGGER.debug("Mapping arg")
         val mapped = argList map op
         LOGGER.debug("Mapped arg: " + mapped)
         mapped.foreach( outputPipe.push(_) )
@@ -117,6 +132,13 @@ class BasicOperatorsPlugin extends AbstractShellPlugin with PluginHelper {
         classOf[Variable], classOf[VariableReference]
     )
 
+    def curriedAllowArgumentTypes(verb: String, allowed: Seq[Class[_]])(args: List[AnyRef])
+    {
+        onlyAllowArgumentTypes(verb, args, allowed)
+    }
+
+
+    // plus --------------------------------------------------------------------
 
     private def plusElem(a: AnyRef, b: AnyRef): AnyRef = {
         (a, b) match {
@@ -158,21 +180,20 @@ class BasicOperatorsPlugin extends AbstractShellPlugin with PluginHelper {
     @CommandName(name = "+")
     @throws(classOf[CommandExecutionException])
     def plus(inputPipe: InputPipe, outputPipe: OutputPipe, args: List[AnyRef]) {
-        onlyAllowArgumentTypes("add", args, allArgumentTypes)
-        reduceArgsThenPipeOut(outputPipe, args, new Integer(0), plusElem)
+        val validator = curriedAllowArgumentTypes("add", allArgumentTypes)(_)
+        reduceArgsThenPipeOut(outputPipe, args, new Integer(0), plusElem, validator)
     }
 
+    // minus -------------------------------------------------------------------
 
     private def minusElem(a: AnyRef, b: AnyRef): AnyRef = {
-        val out = (a, b) match {
+        (a, b) match {
             case (aInt: java.lang.Integer, bInt: java.lang.Integer) => new Integer(aInt - bInt)
             case (aInt: java.lang.Integer, bDbl: java.lang.Double) => minusElem(new java.lang.Double(aInt.doubleValue()), bDbl)
 
             case (aDbl: java.lang.Double, bInt: java.lang.Integer) => minusElem(aDbl, new java.lang.Double(bInt.doubleValue()))
             case (aDbl: java.lang.Double, bDbl: java.lang.Double) => new java.lang.Double(aDbl - bDbl)
         }
-        LOGGER.debug("(" + a + " - " + b + ") = " + out)
-        out
     }
 
     /**
@@ -187,14 +208,15 @@ class BasicOperatorsPlugin extends AbstractShellPlugin with PluginHelper {
     @CommandName(name = "-")
     @throws(classOf[CommandExecutionException])
     def minus(inputPipe: InputPipe, outputPipe: OutputPipe, args: List[AnyRef]) {
-        onlyAllowArgumentTypes("subtract", args, numericArgumentTypes)
+        val validator = curriedAllowArgumentTypes("subtract", numericArgumentTypes)(_)
         if (args.size == 1) {
             def negate(a: AnyRef): AnyRef = { minusElem(new java.lang.Integer(0), a) }
-            mapArgThenPipeOut(outputPipe, args(0), negate)
+            mapArgThenPipeOut(outputPipe, args(0), negate, validator)
         } else {
-            reduceArgsThenPipeOut(outputPipe, args, new Integer(0), minusElem)
+            reduceArgsThenPipeOut(outputPipe, args, new Integer(0), minusElem, validator)
         }
     }
+
 
     @CommandName(name = "*")
     def times(inputPipe: InputPipe, outputPipe: OutputPipe, args: java.util.List[Object]) {

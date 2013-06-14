@@ -219,8 +219,17 @@ public class TestBasicOperatorsPlugin {
                 createObjectList(
                     new Switch("Whatever"),
                     new Regex("/foo/", createList(new String[0]))),
-                "Cannot add the Switch 'Switch(Whatever)', Regex '/foo/'");
+                "Cannot add the Switch 'Switch(Whatever)'");
+        // validates each arg early, not after zip, so can't report all validation failures together
     }
+
+    @Test
+    public void additionOfDisallowedTypesInVariablesIsDisallowed() throws CommandExecutionException {
+        final Variable argVar = new Variable();
+        argVar.add(new Switch("baloney"));
+        assertAdditionFails(createObjectList(argVar), "Cannot add the Switch 'Switch(baloney)'");
+    }
+
 
     // minus -------------------------------------------------------------------
     private void assertSubtraction(List<Object> inputs, List<Object> outputs) throws CommandExecutionException {
@@ -266,7 +275,8 @@ public class TestBasicOperatorsPlugin {
                         "String",
                         true
                 ),
-                "Cannot subtract the Switch 'Switch(Whatever)', Regex '/foo/', String 'String', Boolean 'true'");
+                "Cannot subtract the Switch 'Switch(Whatever)'");
+        // validates each arg early, not after zip, so can't report all validation failures together
     }
 
     @Test
@@ -279,8 +289,11 @@ public class TestBasicOperatorsPlugin {
         assertSubtraction(createObjectList(9), createObjectList(-9));
     }
 
+    @Test
+    public void subtractionOfDisallowedTypesInVariablesIsDisallowed() throws CommandExecutionException {
+        final Variable argVar = new Variable();
+        argVar.add(new Switch("baloney"));
+        assertSubtractionFails(createObjectList(argVar), "Cannot subtract the Switch 'Switch(baloney)'");
+    }
 
-
-
-    // TODO what about variables that hold types that the disallow check would filter out?
 }
