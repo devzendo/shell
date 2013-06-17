@@ -427,4 +427,57 @@ public class TestBasicOperatorsPlugin {
         assertDivisionFails(createObjectList(argVar), "Cannot divide the Switch 'Switch(baloney)'");
     }
 
+    // logical not -------------------------------------------------------------
+    private void assertLogicalNot(List<Object> inputs, List<Object> outputs) throws CommandExecutionException {
+        plugin.logicalNot(inputPipe, outputPipe, inputs);
+        assertThat(outputVariable.get(), equalTo(outputs));
+    }
+
+    private void assertLogicalNotFails(List<Object> inputs, String message) {
+        try {
+            plugin.logicalNot(inputPipe, outputPipe, inputs);
+            Assert.fail("Expected a CommandExecutionException");
+        } catch (CommandExecutionException e) {
+            assertThat(e.getMessage(), equalTo(message));
+        }
+    }
+
+    @Test
+    public void logicalNotOfBooleans1() throws CommandExecutionException {
+        assertLogicalNot(createObjectList(true), createObjectList(false));
+    }
+
+    @Test
+    public void logicalNotOfBooleans2() throws CommandExecutionException {
+        assertLogicalNot(createObjectList(false), createObjectList(true));
+    }
+
+    @Test
+    public void logicalNotDoesNotAllowSwitches() {
+        assertLogicalNotFails(
+                createObjectList(new Switch("Whatever")),
+                "Cannot negate the Switch 'Switch(Whatever)'");
+    }
+
+    @Test
+    public void logicalNotDoesNotAllowIntegers() {
+        assertLogicalNotFails(
+                createObjectList(3),
+                "Cannot negate the Integer '3'");
+    }
+
+    @Test
+    public void logicalNotDoesNotAllowDoubles() {
+        assertLogicalNotFails(
+                createObjectList(3.7),
+                "Cannot negate the Double '3.7'");
+    }
+
+    @Test
+    public void logicalNotIsUnary() {
+        assertLogicalNotFails(
+                createObjectList(true, false),
+                "Boolean negation is a unary operation");
+    }
+
 }

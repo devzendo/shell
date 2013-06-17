@@ -131,6 +131,10 @@ class BasicOperatorsPlugin extends AbstractShellPlugin with PluginHelper {
         classOf[Variable], classOf[VariableReference]
     )
 
+    val booleanArgumentTypes = Seq(
+        classOf[java.lang.Boolean], classOf[Variable], classOf[VariableReference]
+    )
+
     val numericAndStringArgumentTypes = Seq(
         classOf[java.lang.Integer], classOf[java.lang.Double],
         classOf[Variable], classOf[VariableReference], classOf[String]
@@ -249,6 +253,7 @@ class BasicOperatorsPlugin extends AbstractShellPlugin with PluginHelper {
         reduceArgsThenPipeOut(outputPipe, args, new Integer(1), timesElem, validator)
     }
 
+
     // divide ------------------------------------------------------------------
     private def divideElem(a: AnyRef, b: AnyRef): AnyRef = {
         (a, b) match {
@@ -271,10 +276,24 @@ class BasicOperatorsPlugin extends AbstractShellPlugin with PluginHelper {
         reduceArgsThenPipeOut(outputPipe, args, new Integer(1), divideElem, validator)
     }
 
+    // logical not -------------------------------------------------------------
+
+    /*
+     * Negation is only defined for Booleans, and is a unary operation.
+     */
     @CommandName(name = "!")
     @CommandAlias(alias = "¬")
-    def logicalNot(inputPipe: InputPipe, outputPipe: OutputPipe, args: java.util.List[Object]) {
-
+    @throws(classOf[CommandExecutionException])
+    def logicalNot(inputPipe: InputPipe, outputPipe: OutputPipe, args: List[Object]) {
+        val validator = curriedAllowArgumentTypes("negate", booleanArgumentTypes)(_)
+        if (args.size == 1) {
+            def negate(a: AnyRef): AnyRef = a match {
+                case b: java.lang.Boolean => new java.lang.Boolean(!b)
+            }
+            mapArgThenPipeOut(outputPipe, args(0), negate, validator)
+        } else {
+            throw new CommandExecutionException("Boolean negation is a unary operation")
+        }
     }
 
     @CommandName(name = "%")
