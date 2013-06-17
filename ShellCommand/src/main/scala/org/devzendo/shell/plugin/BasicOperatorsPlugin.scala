@@ -126,6 +126,11 @@ class BasicOperatorsPlugin extends AbstractShellPlugin with PluginHelper {
         classOf[Variable], classOf[VariableReference]
     )
 
+    val integerArgumentTypes = Seq(
+        classOf[java.lang.Integer],
+        classOf[Variable], classOf[VariableReference]
+    )
+
     val numericArgumentTypes = Seq(
         classOf[java.lang.Integer], classOf[java.lang.Double],
         classOf[Variable], classOf[VariableReference]
@@ -296,9 +301,21 @@ class BasicOperatorsPlugin extends AbstractShellPlugin with PluginHelper {
         }
     }
 
-    @CommandName(name = "%")
-    def mod(inputPipe: InputPipe, outputPipe: OutputPipe, args: java.util.List[Object]) {
+    // modulus -----------------------------------------------------------------
 
+    /*
+     * Modulus is defined for Integers
+     */
+    @CommandName(name = "%")
+    @throws(classOf[CommandExecutionException])
+    def mod(inputPipe: InputPipe, outputPipe: OutputPipe, args: List[Object]) {
+        val validator = curriedAllowArgumentTypes("take the modulus of", integerArgumentTypes)(_)
+        def modElem(a: AnyRef, b: AnyRef): AnyRef = {
+            (a, b) match {
+                case (aInt: java.lang.Integer, bInt: java.lang.Integer) => new Integer(aInt % bInt)
+            }
+        }
+        reduceArgsThenPipeOut(outputPipe, args, new Integer(1), modElem, validator)
     }
 
     @CommandName(name = "^")

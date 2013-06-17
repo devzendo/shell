@@ -480,4 +480,38 @@ public class TestBasicOperatorsPlugin {
                 "Boolean negation is a unary operation");
     }
 
+    // modulus -----------------------------------------------------------------
+    private void assertModulus(List<Object> inputs, List<Object> outputs) throws CommandExecutionException {
+        plugin.mod(inputPipe, outputPipe, inputs);
+        assertThat(outputVariable.get(), equalTo(outputs));
+    }
+
+    private void assertModulusFails(List<Object> inputs, String message) {
+        try {
+            plugin.mod(inputPipe, outputPipe, inputs);
+            Assert.fail("Expected a CommandExecutionException");
+        } catch (CommandExecutionException e) {
+            assertThat(e.getMessage(), equalTo(message));
+        }
+    }
+
+    @Test
+    public void modulusOfIntegers() throws CommandExecutionException {
+        assertModulus(createObjectList(11, 4), createObjectList(3));
+    }
+
+    @Test
+    public void modulusDoesNotAllowDoubles() {
+        assertModulusFails(
+                createObjectList(3.7),
+                "Cannot take the modulus of the Double '3.7'");
+    }
+
+    @Test
+    public void modulusDoesNotAllowSwitches() {
+        assertModulusFails(
+                createObjectList(new Switch("Whatever")),
+                "Cannot take the modulus of the Switch 'Switch(Whatever)'");
+    }
+
 }
