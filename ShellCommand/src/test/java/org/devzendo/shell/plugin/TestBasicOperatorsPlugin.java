@@ -41,6 +41,17 @@ public class TestBasicOperatorsPlugin {
     final Variable outputVariable = new Variable();
     final VariableOutputPipe outputPipe = new VariableOutputPipe(outputVariable);
 
+    // test data ---------------------------------------------------------------
+    // This list is used for validating argument types. The framework validates
+    // each arg early, not after zip, so can't report all validation failures
+    // together.
+    final List<Object> whateverSwitchRegexStringList = createObjectList(
+            new Switch("Whatever"),
+            new Regex("/foo/", createList(new String[0])),
+            "String",
+            true
+    );
+
     @Before
     public void setUp() throws Exception {
         BasicConfigurator.configure();
@@ -216,11 +227,8 @@ public class TestBasicOperatorsPlugin {
     @Test
     public void additionDoesNotAllowSwitches() {
         assertAdditionFails(
-                createObjectList(
-                    new Switch("Whatever"),
-                    new Regex("/foo/", createList(new String[0]))),
+                whateverSwitchRegexStringList,
                 "Cannot add the Switch 'Switch(Whatever)'");
-        // validates each arg early, not after zip, so can't report all validation failures together
     }
 
     @Test
@@ -269,14 +277,8 @@ public class TestBasicOperatorsPlugin {
     @Test
     public void subtractionDoesNotAllowSwitchesStringsOrBooleans() {
         assertSubtractionFails(
-                createObjectList(
-                        new Switch("Whatever"),
-                        new Regex("/foo/", createList(new String[0])),
-                        "String",
-                        true
-                ),
+                whateverSwitchRegexStringList,
                 "Cannot subtract the Switch 'Switch(Whatever)'");
-        // validates each arg early, not after zip, so can't report all validation failures together
     }
 
     @Test
@@ -334,14 +336,8 @@ public class TestBasicOperatorsPlugin {
     @Test
     public void multiplicationDoesNotAllowSwitchesStringsOrBooleans() {
         assertMultiplicationFails(
-                createObjectList(
-                        new Switch("Whatever"),
-                        new Regex("/foo/", createList(new String[0])),
-                        "String",
-                        true
-                ),
+                whateverSwitchRegexStringList,
                 "Cannot multiply the Switch 'Switch(Whatever)'");
-        // validates each arg early, not after zip, so can't report all validation failures together
     }
 
     @Test
@@ -419,12 +415,7 @@ public class TestBasicOperatorsPlugin {
     @Test
     public void divisionDoesNotAllowSwitchesStringsOrBooleans() {
         assertDivisionFails(
-                createObjectList(
-                        new Switch("Whatever"),
-                        new Regex("/foo/", createList(new String[0])),
-                        "String",
-                        true
-                ),
+                whateverSwitchRegexStringList,
                 "Cannot divide the Switch 'Switch(Whatever)'");
         // validates each arg early, not after zip, so can't report all validation failures together
     }
