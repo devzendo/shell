@@ -131,6 +131,11 @@ class BasicOperatorsPlugin extends AbstractShellPlugin with PluginHelper {
         classOf[Variable], classOf[VariableReference]
     )
 
+    val integerBooleanArgumentTypes = Seq(
+        classOf[java.lang.Integer], classOf[java.lang.Boolean],
+        classOf[Variable], classOf[VariableReference]
+    )
+
     val numericArgumentTypes = Seq(
         classOf[java.lang.Integer], classOf[java.lang.Double],
         classOf[Variable], classOf[VariableReference]
@@ -318,9 +323,27 @@ class BasicOperatorsPlugin extends AbstractShellPlugin with PluginHelper {
         reduceArgsThenPipeOut(outputPipe, args, new Integer(1), modElem, validator)
     }
 
-    @CommandName(name = "^")
-    def bitwiseXor(inputPipe: InputPipe, outputPipe: OutputPipe, args: java.util.List[Object]) {
+    // bitwise exclusive or ----------------------------------------------------
+    private def boolean2Integer(b: java.lang.Boolean): Integer = {
+        if (b) new Integer(1) else new Integer(0)
+    }
 
+    /*
+     * Xor is defined for Integers and Booleans.
+     */
+    @CommandName(name = "^")
+    @throws(classOf[CommandExecutionException])
+    def bitwiseXor(inputPipe: InputPipe, outputPipe: OutputPipe, args: List[Object]) {
+        val validator = curriedAllowArgumentTypes("bitwise xor", integerBooleanArgumentTypes)(_)
+        def xorElem(a: AnyRef, b: AnyRef): AnyRef = {
+            (a, b) match {
+                case (aInt: java.lang.Integer, bBoo: java.lang.Boolean) => xorElem(aInt, boolean2Integer(bBoo))
+                case (aBoo: java.lang.Boolean, bBoo: java.lang.Boolean) => new java.lang.Boolean(aBoo ^ bBoo)
+                case (aInt: java.lang.Integer, bInt: java.lang.Integer) => new Integer(aInt ^ bInt)
+                case (aBoo: java.lang.Boolean, bInt: java.lang.Integer) => xorElem(boolean2Integer(aBoo), bInt)
+            }
+        }
+        reduceArgsThenPipeOut(outputPipe, args, new Integer(0), xorElem, validator)
     }
 
     @CommandName(name = "|") // hmmm, parser might not like that...

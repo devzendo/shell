@@ -514,4 +514,84 @@ public class TestBasicOperatorsPlugin {
                 "Cannot take the modulus of the Switch 'Switch(Whatever)'");
     }
 
+    // bitwise xor -------------------------------------------------------------
+    private void assertXor(List<Object> inputs, List<Object> outputs) throws CommandExecutionException {
+        plugin.bitwiseXor(inputPipe, outputPipe, inputs);
+        assertThat(outputVariable.get(), equalTo(outputs));
+    }
+
+    private void assertXorFails(List<Object> inputs, String message) {
+        try {
+            plugin.bitwiseXor(inputPipe, outputPipe, inputs);
+            Assert.fail("Expected a CommandExecutionException");
+        } catch (CommandExecutionException e) {
+            assertThat(e.getMessage(), equalTo(message));
+        }
+    }
+
+    @Test
+    public void bitwiseXorOfIntegers() throws CommandExecutionException {
+        // 1011 xor 1100 = 0111
+        assertXor(createObjectList(11, 12), createObjectList(7));
+    }
+
+    @Test
+    public void bitwiseXorOfIntegerAndBoolean1() throws CommandExecutionException {
+        // 1011 xor 0001 = 1010
+        assertXor(createObjectList(11, true), createObjectList(10));
+    }
+
+    @Test
+    public void bitwiseXorOfIntegerAndBoolean2() throws CommandExecutionException {
+        // 1011 xor 0000 = 1011
+        assertXor(createObjectList(11, false), createObjectList(11));
+    }
+
+    @Test
+    public void bitwiseXorOfBooleanAndInteger1() throws CommandExecutionException {
+        // 0001 xor 1011 = 1010
+        assertXor(createObjectList(true, 11), createObjectList(10));
+    }
+
+    @Test
+    public void bitwiseXorOfBooleanAndInteger2() throws CommandExecutionException {
+        // 0000 xor 1011 = 1011
+        assertXor(createObjectList(false, 11), createObjectList(11));
+    }
+
+    @Test
+    public void bitwiseXorOfBooleans1() throws CommandExecutionException {
+        assertXor(createObjectList(false, false), createObjectList(false));
+    }
+
+    @Test
+    public void bitwiseXorOfBooleans2() throws CommandExecutionException {
+        assertXor(createObjectList(false, true), createObjectList(true));
+    }
+
+    @Test
+    public void bitwiseXorOfBooleans3() throws CommandExecutionException {
+        assertXor(createObjectList(true, false), createObjectList(true));
+    }
+
+    @Test
+    public void bitwiseXorOfBooleans4() throws CommandExecutionException {
+        assertXor(createObjectList(true, true), createObjectList(false));
+    }
+
+    @Test
+    public void xorDoesNotAllowDoubles() {
+        assertXorFails(
+                createObjectList(3.7),
+                "Cannot bitwise xor the Double '3.7'");
+    }
+
+    @Test
+    public void xorDoesNotAllowSwitches() {
+        assertXorFails(
+                createObjectList(new Switch("Whatever")),
+                "Cannot bitwise xor the Switch 'Switch(Whatever)'");
+    }
+
+
 }
