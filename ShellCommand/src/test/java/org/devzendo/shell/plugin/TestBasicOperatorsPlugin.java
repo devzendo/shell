@@ -594,4 +594,85 @@ public class TestBasicOperatorsPlugin {
     }
 
 
+    // bitwise or --------------------------------------------------------------
+    private void assertOr(List<Object> inputs, List<Object> outputs) throws CommandExecutionException {
+        plugin.bitwiseOr(inputPipe, outputPipe, inputs);
+        assertThat(outputVariable.get(), equalTo(outputs));
+    }
+
+    private void assertOrFails(List<Object> inputs, String message) {
+        try {
+            plugin.bitwiseOr(inputPipe, outputPipe, inputs);
+            Assert.fail("Expected a CommandExecutionException");
+        } catch (CommandExecutionException e) {
+            assertThat(e.getMessage(), equalTo(message));
+        }
+    }
+
+    @Test
+    public void bitwiseOrOfIntegers() throws CommandExecutionException {
+        // 1011 or 1100 = 1111
+        assertOr(createObjectList(11, 12), createObjectList(15));
+    }
+
+    @Test
+    public void bitwiseOrOfIntegerAndBoolean1() throws CommandExecutionException {
+        // 1011 or 0001 = 1011
+        assertOr(createObjectList(11, true), createObjectList(11));
+    }
+
+    @Test
+    public void bitwiseOrOfIntegerAndBoolean2() throws CommandExecutionException {
+        // 1011 or 0000 = 1011
+        assertOr(createObjectList(11, false), createObjectList(11));
+    }
+
+    @Test
+    public void bitwiseOrOfBooleanAndInteger1() throws CommandExecutionException {
+        // 0001 or 1011 = 1011
+        assertOr(createObjectList(true, 11), createObjectList(11));
+    }
+
+    @Test
+    public void bitwiseOrOfBooleanAndInteger2() throws CommandExecutionException {
+        // 0000 or 1011 = 1011
+        assertOr(createObjectList(false, 11), createObjectList(11));
+    }
+
+    @Test
+    public void bitwiseOrOfBooleans1() throws CommandExecutionException {
+        assertOr(createObjectList(false, false), createObjectList(false));
+    }
+
+    @Test
+    public void bitwiseOrOfBooleans2() throws CommandExecutionException {
+        assertOr(createObjectList(false, true), createObjectList(true));
+    }
+
+    @Test
+    public void bitwiseOrOfBooleans3() throws CommandExecutionException {
+        assertOr(createObjectList(true, false), createObjectList(true));
+    }
+
+    @Test
+    public void bitwiseOrOfBooleans4() throws CommandExecutionException {
+        assertOr(createObjectList(true, true), createObjectList(true));
+    }
+
+    @Test
+    public void orDoesNotAllowDoubles() {
+        assertOrFails(
+                createObjectList(3.7),
+                "Cannot bitwise or the Double '3.7'");
+    }
+
+    @Test
+    public void orDoesNotAllowSwitches() {
+        assertOrFails(
+                createObjectList(new Switch("Whatever")),
+                "Cannot bitwise or the Switch 'Switch(Whatever)'");
+    }
+
+
+
 }
