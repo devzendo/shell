@@ -435,6 +435,22 @@ class BasicOperatorsPlugin extends AbstractShellPlugin with PluginHelper {
         reduceArgsThenPipeOut(outputPipe, args, java.lang.Boolean.FALSE, orElem, validator)
     }
 
+    // logical xor -------------------------------------------------------------
+    /*
+     * Logical xor is defined for Booleans.
+     */
+    @CommandName(name = "^^")
+    @throws(classOf[CommandExecutionException])
+    def logicalXor(inputPipe: InputPipe, outputPipe: OutputPipe, args: List[Object]) {
+        val validator = curriedAllowArgumentTypes("logically xor", booleanArgumentTypes)(_)
+        def xorElem(a: AnyRef, b: AnyRef): AnyRef = {
+            (a, b) match {
+                case (aBoo: java.lang.Boolean, bBoo: java.lang.Boolean) => new java.lang.Boolean(aBoo ^ bBoo)
+            }
+        }
+        reduceArgsThenPipeOut(outputPipe, args, java.lang.Boolean.FALSE, xorElem, validator)
+    }
+
     @CommandName(name = "<") // hmmm parser?
     def lessThan(inputPipe: InputPipe, outputPipe: OutputPipe, args: java.util.List[Object]) {
 

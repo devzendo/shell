@@ -915,5 +915,62 @@ public class TestBasicOperatorsPlugin {
                 "Cannot logically or the Switch 'Switch(Whatever)'");
     }
 
+    // logical xor --------------------------------------------------------------
+    private void assertLXor(List<Object> inputs, List<Object> outputs) throws CommandExecutionException {
+        plugin.logicalXor(inputPipe, outputPipe, inputs);
+        assertThat(outputVariable.get(), equalTo(outputs));
+    }
+
+    private void assertLXorFails(List<Object> inputs, String message) {
+        try {
+            plugin.logicalXor(inputPipe, outputPipe, inputs);
+            Assert.fail("Expected a CommandExecutionException");
+        } catch (CommandExecutionException e) {
+            assertThat(e.getMessage(), equalTo(message));
+        }
+    }
+
+    @Test
+    public void logicalXorOfBooleans1() throws CommandExecutionException {
+        assertLXor(createObjectList(false, false), createObjectList(false));
+    }
+
+    @Test
+    public void logicalXorOfBooleans2() throws CommandExecutionException {
+        assertLXor(createObjectList(false, true), createObjectList(true));
+    }
+
+    @Test
+    public void logicalXorOfBooleans3() throws CommandExecutionException {
+        assertLXor(createObjectList(true, false), createObjectList(true));
+    }
+
+    @Test
+    public void logicalXorOfBooleans4() throws CommandExecutionException {
+        assertLXor(createObjectList(true, true), createObjectList(false));
+    }
+
+    @Test
+    public void logicalXorDoesNotAllowDoubles() {
+        assertLXorFails(
+                createObjectList(3.7),
+                "Cannot logically xor the Double '3.7'");
+    }
+
+    @Test
+    public void logicalXorDoesNotAllowIntegers() {
+        assertLXorFails(
+                createObjectList(3),
+                "Cannot logically xor the Integer '3'");
+    }
+
+    @Test
+    public void logicalXorDoesNotAllowSwitches() {
+        assertLXorFails(
+                createObjectList(new Switch("Whatever")),
+                "Cannot logically xor the Switch 'Switch(Whatever)'");
+    }
+
+
     // TODO need to think about short-circuiting logical operations
 }
