@@ -365,9 +365,23 @@ class BasicOperatorsPlugin extends AbstractShellPlugin with PluginHelper {
         reduceArgsThenPipeOut(outputPipe, args, new Integer(0), orElem, validator)
     }
 
+    // bitwise and -------------------------------------------------------------
+    /*
+     * And is defined for Integers and Booleans.
+     */
     @CommandName(name = "&")
-    def bitwiseAnd(inputPipe: InputPipe, outputPipe: OutputPipe, args: java.util.List[Object]) {
-
+    @throws(classOf[CommandExecutionException])
+    def bitwiseAnd(inputPipe: InputPipe, outputPipe: OutputPipe, args: List[Object]) {
+        val validator = curriedAllowArgumentTypes("bitwise and", integerBooleanArgumentTypes)(_)
+        def andElem(a: AnyRef, b: AnyRef): AnyRef = {
+            (a, b) match {
+                case (aInt: java.lang.Integer, bBoo: java.lang.Boolean) => andElem(aInt, boolean2Integer(bBoo))
+                case (aBoo: java.lang.Boolean, bBoo: java.lang.Boolean) => new java.lang.Boolean(aBoo & bBoo)
+                case (aInt: java.lang.Integer, bInt: java.lang.Integer) => new Integer(aInt & bInt)
+                case (aBoo: java.lang.Boolean, bInt: java.lang.Integer) => andElem(boolean2Integer(aBoo), bInt)
+            }
+        }
+        reduceArgsThenPipeOut(outputPipe, args, new Integer(0), andElem, validator)
     }
 
     @CommandName(name = "~")

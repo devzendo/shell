@@ -673,6 +673,82 @@ public class TestBasicOperatorsPlugin {
                 "Cannot bitwise or the Switch 'Switch(Whatever)'");
     }
 
+    // bitwise and -------------------------------------------------------------
+    private void assertAnd(List<Object> inputs, List<Object> outputs) throws CommandExecutionException {
+        plugin.bitwiseAnd(inputPipe, outputPipe, inputs);
+        assertThat(outputVariable.get(), equalTo(outputs));
+    }
 
+    private void assertAndFails(List<Object> inputs, String message) {
+        try {
+            plugin.bitwiseAnd(inputPipe, outputPipe, inputs);
+            Assert.fail("Expected a CommandExecutionException");
+        } catch (CommandExecutionException e) {
+            assertThat(e.getMessage(), equalTo(message));
+        }
+    }
 
+    @Test
+    public void bitwiseAndOfIntegers() throws CommandExecutionException {
+        // 1011 and 1100 = 1000
+        assertAnd(createObjectList(11, 12), createObjectList(8));
+    }
+
+    @Test
+    public void bitwiseAndOfIntegerAndBoolean1() throws CommandExecutionException {
+        // 1011 and 0001 = 0001
+        assertAnd(createObjectList(11, true), createObjectList(1));
+    }
+
+    @Test
+    public void bitwiseAndOfIntegerAndBoolean2() throws CommandExecutionException {
+        // 1011 and 0000 = 0000
+        assertAnd(createObjectList(11, false), createObjectList(0));
+    }
+
+    @Test
+    public void bitwiseAndOfBooleanAndInteger1() throws CommandExecutionException {
+        // 0001 and 1011 = 0001
+        assertAnd(createObjectList(true, 11), createObjectList(1));
+    }
+
+    @Test
+    public void bitwiseAndOfBooleanAndInteger2() throws CommandExecutionException {
+        // 0000 and 1011 = 0000
+        assertAnd(createObjectList(false, 11), createObjectList(0));
+    }
+
+    @Test
+    public void bitwiseAndOfBooleans1() throws CommandExecutionException {
+        assertAnd(createObjectList(false, false), createObjectList(false));
+    }
+
+    @Test
+    public void bitwiseAndOfBooleans2() throws CommandExecutionException {
+        assertAnd(createObjectList(false, true), createObjectList(false));
+    }
+
+    @Test
+    public void bitwiseAndOfBooleans3() throws CommandExecutionException {
+        assertAnd(createObjectList(true, false), createObjectList(false));
+    }
+
+    @Test
+    public void bitwiseAndOfBooleans4() throws CommandExecutionException {
+        assertAnd(createObjectList(true, true), createObjectList(true));
+    }
+
+    @Test
+    public void andDoesNotAllowDoubles() {
+        assertAndFails(
+                createObjectList(3.7),
+                "Cannot bitwise and the Double '3.7'");
+    }
+
+    @Test
+    public void andDoesNotAllowSwitches() {
+        assertAndFails(
+                createObjectList(new Switch("Whatever")),
+                "Cannot bitwise and the Switch 'Switch(Whatever)'");
+    }
 }
