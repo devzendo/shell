@@ -18,6 +18,7 @@ package org.devzendo.shell.parser;
 import org.devzendo.shell.ast.*;
 import org.hamcrest.Matchers;
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -355,7 +356,8 @@ public class TestCommandParser {
                 "/",
                 ":",
                 "@",
-                "_"
+                "_",
+                "|" // but must be contained in (sub-commands)
         };
         addValidCommands(valids);
         for (String valid: valids) {
@@ -378,8 +380,7 @@ public class TestCommandParser {
                 "}",
                 ".",
                 ";",
-                "`",
-                "|"
+                "`"
         };
         addValidCommands(invalids); // so they won't be rejected immediately, but parsed
         for (String invalid: invalids) {
@@ -479,5 +480,34 @@ public class TestCommandParser {
 
         final Integer plusRhs = (Integer) plusCommandArgs.get(1);
         assertThat(plusRhs, equalTo(1));
+    }
+
+    @Test
+    public void subCommandsCanContainPipeSymbolsAsOperators() throws CommandParserException {
+        addValidCommands("echo", "|", "||");
+
+        final CommandPipeline pipeline = (CommandPipeline) parser.parse("echo (2 | (true || false))");
+        final scala.collection.immutable.List<Command> cmds = pipeline.getCommands();
+
+        assertThat(cmds.size(), equalTo(1));
+        final Command command = cmds.apply(0);
+        assertThat(command.getName(), equalTo("echo"));
+
+        final List<Object> echoArgs = command.getArgs();
+        assertThat(echoArgs.size(), equalTo(1));
+
+        final Command bitwiseOrCommand = (Command) echoArgs.get(0);
+        assertThat(bitwiseOrCommand.getName(), equalTo("|"));
+        final List<Object> bitwiseOrCommandArgs = bitwiseOrCommand.getArgs();
+
+        final Command logicalOrCommand = (Command) bitwiseOrCommandArgs.get(1);
+        assertThat(logicalOrCommand.getName(), equalTo("||"));
+        final List<Object> logicalOrExpectedArgs = new ArrayList<Object>();
+        logicalOrExpectedArgs.addAll(asList(true, false));
+        assertThat(logicalOrCommand.getArgs(), equalTo(logicalOrExpectedArgs));
+
+        final List<Object> bitwiseOrExpectedArgs = new ArrayList<Object>();
+        bitwiseOrExpectedArgs.addAll(asList(2, logicalOrCommand));
+        assertThat(bitwiseOrCommandArgs, equalTo(bitwiseOrExpectedArgs));
     }
 }

@@ -331,7 +331,7 @@ class BasicOperatorsPlugin extends AbstractShellPlugin with PluginHelper {
     /*
      * Xor is defined for Integers and Booleans.
      */
-    @CommandName(name = "^")
+    @CommandName(name = "x")
     @throws(classOf[CommandExecutionException])
     def bitwiseXor(inputPipe: InputPipe, outputPipe: OutputPipe, args: List[Object]) {
         val validator = curriedAllowArgumentTypes("bitwise xor", integerBooleanArgumentTypes)(_)
@@ -350,7 +350,7 @@ class BasicOperatorsPlugin extends AbstractShellPlugin with PluginHelper {
     /*
      * Or is defined for Integers and Booleans.
      */
-    @CommandName(name = "|") // hmmm, parser might not like that...
+    @CommandName(name = "v") // Would use |, but the parser grabs that for piping.
     @throws(classOf[CommandExecutionException])
     def bitwiseOr(inputPipe: InputPipe, outputPipe: OutputPipe, args: List[Object]) {
         val validator = curriedAllowArgumentTypes("bitwise or", integerBooleanArgumentTypes)(_)
@@ -365,7 +365,8 @@ class BasicOperatorsPlugin extends AbstractShellPlugin with PluginHelper {
         reduceArgsThenPipeOut(outputPipe, args, new Integer(0), orElem, validator)
     }
 
-    @CommandName(name = "&")
+    @CommandName(name = "")
+    @CommandAlias(alias = "&")
     def bitwiseAnd(inputPipe: InputPipe, outputPipe: OutputPipe, args: java.util.List[Object]) {
 
     }

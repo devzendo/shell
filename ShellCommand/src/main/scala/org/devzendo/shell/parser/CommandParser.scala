@@ -21,6 +21,7 @@ import org.devzendo.shell.ast._
 import org.devzendo.shell.ast.VariableReference
 import org.devzendo.shell.ast.Switch
 import org.devzendo.shell.ast.Command
+import java.util
 
 trait CommandExists {
     def commandExists(name: String): Boolean
@@ -40,11 +41,11 @@ class CommandParser(commandExists: CommandExists) {
         }
         new CommandPipeline()
     }
-    
+
     private def nullToEmpty(input: String): String = {
         if (input == null) "" else input
     }
-    
+
     private class StatementCombinatorParser extends JavaTokenParsers {
         def statement: Parser[Statement] = (
                 blockPipeline | pipeline
@@ -116,13 +117,13 @@ class CommandParser(commandExists: CommandExists) {
         }
 
         def operatorIdentifier: Parser[String] =
-            """[\p{Sm}\p{So}\p{Punct}&&[^()\[\]{}'"_.;`|]]*""".r
+            """[\p{Sm}\p{So}\p{Punct}&&[^()\[\]{}'"_.;`]]*""".r
         // Inspired initially from Scala's operator identifier; Odersky et al,
         // Programming in Scala, 2ed, p152.
         // I added _ to the exclusion above, but it is accepted as
         // the first character of an ident, so it is a valid identifier in
-        // Shell. | is also an invalid operator command for reasons that should
-        // be obvious :)
+        // Shell. | is also a valid operator, but must be enclosed in (sub-
+        // commands) for reasons that should be obvious :)
 
         def identifier: Parser[String] = (ident | operatorIdentifier)
 
