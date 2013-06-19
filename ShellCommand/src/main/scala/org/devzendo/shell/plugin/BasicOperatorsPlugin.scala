@@ -384,9 +384,23 @@ class BasicOperatorsPlugin extends AbstractShellPlugin with PluginHelper {
         reduceArgsThenPipeOut(outputPipe, args, new Integer(0), andElem, validator)
     }
 
+    // bitwise complement ------------------------------------------------------
+    /*
+     * Complement is defined for Integers and Booleans.
+     */
     @CommandName(name = "~")
-    def bitwiseComplement(inputPipe: InputPipe, outputPipe: OutputPipe, args: java.util.List[Object]) {
-
+    @throws(classOf[CommandExecutionException])
+    def bitwiseComplement(inputPipe: InputPipe, outputPipe: OutputPipe, args: List[Object]) {
+        val validator = curriedAllowArgumentTypes("complement", integerBooleanArgumentTypes)(_)
+        if (args.size == 1) {
+            def complement(a: AnyRef): AnyRef = a match {
+                case b: java.lang.Boolean => new java.lang.Boolean(!b)
+                case i: java.lang.Integer => new java.lang.Integer(~i)
+            }
+            mapArgThenPipeOut(outputPipe, args(0), complement, validator)
+        } else {
+            throw new CommandExecutionException("Bitwise complement is a unary operation")
+        }
     }
 
     @CommandName(name = "&&")

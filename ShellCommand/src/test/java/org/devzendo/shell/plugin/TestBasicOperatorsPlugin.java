@@ -751,4 +751,55 @@ public class TestBasicOperatorsPlugin {
                 createObjectList(new Switch("Whatever")),
                 "Cannot bitwise and the Switch 'Switch(Whatever)'");
     }
+
+    // bitwise complement ------------------------------------------------------
+    private void assertComplement(List<Object> inputs, List<Object> outputs) throws CommandExecutionException {
+        plugin.bitwiseComplement(inputPipe, outputPipe, inputs);
+        assertThat(outputVariable.get(), equalTo(outputs));
+    }
+
+    private void assertComplementFails(List<Object> inputs, String message) {
+        try {
+            plugin.bitwiseComplement(inputPipe, outputPipe, inputs);
+            Assert.fail("Expected a CommandExecutionException");
+        } catch (CommandExecutionException e) {
+            assertThat(e.getMessage(), equalTo(message));
+        }
+    }
+
+    @Test
+    public void complementOfBooleans1() throws CommandExecutionException {
+        assertComplement(createObjectList(true), createObjectList(false));
+    }
+
+    @Test
+    public void complementOfBooleans2() throws CommandExecutionException {
+        assertComplement(createObjectList(false), createObjectList(true));
+    }
+
+    @Test
+    public void complementOfInteger() throws CommandExecutionException {
+        assertComplement(createObjectList(1), createObjectList(-2));
+    }
+
+    @Test
+    public void complementDoesNotAllowSwitches() {
+        assertComplementFails(
+                createObjectList(new Switch("Whatever")),
+                "Cannot complement the Switch 'Switch(Whatever)'");
+    }
+
+    @Test
+    public void complementDoesNotAllowDoubles() {
+        assertComplementFails(
+                createObjectList(3.7),
+                "Cannot complement the Double '3.7'");
+    }
+
+    @Test
+    public void complementIsUnary() {
+        assertComplementFails(
+                createObjectList(true, false),
+                "Bitwise complement is a unary operation");
+    }
 }
