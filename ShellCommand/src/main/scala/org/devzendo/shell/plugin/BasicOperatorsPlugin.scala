@@ -403,9 +403,20 @@ class BasicOperatorsPlugin extends AbstractShellPlugin with PluginHelper {
         }
     }
 
+    // logical and -------------------------------------------------------------
+    /*
+     * Logical and is defined for Booleans.
+     */
     @CommandName(name = "&&")
-    def logicalAnd(inputPipe: InputPipe, outputPipe: OutputPipe, args: java.util.List[Object]) {
-
+    @throws(classOf[CommandExecutionException])
+    def logicalAnd(inputPipe: InputPipe, outputPipe: OutputPipe, args: List[Object]) {
+        val validator = curriedAllowArgumentTypes("logically and", booleanArgumentTypes)(_)
+        def andElem(a: AnyRef, b: AnyRef): AnyRef = {
+            (a, b) match {
+                case (aBoo: java.lang.Boolean, bBoo: java.lang.Boolean) => new java.lang.Boolean(aBoo & bBoo)
+            }
+        }
+        reduceArgsThenPipeOut(outputPipe, args, java.lang.Boolean.FALSE, andElem, validator)
     }
 
     @CommandName(name = "||")

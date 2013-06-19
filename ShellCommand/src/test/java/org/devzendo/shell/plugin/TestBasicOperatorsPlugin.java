@@ -802,4 +802,60 @@ public class TestBasicOperatorsPlugin {
                 createObjectList(true, false),
                 "Bitwise complement is a unary operation");
     }
+
+    // logical and -------------------------------------------------------------
+    private void assertLAnd(List<Object> inputs, List<Object> outputs) throws CommandExecutionException {
+        plugin.logicalAnd(inputPipe, outputPipe, inputs);
+        assertThat(outputVariable.get(), equalTo(outputs));
+    }
+
+    private void assertLAndFails(List<Object> inputs, String message) {
+        try {
+            plugin.logicalAnd(inputPipe, outputPipe, inputs);
+            Assert.fail("Expected a CommandExecutionException");
+        } catch (CommandExecutionException e) {
+            assertThat(e.getMessage(), equalTo(message));
+        }
+    }
+
+    @Test
+    public void logicalAndOfBooleans1() throws CommandExecutionException {
+        assertLAnd(createObjectList(false, false), createObjectList(false));
+    }
+
+    @Test
+    public void logicalAndOfBooleans2() throws CommandExecutionException {
+        assertLAnd(createObjectList(false, true), createObjectList(false));
+    }
+
+    @Test
+    public void logicalAndOfBooleans3() throws CommandExecutionException {
+        assertLAnd(createObjectList(true, false), createObjectList(false));
+    }
+
+    @Test
+    public void logicalAndOfBooleans4() throws CommandExecutionException {
+        assertLAnd(createObjectList(true, true), createObjectList(true));
+    }
+
+    @Test
+    public void logicalAndDoesNotAllowDoubles() {
+        assertLAndFails(
+                createObjectList(3.7),
+                "Cannot logically and the Double '3.7'");
+    }
+
+    @Test
+    public void logicalAndDoesNotAllowIntegers() {
+        assertLAndFails(
+                createObjectList(3),
+                "Cannot logically and the Integer '3'");
+    }
+
+    @Test
+    public void logicalAndDoesNotAllowSwitches() {
+        assertLAndFails(
+                createObjectList(new Switch("Whatever")),
+                "Cannot logically and the Switch 'Switch(Whatever)'");
+    }
 }
