@@ -858,4 +858,62 @@ public class TestBasicOperatorsPlugin {
                 createObjectList(new Switch("Whatever")),
                 "Cannot logically and the Switch 'Switch(Whatever)'");
     }
+
+    // logical or --------------------------------------------------------------
+    private void assertLOr(List<Object> inputs, List<Object> outputs) throws CommandExecutionException {
+        plugin.logicalOr(inputPipe, outputPipe, inputs);
+        assertThat(outputVariable.get(), equalTo(outputs));
+    }
+
+    private void assertLOrFails(List<Object> inputs, String message) {
+        try {
+            plugin.logicalOr(inputPipe, outputPipe, inputs);
+            Assert.fail("Expected a CommandExecutionException");
+        } catch (CommandExecutionException e) {
+            assertThat(e.getMessage(), equalTo(message));
+        }
+    }
+
+    @Test
+    public void logicalOrOfBooleans1() throws CommandExecutionException {
+        assertLOr(createObjectList(false, false), createObjectList(false));
+    }
+
+    @Test
+    public void logicalOrOfBooleans2() throws CommandExecutionException {
+        assertLOr(createObjectList(false, true), createObjectList(true));
+    }
+
+    @Test
+    public void logicalOrOfBooleans3() throws CommandExecutionException {
+        assertLOr(createObjectList(true, false), createObjectList(true));
+    }
+
+    @Test
+    public void logicalOrOfBooleans4() throws CommandExecutionException {
+        assertLOr(createObjectList(true, true), createObjectList(true));
+    }
+
+    @Test
+    public void logicalOrDoesNotAllowDoubles() {
+        assertLOrFails(
+                createObjectList(3.7),
+                "Cannot logically or the Double '3.7'");
+    }
+
+    @Test
+    public void logicalOrDoesNotAllowIntegers() {
+        assertLOrFails(
+                createObjectList(3),
+                "Cannot logically or the Integer '3'");
+    }
+
+    @Test
+    public void logicalOrDoesNotAllowSwitches() {
+        assertLOrFails(
+                createObjectList(new Switch("Whatever")),
+                "Cannot logically or the Switch 'Switch(Whatever)'");
+    }
+
+    // TODO need to think about short-circuiting logical operations
 }

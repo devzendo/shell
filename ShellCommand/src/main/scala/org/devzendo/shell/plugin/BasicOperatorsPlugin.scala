@@ -419,9 +419,20 @@ class BasicOperatorsPlugin extends AbstractShellPlugin with PluginHelper {
         reduceArgsThenPipeOut(outputPipe, args, java.lang.Boolean.FALSE, andElem, validator)
     }
 
+    // logical or --------------------------------------------------------------
+    /*
+     * Logical or is defined for Booleans.
+     */
     @CommandName(name = "||")
-    def logicalOr(inputPipe: InputPipe, outputPipe: OutputPipe, args: java.util.List[Object]) {
-
+    @throws(classOf[CommandExecutionException])
+    def logicalOr(inputPipe: InputPipe, outputPipe: OutputPipe, args: List[Object]) {
+        val validator = curriedAllowArgumentTypes("logically or", booleanArgumentTypes)(_)
+        def orElem(a: AnyRef, b: AnyRef): AnyRef = {
+            (a, b) match {
+                case (aBoo: java.lang.Boolean, bBoo: java.lang.Boolean) => new java.lang.Boolean(aBoo | bBoo)
+            }
+        }
+        reduceArgsThenPipeOut(outputPipe, args, java.lang.Boolean.FALSE, orElem, validator)
     }
 
     @CommandName(name = "<") // hmmm parser?
