@@ -157,33 +157,6 @@ class BasicOperatorsPlugin extends AbstractShellPlugin with PluginHelper {
 
 
     // plus --------------------------------------------------------------------
-
-    private def plusElem(a: AnyRef, b: AnyRef): AnyRef = {
-        (a, b) match {
-            case (aStr: String, bStr: String) => aStr + bStr
-            case (aStr: String, bInt: java.lang.Integer) => plusElem(aStr, bInt.toString)
-            case (aStr: String, bDbl: java.lang.Double) => plusElem(aStr, new java.lang.Double(bDbl).toString)
-            case (aStr: String, bBoo: java.lang.Boolean) => throw new CommandExecutionException("Cannot add String '" + aStr + "' to Boolean '" + bBoo + "'")
-
-            case (aInt: java.lang.Integer, bStr: String) => plusElem(aInt.toString, bStr)
-            case (aInt: java.lang.Integer, bInt: java.lang.Integer) => new Integer(aInt + bInt)
-            case (aInt: java.lang.Integer, bDbl: java.lang.Double) => plusElem(new java.lang.Double(aInt.doubleValue()), bDbl)
-            case (aInt: java.lang.Integer, bBoo: java.lang.Boolean) => throw new CommandExecutionException("Cannot add Integer '" + aInt + "' to Boolean '" + bBoo + "'")
-                // what about truthiness of integers? addition of booleans means disjunction
-
-            case (aDbl: java.lang.Double, bStr: String) => plusElem(new java.lang.Double(aDbl).toString, bStr)
-            case (aDbl: java.lang.Double, bInt: java.lang.Integer) => plusElem(aDbl, new java.lang.Double(bInt.doubleValue()))
-            case (aDbl: java.lang.Double, bDbl: java.lang.Double) => new java.lang.Double(aDbl + bDbl)
-            case (aDbl: java.lang.Double, bBoo: java.lang.Boolean) => throw new CommandExecutionException("Cannot add Double '" + aDbl + "' to Boolean '" + bBoo + "'")
-                // what about truthiness of doubles? addition of booleans means disjunction
-
-            case (aBoo: java.lang.Boolean, bStr: String) => throw new CommandExecutionException("Cannot add Boolean '" + aBoo + "' to String '" + bStr + "'")
-            case (aBoo: java.lang.Boolean, bInt: java.lang.Integer) => throw new CommandExecutionException("Cannot add Boolean '" + aBoo + "' to Integer '" + bInt + "'")
-            case (aBoo: java.lang.Boolean, bDbl: java.lang.Double) => throw new CommandExecutionException("Cannot add Boolean '" + aBoo + "' to Double '" + bDbl + "'")
-            case (aBoo: java.lang.Boolean, bBoo: java.lang.Boolean) => new java.lang.Boolean(aBoo || bBoo)
-        }
-    }
-
     /*
      * Addition is defined for Integers, Doubles, Strings and Booleans.
      * Differing numerics are converted to the type that loses less.
@@ -195,21 +168,35 @@ class BasicOperatorsPlugin extends AbstractShellPlugin with PluginHelper {
     @throws(classOf[CommandExecutionException])
     def plus(inputPipe: InputPipe, outputPipe: OutputPipe, args: List[AnyRef]) {
         val validator = curriedAllowArgumentTypes("add", allArgumentTypes)(_)
+        def plusElem(a: AnyRef, b: AnyRef): AnyRef = {
+            (a, b) match {
+                case (aStr: String, bStr: String) => aStr + bStr
+                case (aStr: String, bInt: java.lang.Integer) => plusElem(aStr, bInt.toString)
+                case (aStr: String, bDbl: java.lang.Double) => plusElem(aStr, new java.lang.Double(bDbl).toString)
+                case (aStr: String, bBoo: java.lang.Boolean) => throw new CommandExecutionException("Cannot add String '" + aStr + "' to Boolean '" + bBoo + "'")
+
+                case (aInt: java.lang.Integer, bStr: String) => plusElem(aInt.toString, bStr)
+                case (aInt: java.lang.Integer, bInt: java.lang.Integer) => new Integer(aInt + bInt)
+                case (aInt: java.lang.Integer, bDbl: java.lang.Double) => plusElem(new java.lang.Double(aInt.doubleValue()), bDbl)
+                case (aInt: java.lang.Integer, bBoo: java.lang.Boolean) => throw new CommandExecutionException("Cannot add Integer '" + aInt + "' to Boolean '" + bBoo + "'")
+                // what about truthiness of integers? addition of booleans means disjunction
+
+                case (aDbl: java.lang.Double, bStr: String) => plusElem(new java.lang.Double(aDbl).toString, bStr)
+                case (aDbl: java.lang.Double, bInt: java.lang.Integer) => plusElem(aDbl, new java.lang.Double(bInt.doubleValue()))
+                case (aDbl: java.lang.Double, bDbl: java.lang.Double) => new java.lang.Double(aDbl + bDbl)
+                case (aDbl: java.lang.Double, bBoo: java.lang.Boolean) => throw new CommandExecutionException("Cannot add Double '" + aDbl + "' to Boolean '" + bBoo + "'")
+                // what about truthiness of doubles? addition of booleans means disjunction
+
+                case (aBoo: java.lang.Boolean, bStr: String) => throw new CommandExecutionException("Cannot add Boolean '" + aBoo + "' to String '" + bStr + "'")
+                case (aBoo: java.lang.Boolean, bInt: java.lang.Integer) => throw new CommandExecutionException("Cannot add Boolean '" + aBoo + "' to Integer '" + bInt + "'")
+                case (aBoo: java.lang.Boolean, bDbl: java.lang.Double) => throw new CommandExecutionException("Cannot add Boolean '" + aBoo + "' to Double '" + bDbl + "'")
+                case (aBoo: java.lang.Boolean, bBoo: java.lang.Boolean) => new java.lang.Boolean(aBoo || bBoo)
+            }
+        }
         reduceArgsThenPipeOut(outputPipe, args, new Integer(0), plusElem, validator)
     }
 
     // minus -------------------------------------------------------------------
-
-    private def minusElem(a: AnyRef, b: AnyRef): AnyRef = {
-        (a, b) match {
-            case (aInt: java.lang.Integer, bInt: java.lang.Integer) => new Integer(aInt - bInt)
-            case (aInt: java.lang.Integer, bDbl: java.lang.Double) => minusElem(new java.lang.Double(aInt.doubleValue()), bDbl)
-
-            case (aDbl: java.lang.Double, bInt: java.lang.Integer) => minusElem(aDbl, new java.lang.Double(bInt.doubleValue()))
-            case (aDbl: java.lang.Double, bDbl: java.lang.Double) => new java.lang.Double(aDbl - bDbl)
-        }
-    }
-
     /*
      * Subtraction is defined for Integers and Doubles.
      * Differing numerics are converted to the type that loses less.
@@ -219,6 +206,15 @@ class BasicOperatorsPlugin extends AbstractShellPlugin with PluginHelper {
     @throws(classOf[CommandExecutionException])
     def minus(inputPipe: InputPipe, outputPipe: OutputPipe, args: List[AnyRef]) {
         val validator = curriedAllowArgumentTypes("subtract", numericArgumentTypes)(_)
+        def minusElem(a: AnyRef, b: AnyRef): AnyRef = {
+            (a, b) match {
+                case (aInt: java.lang.Integer, bInt: java.lang.Integer) => new Integer(aInt - bInt)
+                case (aInt: java.lang.Integer, bDbl: java.lang.Double) => minusElem(new java.lang.Double(aInt.doubleValue()), bDbl)
+
+                case (aDbl: java.lang.Double, bInt: java.lang.Integer) => minusElem(aDbl, new java.lang.Double(bInt.doubleValue()))
+                case (aDbl: java.lang.Double, bDbl: java.lang.Double) => new java.lang.Double(aDbl - bDbl)
+            }
+        }
         if (args.size == 1) {
             def negate(a: AnyRef): AnyRef = { minusElem(new java.lang.Integer(0), a) }
             mapArgThenPipeOut(outputPipe, args(0), negate, validator)
@@ -229,28 +225,6 @@ class BasicOperatorsPlugin extends AbstractShellPlugin with PluginHelper {
 
 
     // times -------------------------------------------------------------------
-    private def replicate(n: Integer, str: String): String = {
-        if (n < 0) {
-            throw new CommandExecutionException("Cannot replicate the String '" + str + "' by the negative Integer '" + n + "'")
-        } else {
-            str * n
-        }
-    }
-
-    private def timesElem(a: AnyRef, b: AnyRef): AnyRef = {
-        (a, b) match {
-            case (aInt: java.lang.Integer, bInt: java.lang.Integer) => new Integer(aInt * bInt)
-            case (aInt: java.lang.Integer, bDbl: java.lang.Double) => timesElem(new java.lang.Double(aInt.doubleValue()), bDbl)
-            case (aInt: java.lang.Integer, bStr: java.lang.String) => replicate(aInt, bStr)
-            case (aStr: String, bInt: java.lang.Integer) => replicate(bInt, aStr)
-
-            case (aDbl: java.lang.Double, bInt: java.lang.Integer) => timesElem(aDbl, new java.lang.Double(bInt.doubleValue()))
-            case (aDbl: java.lang.Double, bDbl: java.lang.Double) => new java.lang.Double(aDbl * bDbl)
-            case (aDbl: java.lang.Double, bStr: java.lang.String) => throw new CommandExecutionException("Cannot replicate the String '" + bStr + "' by the Double '" + aDbl + "'")
-            case (aStr: String, bDbl: java.lang.Double) => throw new CommandExecutionException("Cannot replicate the String '" + aStr + "' by the Double '" + bDbl + "'")
-        }
-    }
-
     /*
      * Multiplication is defined for Integers, Doubles and Strings.
      * Differing numerics are converted to the type that loses less.
@@ -260,21 +234,32 @@ class BasicOperatorsPlugin extends AbstractShellPlugin with PluginHelper {
     @throws(classOf[CommandExecutionException])
     def times(inputPipe: InputPipe, outputPipe: OutputPipe, args: List[Object]) {
         val validator = curriedAllowArgumentTypes("multiply", numericAndStringArgumentTypes)(_)
+        def replicate(n: Integer, str: String): String = {
+            if (n < 0) {
+                throw new CommandExecutionException("Cannot replicate the String '" + str + "' by the negative Integer '" + n + "'")
+            } else {
+                str * n
+            }
+        }
+
+        def timesElem(a: AnyRef, b: AnyRef): AnyRef = {
+            (a, b) match {
+                case (aInt: java.lang.Integer, bInt: java.lang.Integer) => new Integer(aInt * bInt)
+                case (aInt: java.lang.Integer, bDbl: java.lang.Double) => timesElem(new java.lang.Double(aInt.doubleValue()), bDbl)
+                case (aInt: java.lang.Integer, bStr: java.lang.String) => replicate(aInt, bStr)
+                case (aStr: String, bInt: java.lang.Integer) => replicate(bInt, aStr)
+
+                case (aDbl: java.lang.Double, bInt: java.lang.Integer) => timesElem(aDbl, new java.lang.Double(bInt.doubleValue()))
+                case (aDbl: java.lang.Double, bDbl: java.lang.Double) => new java.lang.Double(aDbl * bDbl)
+                case (aDbl: java.lang.Double, bStr: java.lang.String) => throw new CommandExecutionException("Cannot replicate the String '" + bStr + "' by the Double '" + aDbl + "'")
+                case (aStr: String, bDbl: java.lang.Double) => throw new CommandExecutionException("Cannot replicate the String '" + aStr + "' by the Double '" + bDbl + "'")
+            }
+        }
         reduceArgsThenPipeOut(outputPipe, args, new Integer(1), timesElem, validator)
     }
 
 
     // divide ------------------------------------------------------------------
-    private def divideElem(a: AnyRef, b: AnyRef): AnyRef = {
-        (a, b) match {
-            case (aInt: java.lang.Integer, bInt: java.lang.Integer) => new Integer(aInt / bInt)
-            case (aInt: java.lang.Integer, bDbl: java.lang.Double) => divideElem(new java.lang.Double(aInt.doubleValue()), bDbl)
-
-            case (aDbl: java.lang.Double, bInt: java.lang.Integer) => divideElem(aDbl, new java.lang.Double(bInt.doubleValue()))
-            case (aDbl: java.lang.Double, bDbl: java.lang.Double) => new java.lang.Double(aDbl / bDbl)
-        }
-    }
-
     /*
      * Division is defined for Integers and Doubles.
      * Differing numerics are converted to the type that loses less.
@@ -283,11 +268,19 @@ class BasicOperatorsPlugin extends AbstractShellPlugin with PluginHelper {
     @throws(classOf[CommandExecutionException])
     def divide(inputPipe: InputPipe, outputPipe: OutputPipe, args: List[Object]) {
         val validator = curriedAllowArgumentTypes("divide", numericArgumentTypes)(_)
+        def divideElem(a: AnyRef, b: AnyRef): AnyRef = {
+            (a, b) match {
+                case (aInt: java.lang.Integer, bInt: java.lang.Integer) => new Integer(aInt / bInt)
+                case (aInt: java.lang.Integer, bDbl: java.lang.Double) => divideElem(new java.lang.Double(aInt.doubleValue()), bDbl)
+
+                case (aDbl: java.lang.Double, bInt: java.lang.Integer) => divideElem(aDbl, new java.lang.Double(bInt.doubleValue()))
+                case (aDbl: java.lang.Double, bDbl: java.lang.Double) => new java.lang.Double(aDbl / bDbl)
+            }
+        }
         reduceArgsThenPipeOut(outputPipe, args, new Integer(1), divideElem, validator)
     }
 
     // logical not -------------------------------------------------------------
-
     /*
      * Negation is only defined for Booleans, and is a unary operation.
      */
@@ -307,7 +300,6 @@ class BasicOperatorsPlugin extends AbstractShellPlugin with PluginHelper {
     }
 
     // modulus -----------------------------------------------------------------
-
     /*
      * Modulus is defined for Integers
      */
@@ -480,6 +472,11 @@ class BasicOperatorsPlugin extends AbstractShellPlugin with PluginHelper {
 
     }
 
+    @CommandName(name = "==") // hmmm parser?
+    def equal(inputPipe: InputPipe, outputPipe: OutputPipe, args: java.util.List[Object]) {
+
+    }
+
     @CommandName(name = ">>") // hmmm parser?
     def shiftRight(inputPipe: InputPipe, outputPipe: OutputPipe, args: java.util.List[Object]) {
 
@@ -494,7 +491,5 @@ class BasicOperatorsPlugin extends AbstractShellPlugin with PluginHelper {
     def shiftLeft(inputPipe: InputPipe, outputPipe: OutputPipe, args: java.util.List[Object]) {
 
     }
-
-
 }
 
