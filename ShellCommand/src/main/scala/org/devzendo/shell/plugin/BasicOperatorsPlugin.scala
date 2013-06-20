@@ -534,8 +534,18 @@ class BasicOperatorsPlugin extends AbstractShellPlugin with PluginHelper {
 
     @CommandName(name = ">=") // hmmm parser?
     @CommandAlias(alias = "≥")
-    def greaterThanOrEqual(inputPipe: InputPipe, outputPipe: OutputPipe, args: java.util.List[Object]) {
-
+    @throws(classOf[CommandExecutionException])
+    def greaterThanOrEqual(inputPipe: InputPipe, outputPipe: OutputPipe, args: List[Object]) {
+        val validator = curriedAllowArgumentTypes("order", numericAndStringArgumentTypes)(_)
+        def gtEqOp(a: AnyRef, b: AnyRef): AnyRef = {
+            (a, b) match {
+                case (aStr: String, bStr: String) => new java.lang.Boolean(aStr.compareTo(bStr) >= 0)
+                case (aInt: java.lang.Integer, bInt: java.lang.Integer) => new java.lang.Boolean(aInt >= bInt)
+                case (aDbl: java.lang.Double, bDbl: java.lang.Double) => new java.lang.Boolean(aDbl >= bDbl)
+            }
+        }
+        val gtEqElem = alphaNumericCoerce(_: AnyRef, _: AnyRef)(gtEqOp)
+        reduceArgsThenPipeOut(outputPipe, args, java.lang.Boolean.FALSE, gtEqElem, validator)
     }
 
     @CommandName(name = "!=") // hmmm parser?
