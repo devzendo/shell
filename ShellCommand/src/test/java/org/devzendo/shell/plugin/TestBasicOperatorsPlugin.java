@@ -1058,7 +1058,7 @@ public class TestBasicOperatorsPlugin {
 
     @Test
     public void lessThanOfDoublesGT() throws CommandExecutionException {
-        assertLessThan(createObjectList(3.5, 3.5), createObjectList(false));
+        assertLessThan(createObjectList(34.5, 3.2), createObjectList(false));
     }
 
     @Test
@@ -1080,6 +1080,117 @@ public class TestBasicOperatorsPlugin {
         final Variable argVar = new Variable();
         argVar.add(new Switch("baloney"));
         assertLessThanFails(createObjectList(argVar), "Cannot order the Switch 'Switch(baloney)'");
+    }
+
+    // greater than ------------------------------------------------------------
+    private void assertGreaterThan(List<Object> inputs, List<Object> outputs) throws CommandExecutionException {
+        plugin.greaterThan(inputPipe, outputPipe, inputs);
+        assertThat(outputVariable.get(), equalTo(outputs));
+    }
+
+    private void assertGreaterThanFails(List<Object> inputs, String message) {
+        try {
+            plugin.greaterThan(inputPipe, outputPipe, inputs);
+            Assert.fail("Expected a CommandExecutionException");
+        } catch (CommandExecutionException e) {
+            assertThat(e.getMessage(), equalTo(message));
+        }
+    }
+
+    @Test
+    public void greaterThanOfStringsLT() throws CommandExecutionException {
+        assertGreaterThan(createObjectList("aaa", "bbb"), createObjectList(false));
+    }
+
+    @Test
+    public void greaterThanOfStringsEQ() throws CommandExecutionException {
+        assertGreaterThan(createObjectList("aaa", "aaa"), createObjectList(false));
+    }
+
+    @Test
+    public void greaterThanOfStringsGT() throws CommandExecutionException {
+        assertGreaterThan(createObjectList("bbb", "aaa"), createObjectList(true));
+    }
+
+    @Test
+    public void greaterThanOfStringAndInteger() throws CommandExecutionException {
+        assertGreaterThan(createObjectList("1", 2), createObjectList(false));
+    }
+
+    @Test
+    public void greaterThanOfStringAndDouble() throws CommandExecutionException {
+        assertGreaterThan(createObjectList("1", 1.3), createObjectList(false));
+    }
+
+    @Test
+    public void greaterThanOfIntegerAndString() throws CommandExecutionException {
+        assertGreaterThan(createObjectList(1, "0"), createObjectList(true));
+    }
+
+    @Test
+    public void greaterThanOfIntegersLT() throws CommandExecutionException {
+        assertGreaterThan(createObjectList(1, 2), createObjectList(false));
+    }
+
+    @Test
+    public void greaterThanOfIntegersEQ() throws CommandExecutionException {
+        assertGreaterThan(createObjectList(4, 4), createObjectList(false));
+    }
+
+    @Test
+    public void greaterThanOfIntegersGT() throws CommandExecutionException {
+        assertGreaterThan(createObjectList(5, 2), createObjectList(true));
+    }
+
+    @Test
+    public void greaterThanOfIntegerAndDouble() throws CommandExecutionException {
+        assertGreaterThan(createObjectList(1, 3.2), createObjectList(false));
+    }
+
+    @Test
+    public void greaterThanOfDoubleAndString() throws CommandExecutionException {
+        assertGreaterThan(createObjectList(1.3, "1"), createObjectList(true));
+    }
+
+    @Test
+    public void greaterThanOfDoubleAndInteger() throws CommandExecutionException {
+        assertGreaterThan(createObjectList(4.1, 1), createObjectList(true));
+    }
+
+    @Test
+    public void greaterThanOfDoublesLT() throws CommandExecutionException {
+        assertGreaterThan(createObjectList(1.1, 3.5), createObjectList(false));
+    }
+
+    @Test
+    public void greaterThanOfDoublesEQ() throws CommandExecutionException {
+        assertGreaterThan(createObjectList(1.1, 1.1), createObjectList(false));
+    }
+
+    @Test
+    public void greaterThanOfDoublesGT() throws CommandExecutionException {
+        assertGreaterThan(createObjectList(32.5, 3.5), createObjectList(true));
+    }
+
+    @Test
+    public void greaterThanDoesNotAllowSwitches() {
+        assertGreaterThanFails(
+                whateverSwitchRegexStringList,
+                "Cannot order the Switch 'Switch(Whatever)'");
+    }
+
+    @Test
+    public void greaterThanDoesNotAllowBooleans() {
+        assertGreaterThanFails(
+                createObjectList(true),
+                "Cannot order the Boolean 'true'");
+    }
+
+    @Test
+    public void greaterThanOfDisallowedTypesInVariablesIsDisallowed() throws CommandExecutionException {
+        final Variable argVar = new Variable();
+        argVar.add(new Switch("baloney"));
+        assertGreaterThanFails(createObjectList(argVar), "Cannot order the Switch 'Switch(baloney)'");
     }
 
 
