@@ -121,6 +121,40 @@ class BasicOperatorsPlugin extends AbstractShellPlugin with PluginHelper {
         mapped.foreach( outputPipe.push(_) )
     }
 
+    // Coerce dissimilar String/Numeric arguments "upwards":
+    // Double, Integer -> String
+    // Integer -> Double
+    // .. then perform some other operation on the pair that are now the same type.
+    def alphaNumericCoerce(a: AnyRef, b: AnyRef)(op: ((AnyRef, AnyRef) => AnyRef)): AnyRef = {
+        (a, b) match {
+            case (aStr: String, bStr: String) => op(a, b)
+            case (aStr: String, bInt: java.lang.Integer) => op(aStr, bInt.toString)
+            case (aStr: String, bDbl: java.lang.Double) => op(aStr, new java.lang.Double(bDbl).toString)
+
+            case (aInt: java.lang.Integer, bStr: String) => op(aInt.toString, bStr)
+            case (aInt: java.lang.Integer, bInt: java.lang.Integer) => op(a, b)
+            case (aInt: java.lang.Integer, bDbl: java.lang.Double) => op(new java.lang.Double(aInt.doubleValue()), bDbl)
+
+            case (aDbl: java.lang.Double, bStr: String) => op(new java.lang.Double(aDbl).toString, bStr)
+            case (aDbl: java.lang.Double, bInt: java.lang.Integer) => op(aDbl, new java.lang.Double(bInt.doubleValue()))
+            case (aDbl: java.lang.Double, bDbl: java.lang.Double) => op(a, b)
+        }
+    }
+
+    // Coerce dissimilar Numeric arguments "upwards":
+    // Integer -> Double
+    // .. then perform some other operation on the pair that are now the same type.
+    def numericCoerce(a: AnyRef, b: AnyRef)(op: ((AnyRef, AnyRef) => AnyRef)): AnyRef = {
+        (a, b) match {
+            case (aInt: java.lang.Integer, bInt: java.lang.Integer) => op(a, b)
+            case (aInt: java.lang.Integer, bDbl: java.lang.Double) => op(new java.lang.Double(aInt.doubleValue()), bDbl)
+
+            case (aDbl: java.lang.Double, bInt: java.lang.Integer) => op(aDbl, new java.lang.Double(bInt.doubleValue()))
+            case (aDbl: java.lang.Double, bDbl: java.lang.Double) => op(a, b)
+        }
+    }
+
+
     val allArgumentTypes = Seq(
         classOf[String], classOf[java.lang.Integer], classOf[java.lang.Double], classOf[java.lang.Boolean],
         classOf[Variable], classOf[VariableReference]
@@ -455,19 +489,12 @@ class BasicOperatorsPlugin extends AbstractShellPlugin with PluginHelper {
         def ltElem(a: AnyRef, b: AnyRef): AnyRef = {
             (a, b) match {
                 case (aStr: String, bStr: String) => new java.lang.Boolean(aStr.compareTo(bStr) < 0)
-                case (aStr: String, bInt: java.lang.Integer) => ltElem(aStr, bInt.toString)
-                case (aStr: String, bDbl: java.lang.Double) => ltElem(aStr, new java.lang.Double(bDbl).toString)
-
-                case (aInt: java.lang.Integer, bStr: String) => ltElem(aInt.toString, bStr)
                 case (aInt: java.lang.Integer, bInt: java.lang.Integer) => new java.lang.Boolean(aInt < bInt)
-                case (aInt: java.lang.Integer, bDbl: java.lang.Double) => ltElem(new java.lang.Double(aInt.doubleValue()), bDbl)
-
-                case (aDbl: java.lang.Double, bStr: String) => ltElem(new java.lang.Double(aDbl).toString, bStr)
-                case (aDbl: java.lang.Double, bInt: java.lang.Integer) => ltElem(aDbl, new java.lang.Double(bInt.doubleValue()))
                 case (aDbl: java.lang.Double, bDbl: java.lang.Double) => new java.lang.Boolean(aDbl < bDbl)
             }
         }
-        reduceArgsThenPipeOut(outputPipe, args, java.lang.Boolean.FALSE, ltElem, validator)
+        val elemOp = alphaNumericCoerce(_: AnyRef, _: AnyRef)(ltElem)
+        reduceArgsThenPipeOut(outputPipe, args, java.lang.Boolean.FALSE, elemOp, validator)
     }
 
     @CommandName(name = ">") // hmmm parser?
