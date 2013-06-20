@@ -971,6 +971,117 @@ public class TestBasicOperatorsPlugin {
                 "Cannot logically xor the Switch 'Switch(Whatever)'");
     }
 
+    // less than ---------------------------------------------------------------
+    private void assertLessThan(List<Object> inputs, List<Object> outputs) throws CommandExecutionException {
+        plugin.lessThan(inputPipe, outputPipe, inputs);
+        assertThat(outputVariable.get(), equalTo(outputs));
+    }
+
+    private void assertLessThanFails(List<Object> inputs, String message) {
+        try {
+            plugin.lessThan(inputPipe, outputPipe, inputs);
+            Assert.fail("Expected a CommandExecutionException");
+        } catch (CommandExecutionException e) {
+            assertThat(e.getMessage(), equalTo(message));
+        }
+    }
+
+    @Test
+    public void lessThanOfStringsLT() throws CommandExecutionException {
+        assertLessThan(createObjectList("aaa", "bbb"), createObjectList(true));
+    }
+
+    @Test
+    public void lessThanOfStringsEQ() throws CommandExecutionException {
+        assertLessThan(createObjectList("aaa", "aaa"), createObjectList(false));
+    }
+
+    @Test
+    public void lessThanOfStringsGT() throws CommandExecutionException {
+        assertLessThan(createObjectList("bbb", "aaa"), createObjectList(false));
+    }
+
+    @Test
+    public void lessThanOfStringAndInteger() throws CommandExecutionException {
+        assertLessThan(createObjectList("1", 2), createObjectList(true));
+    }
+
+    @Test
+    public void lessThanOfStringAndDouble() throws CommandExecutionException {
+        assertLessThan(createObjectList("1", 1.3), createObjectList(true));
+    }
+
+    @Test
+    public void lessThanOfIntegerAndString() throws CommandExecutionException {
+        assertLessThan(createObjectList(1, "0"), createObjectList(false));
+    }
+
+    @Test
+    public void lessThanOfIntegersLT() throws CommandExecutionException {
+        assertLessThan(createObjectList(1, 2), createObjectList(true));
+    }
+
+    @Test
+    public void lessThanOfIntegersEQ() throws CommandExecutionException {
+        assertLessThan(createObjectList(4, 4), createObjectList(false));
+    }
+
+    @Test
+    public void lessThanOfIntegersGT() throws CommandExecutionException {
+        assertLessThan(createObjectList(5, 2), createObjectList(false));
+    }
+
+    @Test
+    public void lessThanOfIntegerAndDouble() throws CommandExecutionException {
+        assertLessThan(createObjectList(1, 3.2), createObjectList(true));
+    }
+
+    @Test
+    public void lessThanOfDoubleAndString() throws CommandExecutionException {
+        assertLessThan(createObjectList(1.3, "1"), createObjectList(false));
+    }
+
+    @Test
+    public void lessThanOfDoubleAndInteger() throws CommandExecutionException {
+        assertLessThan(createObjectList(4.1, 1), createObjectList(false));
+    }
+
+    @Test
+    public void lessThanOfDoublesLT() throws CommandExecutionException {
+        assertLessThan(createObjectList(1.1, 3.5), createObjectList(true));
+    }
+
+    @Test
+    public void lessThanOfDoublesEQ() throws CommandExecutionException {
+        assertLessThan(createObjectList(1.1, 1.1), createObjectList(false));
+    }
+
+    @Test
+    public void lessThanOfDoublesGT() throws CommandExecutionException {
+        assertLessThan(createObjectList(3.5, 3.5), createObjectList(false));
+    }
+
+    @Test
+    public void lessThanDoesNotAllowSwitches() {
+        assertLessThanFails(
+                whateverSwitchRegexStringList,
+                "Cannot order the Switch 'Switch(Whatever)'");
+    }
+
+    @Test
+    public void lessThanDoesNotAllowBooleans() {
+        assertLessThanFails(
+                createObjectList(true),
+                "Cannot order the Boolean 'true'");
+    }
+
+    @Test
+    public void lessThanOfDisallowedTypesInVariablesIsDisallowed() throws CommandExecutionException {
+        final Variable argVar = new Variable();
+        argVar.add(new Switch("baloney"));
+        assertLessThanFails(createObjectList(argVar), "Cannot order the Switch 'Switch(baloney)'");
+    }
+
 
     // TODO need to think about short-circuiting logical operations
 }

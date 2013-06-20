@@ -443,9 +443,31 @@ class BasicOperatorsPlugin extends AbstractShellPlugin with PluginHelper {
         reduceArgsThenPipeOut(outputPipe, args, java.lang.Boolean.FALSE, xorElem, validator)
     }
 
+    // ordering relations ------------------------------------------------------
+    /*
+     * Ordering relations are defined for Integers, Doubles and Strings (via
+     * lexicographic comparison).
+     */
     @CommandName(name = "<") // hmmm parser?
-    def lessThan(inputPipe: InputPipe, outputPipe: OutputPipe, args: java.util.List[Object]) {
+    @throws(classOf[CommandExecutionException])
+    def lessThan(inputPipe: InputPipe, outputPipe: OutputPipe, args: List[Object]) {
+        val validator = curriedAllowArgumentTypes("order", numericAndStringArgumentTypes)(_)
+        def ltElem(a: AnyRef, b: AnyRef): AnyRef = {
+            (a, b) match {
+                case (aStr: String, bStr: String) => new java.lang.Boolean(aStr.compareTo(bStr) < 0)
+                case (aStr: String, bInt: java.lang.Integer) => ltElem(aStr, bInt.toString)
+                case (aStr: String, bDbl: java.lang.Double) => ltElem(aStr, new java.lang.Double(bDbl).toString)
 
+                case (aInt: java.lang.Integer, bStr: String) => ltElem(aInt.toString, bStr)
+                case (aInt: java.lang.Integer, bInt: java.lang.Integer) => new java.lang.Boolean(aInt < bInt)
+                case (aInt: java.lang.Integer, bDbl: java.lang.Double) => ltElem(new java.lang.Double(aInt.doubleValue()), bDbl)
+
+                case (aDbl: java.lang.Double, bStr: String) => ltElem(new java.lang.Double(aDbl).toString, bStr)
+                case (aDbl: java.lang.Double, bInt: java.lang.Integer) => ltElem(aDbl, new java.lang.Double(bInt.doubleValue()))
+                case (aDbl: java.lang.Double, bDbl: java.lang.Double) => new java.lang.Boolean(aDbl < bDbl)
+            }
+        }
+        reduceArgsThenPipeOut(outputPipe, args, java.lang.Boolean.FALSE, ltElem, validator)
     }
 
     @CommandName(name = ">") // hmmm parser?
