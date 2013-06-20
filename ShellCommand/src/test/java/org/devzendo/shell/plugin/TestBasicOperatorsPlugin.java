@@ -1193,6 +1193,116 @@ public class TestBasicOperatorsPlugin {
         assertGreaterThanFails(createObjectList(argVar), "Cannot order the Switch 'Switch(baloney)'");
     }
 
+    // less than or equal ------------------------------------------------------
+    private void assertLessThanEqual(List<Object> inputs, List<Object> outputs) throws CommandExecutionException {
+        plugin.lessThanOrEqual(inputPipe, outputPipe, inputs);
+        assertThat(outputVariable.get(), equalTo(outputs));
+    }
+
+    private void assertLessThanEqualFails(List<Object> inputs, String message) {
+        try {
+            plugin.lessThanOrEqual(inputPipe, outputPipe, inputs);
+            Assert.fail("Expected a CommandExecutionException");
+        } catch (CommandExecutionException e) {
+            assertThat(e.getMessage(), equalTo(message));
+        }
+    }
+
+    @Test
+    public void lessThanEqualOfStringsLT() throws CommandExecutionException {
+        assertLessThanEqual(createObjectList("aaa", "bbb"), createObjectList(true));
+    }
+
+    @Test
+    public void lessThanEqualOfStringsEQ() throws CommandExecutionException {
+        assertLessThanEqual(createObjectList("aaa", "aaa"), createObjectList(true));
+    }
+
+    @Test
+    public void lessThanEqualOfStringsGT() throws CommandExecutionException {
+        assertLessThanEqual(createObjectList("bbb", "aaa"), createObjectList(false));
+    }
+
+    @Test
+    public void lessThanEqualOfStringAndInteger() throws CommandExecutionException {
+        assertLessThanEqual(createObjectList("1", 2), createObjectList(true));
+    }
+
+    @Test
+    public void lessThanEqualOfStringAndDouble() throws CommandExecutionException {
+        assertLessThanEqual(createObjectList("1", 1.3), createObjectList(true));
+    }
+
+    @Test
+    public void lessThanEqualOfIntegerAndString() throws CommandExecutionException {
+        assertLessThanEqual(createObjectList(1, "0"), createObjectList(false));
+    }
+
+    @Test
+    public void lessThanEqualOfIntegersLT() throws CommandExecutionException {
+        assertLessThanEqual(createObjectList(1, 2), createObjectList(true));
+    }
+
+    @Test
+    public void lessThanEqualOfIntegersEQ() throws CommandExecutionException {
+        assertLessThanEqual(createObjectList(4, 4), createObjectList(true));
+    }
+
+    @Test
+    public void lessThanEqualOfIntegersGT() throws CommandExecutionException {
+        assertLessThanEqual(createObjectList(5, 2), createObjectList(false));
+    }
+
+    @Test
+    public void lessThanEqualOfIntegerAndDouble() throws CommandExecutionException {
+        assertLessThanEqual(createObjectList(1, 3.2), createObjectList(true));
+    }
+
+    @Test
+    public void lessThanEqualOfDoubleAndString() throws CommandExecutionException {
+        assertLessThanEqual(createObjectList(1.3, "1"), createObjectList(false));
+    }
+
+    @Test
+    public void lessThanEqualOfDoubleAndInteger() throws CommandExecutionException {
+        assertLessThanEqual(createObjectList(4.1, 1), createObjectList(false));
+    }
+
+    @Test
+    public void lessThanEqualOfDoublesLT() throws CommandExecutionException {
+        assertLessThanEqual(createObjectList(1.1, 3.5), createObjectList(true));
+    }
+
+    @Test
+    public void lessThanEqualOfDoublesEQ() throws CommandExecutionException {
+        assertLessThanEqual(createObjectList(1.1, 1.1), createObjectList(true));
+    }
+
+    @Test
+    public void lessThanEqualOfDoublesGT() throws CommandExecutionException {
+        assertLessThanEqual(createObjectList(34.5, 3.2), createObjectList(false));
+    }
+
+    @Test
+    public void lessThanEqualDoesNotAllowSwitches() {
+        assertLessThanEqualFails(
+                whateverSwitchRegexStringList,
+                "Cannot order the Switch 'Switch(Whatever)'");
+    }
+
+    @Test
+    public void lessThanEqualDoesNotAllowBooleans() {
+        assertLessThanEqualFails(
+                createObjectList(true),
+                "Cannot order the Boolean 'true'");
+    }
+
+    @Test
+    public void lessThanEqualOfDisallowedTypesInVariablesIsDisallowed() throws CommandExecutionException {
+        final Variable argVar = new Variable();
+        argVar.add(new Switch("baloney"));
+        assertLessThanEqualFails(createObjectList(argVar), "Cannot order the Switch 'Switch(baloney)'");
+    }
 
     // TODO need to think about short-circuiting logical operations
 }
