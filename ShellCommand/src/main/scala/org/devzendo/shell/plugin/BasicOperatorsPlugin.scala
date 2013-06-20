@@ -154,6 +154,21 @@ class BasicOperatorsPlugin extends AbstractShellPlugin with PluginHelper {
         }
     }
 
+    private def boolean2Integer(b: java.lang.Boolean): Integer = {
+        if (b) new Integer(1) else new Integer(0)
+    }
+
+    // Coerce dissimilar Integer/Bitwise arguments "upwards":
+    // Boolean -> Integer
+    // .. then perform some other operation on the pair that are now the same type.
+    def bitwiseCoerce(a: AnyRef, b: AnyRef)(op: ((AnyRef, AnyRef) => AnyRef)): AnyRef = {
+        (a, b) match {
+            case (aInt: java.lang.Integer, bBoo: java.lang.Boolean) => op(aInt, boolean2Integer(bBoo))
+            case (aBoo: java.lang.Boolean, bBoo: java.lang.Boolean) => op(a, b)
+            case (aInt: java.lang.Integer, bInt: java.lang.Integer) => op(a, b)
+            case (aBoo: java.lang.Boolean, bInt: java.lang.Integer) => op(boolean2Integer(aBoo), bInt)
+        }
+    }
 
     val allArgumentTypes = Seq(
         classOf[String], classOf[java.lang.Integer], classOf[java.lang.Double], classOf[java.lang.Boolean],
@@ -240,15 +255,13 @@ class BasicOperatorsPlugin extends AbstractShellPlugin with PluginHelper {
     @throws(classOf[CommandExecutionException])
     def minus(inputPipe: InputPipe, outputPipe: OutputPipe, args: List[AnyRef]) {
         val validator = curriedAllowArgumentTypes("subtract", numericArgumentTypes)(_)
-        def minusElem(a: AnyRef, b: AnyRef): AnyRef = {
+        def minusOp(a: AnyRef, b: AnyRef): AnyRef = {
             (a, b) match {
                 case (aInt: java.lang.Integer, bInt: java.lang.Integer) => new Integer(aInt - bInt)
-                case (aInt: java.lang.Integer, bDbl: java.lang.Double) => minusElem(new java.lang.Double(aInt.doubleValue()), bDbl)
-
-                case (aDbl: java.lang.Double, bInt: java.lang.Integer) => minusElem(aDbl, new java.lang.Double(bInt.doubleValue()))
                 case (aDbl: java.lang.Double, bDbl: java.lang.Double) => new java.lang.Double(aDbl - bDbl)
             }
         }
+        val minusElem = numericCoerce(_: AnyRef, _: AnyRef)(minusOp)
         if (args.size == 1) {
             def negate(a: AnyRef): AnyRef = { minusElem(new java.lang.Integer(0), a) }
             mapArgThenPipeOut(outputPipe, args(0), negate, validator)
@@ -302,15 +315,13 @@ class BasicOperatorsPlugin extends AbstractShellPlugin with PluginHelper {
     @throws(classOf[CommandExecutionException])
     def divide(inputPipe: InputPipe, outputPipe: OutputPipe, args: List[Object]) {
         val validator = curriedAllowArgumentTypes("divide", numericArgumentTypes)(_)
-        def divideElem(a: AnyRef, b: AnyRef): AnyRef = {
+        def divideOp(a: AnyRef, b: AnyRef): AnyRef = {
             (a, b) match {
                 case (aInt: java.lang.Integer, bInt: java.lang.Integer) => new Integer(aInt / bInt)
-                case (aInt: java.lang.Integer, bDbl: java.lang.Double) => divideElem(new java.lang.Double(aInt.doubleValue()), bDbl)
-
-                case (aDbl: java.lang.Double, bInt: java.lang.Integer) => divideElem(aDbl, new java.lang.Double(bInt.doubleValue()))
                 case (aDbl: java.lang.Double, bDbl: java.lang.Double) => new java.lang.Double(aDbl / bDbl)
             }
         }
+        val divideElem = numericCoerce(_: AnyRef, _: AnyRef)(divideOp)
         reduceArgsThenPipeOut(outputPipe, args, new Integer(1), divideElem, validator)
     }
 
@@ -350,10 +361,6 @@ class BasicOperatorsPlugin extends AbstractShellPlugin with PluginHelper {
     }
 
     // bitwise exclusive or ----------------------------------------------------
-    private def boolean2Integer(b: java.lang.Boolean): Integer = {
-        if (b) new Integer(1) else new Integer(0)
-    }
-
     /*
      * Xor is defined for Integers and Booleans.
      */
@@ -361,14 +368,13 @@ class BasicOperatorsPlugin extends AbstractShellPlugin with PluginHelper {
     @throws(classOf[CommandExecutionException])
     def bitwiseXor(inputPipe: InputPipe, outputPipe: OutputPipe, args: List[Object]) {
         val validator = curriedAllowArgumentTypes("bitwise xor", integerBooleanArgumentTypes)(_)
-        def xorElem(a: AnyRef, b: AnyRef): AnyRef = {
+        def xorOp(a: AnyRef, b: AnyRef): AnyRef = {
             (a, b) match {
-                case (aInt: java.lang.Integer, bBoo: java.lang.Boolean) => xorElem(aInt, boolean2Integer(bBoo))
                 case (aBoo: java.lang.Boolean, bBoo: java.lang.Boolean) => new java.lang.Boolean(aBoo ^ bBoo)
                 case (aInt: java.lang.Integer, bInt: java.lang.Integer) => new Integer(aInt ^ bInt)
-                case (aBoo: java.lang.Boolean, bInt: java.lang.Integer) => xorElem(boolean2Integer(aBoo), bInt)
             }
         }
+        val xorElem = bitwiseCoerce(_: AnyRef, _: AnyRef)(xorOp)
         reduceArgsThenPipeOut(outputPipe, args, new Integer(0), xorElem, validator)
     }
 
@@ -380,14 +386,13 @@ class BasicOperatorsPlugin extends AbstractShellPlugin with PluginHelper {
     @throws(classOf[CommandExecutionException])
     def bitwiseOr(inputPipe: InputPipe, outputPipe: OutputPipe, args: List[Object]) {
         val validator = curriedAllowArgumentTypes("bitwise or", integerBooleanArgumentTypes)(_)
-        def orElem(a: AnyRef, b: AnyRef): AnyRef = {
+        def orOp(a: AnyRef, b: AnyRef): AnyRef = {
             (a, b) match {
-                case (aInt: java.lang.Integer, bBoo: java.lang.Boolean) => orElem(aInt, boolean2Integer(bBoo))
                 case (aBoo: java.lang.Boolean, bBoo: java.lang.Boolean) => new java.lang.Boolean(aBoo | bBoo)
                 case (aInt: java.lang.Integer, bInt: java.lang.Integer) => new Integer(aInt | bInt)
-                case (aBoo: java.lang.Boolean, bInt: java.lang.Integer) => orElem(boolean2Integer(aBoo), bInt)
             }
         }
+        val orElem = bitwiseCoerce(_: AnyRef, _: AnyRef)(orOp)
         reduceArgsThenPipeOut(outputPipe, args, new Integer(0), orElem, validator)
     }
 
@@ -399,14 +404,13 @@ class BasicOperatorsPlugin extends AbstractShellPlugin with PluginHelper {
     @throws(classOf[CommandExecutionException])
     def bitwiseAnd(inputPipe: InputPipe, outputPipe: OutputPipe, args: List[Object]) {
         val validator = curriedAllowArgumentTypes("bitwise and", integerBooleanArgumentTypes)(_)
-        def andElem(a: AnyRef, b: AnyRef): AnyRef = {
+        def andOp(a: AnyRef, b: AnyRef): AnyRef = {
             (a, b) match {
-                case (aInt: java.lang.Integer, bBoo: java.lang.Boolean) => andElem(aInt, boolean2Integer(bBoo))
                 case (aBoo: java.lang.Boolean, bBoo: java.lang.Boolean) => new java.lang.Boolean(aBoo & bBoo)
                 case (aInt: java.lang.Integer, bInt: java.lang.Integer) => new Integer(aInt & bInt)
-                case (aBoo: java.lang.Boolean, bInt: java.lang.Integer) => andElem(boolean2Integer(aBoo), bInt)
             }
         }
+        val andElem = bitwiseCoerce(_: AnyRef, _: AnyRef)(andOp)
         reduceArgsThenPipeOut(outputPipe, args, new Integer(0), andElem, validator)
     }
 
@@ -486,15 +490,15 @@ class BasicOperatorsPlugin extends AbstractShellPlugin with PluginHelper {
     @throws(classOf[CommandExecutionException])
     def lessThan(inputPipe: InputPipe, outputPipe: OutputPipe, args: List[Object]) {
         val validator = curriedAllowArgumentTypes("order", numericAndStringArgumentTypes)(_)
-        def ltElem(a: AnyRef, b: AnyRef): AnyRef = {
+        def ltOp(a: AnyRef, b: AnyRef): AnyRef = {
             (a, b) match {
                 case (aStr: String, bStr: String) => new java.lang.Boolean(aStr.compareTo(bStr) < 0)
                 case (aInt: java.lang.Integer, bInt: java.lang.Integer) => new java.lang.Boolean(aInt < bInt)
                 case (aDbl: java.lang.Double, bDbl: java.lang.Double) => new java.lang.Boolean(aDbl < bDbl)
             }
         }
-        val elemOp = alphaNumericCoerce(_: AnyRef, _: AnyRef)(ltElem)
-        reduceArgsThenPipeOut(outputPipe, args, java.lang.Boolean.FALSE, elemOp, validator)
+        val ltElem = alphaNumericCoerce(_: AnyRef, _: AnyRef)(ltOp)
+        reduceArgsThenPipeOut(outputPipe, args, java.lang.Boolean.FALSE, ltElem, validator)
     }
 
     @CommandName(name = ">") // hmmm parser?
