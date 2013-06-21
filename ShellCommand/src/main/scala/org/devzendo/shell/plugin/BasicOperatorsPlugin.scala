@@ -46,10 +46,18 @@ class BasicOperatorsPlugin extends AbstractShellPlugin with PluginHelper {
 
     // Convert all args to lists, expanding variable references.
     private def wrapAsList(args: List[AnyRef]): List[List[AnyRef]] = {
-        LOGGER.debug("Wrapping args as lists: " + args)
+        LOGGER.debug("Wrapping args as lists: " + dump(args))
         val out = args map wrapArgAsList
         LOGGER.debug("Wrapped args as lists: " + out)
         out
+    }
+
+    private def dump(args: List[AnyRef]): String = {
+        args map {
+            (a: AnyRef) => {
+                ("<" + a.getClass + "> " + a)
+            }
+        } mkString(",")
     }
 
     // Pad all lists out to the same length with some identity.
@@ -100,7 +108,7 @@ class BasicOperatorsPlugin extends AbstractShellPlugin with PluginHelper {
         val argsAsPaddedLists = padLists(argsAsLists, identity)
         LOGGER.debug("Reducing args: " + argsAsPaddedLists)
         val reduced = reduce(argsAsPaddedLists, op)
-        LOGGER.debug("Reduced args: " + reduced)
+        LOGGER.debug("Reduced args: " + dump(reduced))
 
         reduced.foreach( outputPipe.push(_) )
     }
@@ -138,6 +146,22 @@ class BasicOperatorsPlugin extends AbstractShellPlugin with PluginHelper {
             case (aDbl: java.lang.Double, bStr: String) => op(new java.lang.Double(aDbl).toString, bStr)
             case (aDbl: java.lang.Double, bInt: java.lang.Integer) => op(aDbl, new java.lang.Double(bInt.doubleValue()))
             case (aDbl: java.lang.Double, bDbl: java.lang.Double) => op(a, b)
+        }
+    }
+
+    // Coerce dissimilar String/Numeric arguments "upwards", preserve Booleans,
+    // but compositions of this must be prepared to handle Booleans with anything.
+    // Double, Integer -> String
+    // Integer -> Double
+    // .. then perform some other operation on the pair that are now the same type.
+    def alphaNumericCoerceBooleanPassthrough(a: AnyRef, b: AnyRef)(op: ((AnyRef, AnyRef) => AnyRef)): AnyRef = {
+        val parentCoerce = alphaNumericCoerce(_: AnyRef, _: AnyRef)(op)
+        (a, b) match {
+            case (aBoo: java.lang.Boolean, bBoo: java.lang.Boolean) => op(a, b)
+            case (aBoo: java.lang.Boolean, _: AnyRef) => op(a, b)
+            case (_: AnyRef, bBoo: java.lang.Boolean) => op(a, b)
+
+            case (_: AnyRef, _: AnyRef) => parentCoerce(a, b)
         }
     }
 
@@ -548,17 +572,42 @@ class BasicOperatorsPlugin extends AbstractShellPlugin with PluginHelper {
         reduceArgsThenPipeOut(outputPipe, args, java.lang.Boolean.FALSE, gtEqElem, validator)
     }
 
+    // value equality / inequality ---------------------------------------------
+
     @CommandName(name = "!=") // hmmm parser?
     @CommandAlias(alias = "<>")
 //    @CommandAlias(alias = "≠")
-    def notEqual(inputPipe: InputPipe, outputPipe: OutputPipe, args: java.util.List[Object]) {
-
+    @throws(classOf[CommandExecutionException])
+    def notEqual(inputPipe: InputPipe, outputPipe: OutputPipe, args: List[Object]) {
+        val validator = curriedAllowArgumentTypes("compare", allArgumentTypes)(_)
+        def notEqOp(a: AnyRef, b: AnyRef): AnyRef = {
+            new java.lang.Boolean(a != b)
+        }
+        val notEqElem = alphaNumericCoerceBooleanPassthrough(_: AnyRef, _: AnyRef)(notEqOp)
+        reduceArgsThenPipeOut(outputPipe, args, java.lang.Boolean.FALSE, notEqElem, validator)
     }
 
     @CommandName(name = "==") // hmmm parser?
-    def equal(inputPipe: InputPipe, outputPipe: OutputPipe, args: java.util.List[Object]) {
+    @throws(classOf[CommandExecutionException])
+    def equal(inputPipe: InputPipe, outputPipe: OutputPipe, args: List[Object]) {
 
     }
+
+    // object equality / inequality --------------------------------------------
+
+    @CommandName(name = "ne")
+    @throws(classOf[CommandExecutionException])
+    def notEqualReference(inputPipe: InputPipe, outputPipe: OutputPipe, args: List[Object]) {
+
+    }
+
+    @CommandName(name = "eq")
+    @throws(classOf[CommandExecutionException])
+    def equalReference(inputPipe: InputPipe, outputPipe: OutputPipe, args: List[Object]) {
+
+    }
+
+    // bit shifts --------------------------------------------------------------
 
     @CommandName(name = ">>") // hmmm parser?
     def shiftRight(inputPipe: InputPipe, outputPipe: OutputPipe, args: java.util.List[Object]) {
