@@ -1525,5 +1525,116 @@ public class TestBasicOperatorsPlugin {
         assertNotEqualFails(createObjectList(argVar), "Cannot compare the Switch 'Switch(baloney)'");
     }
 
+    // equal -------------------------------------------------------------------
+    private void assertEqual(List<Object> inputs, List<Object> outputs) throws CommandExecutionException {
+        plugin.equal(inputPipe, outputPipe, inputs);
+        assertThat(outputVariable.get(), equalTo(outputs));
+    }
+
+    private void assertEqualFails(List<Object> inputs, String message) {
+        try {
+            plugin.equal(inputPipe, outputPipe, inputs);
+            Assert.fail("Expected a CommandExecutionException");
+        } catch (CommandExecutionException e) {
+            assertThat(e.getMessage(), equalTo(message));
+        }
+    }
+
+    @Test
+    public void equalOfStrings1() throws CommandExecutionException {
+        assertEqual(createObjectList("aaa", "bbb"), createObjectList(false));
+    }
+
+    @Test
+    public void equalOfStrings2() throws CommandExecutionException {
+        assertEqual(createObjectList("aaa", "aaa"), createObjectList(true));
+    }
+
+    @Test
+    public void equalOfStringAndInteger1() throws CommandExecutionException {
+        assertEqual(createObjectList("1", 2), createObjectList(false));
+    }
+
+    @Test
+    public void equalOfStringAndInteger2() throws CommandExecutionException {
+        assertEqual(createObjectList("1", 1), createObjectList(true));
+    }
+
+    @Test
+    public void equalOfStringAndDouble1() throws CommandExecutionException {
+        assertEqual(createObjectList("2.0", 1.0), createObjectList(false));
+    }
+
+    @Test
+    public void equalOfStringAndDouble2() throws CommandExecutionException {
+        assertEqual(createObjectList("1.0", 1.0), createObjectList(true));
+    }
+
+    @Test
+    public void equalOfIntegers1() throws CommandExecutionException {
+        assertEqual(createObjectList(1, 2), createObjectList(false));
+    }
+
+    @Test
+    public void equalOfIntegers2() throws CommandExecutionException {
+        assertEqual(createObjectList(2, 2), createObjectList(true));
+    }
+
+    @Test
+    public void equalOfDoubles1() throws CommandExecutionException {
+        assertEqual(createObjectList(1.0, 2.0), createObjectList(false));
+    }
+
+    @Test
+    public void equalOfDoubles2() throws CommandExecutionException {
+        assertEqual(createObjectList(2.0, 2.0), createObjectList(true));
+    }
+
+    @Test
+    public void equalOfIntegerAndDouble1() throws CommandExecutionException {
+        assertEqual(createObjectList(1, 3.2), createObjectList(false));
+    }
+
+    @Test
+    public void equalOfIntegerAndDouble2() throws CommandExecutionException {
+        assertEqual(createObjectList(1, 1.0), createObjectList(true));
+    }
+
+    // should booleans be converted to their string representation?
+    // c.f. bitwise ops convert them to integers, so why not?
+    @Test
+    public void equalOfBooleanAndStringNoConversions1() throws CommandExecutionException {
+        assertEqual(createObjectList(false, "false"), createObjectList(false));
+    }
+
+    @Test
+    public void equalOfBooleanAndStringNoConversions2() throws CommandExecutionException {
+        assertEqual(createObjectList(true, "false"), createObjectList(false));
+    }
+
+    @Test
+    public void equalOfBooleans1() throws CommandExecutionException {
+        assertEqual(createObjectList(false, true), createObjectList(false));
+    }
+
+    @Test
+    public void equalOfBooleans2() throws CommandExecutionException {
+        assertEqual(createObjectList(true, true), createObjectList(true));
+    }
+
+    @Test
+    public void equalDoesNotAllowSwitches() {
+        assertEqualFails(
+                whateverSwitchRegexStringList,
+                "Cannot compare the Switch 'Switch(Whatever)'");
+    }
+
+    @Test
+    public void equalOfDisallowedTypesInVariablesIsDisallowed() throws CommandExecutionException {
+        final Variable argVar = new Variable();
+        argVar.add(new Switch("baloney"));
+        assertEqualFails(createObjectList(argVar), "Cannot compare the Switch 'Switch(baloney)'");
+    }
+
     // TODO need to think about short-circuiting logical operations
 }

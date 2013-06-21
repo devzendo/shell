@@ -574,7 +574,7 @@ class BasicOperatorsPlugin extends AbstractShellPlugin with PluginHelper {
 
     // value equality / inequality ---------------------------------------------
 
-    @CommandName(name = "!=") // hmmm parser?
+    @CommandName(name = "!=")
     @CommandAlias(alias = "<>")
 //    @CommandAlias(alias = "≠")
     @throws(classOf[CommandExecutionException])
@@ -587,10 +587,15 @@ class BasicOperatorsPlugin extends AbstractShellPlugin with PluginHelper {
         reduceArgsThenPipeOut(outputPipe, args, java.lang.Boolean.FALSE, notEqElem, validator)
     }
 
-    @CommandName(name = "==") // hmmm parser?
+    @CommandName(name = "==")
     @throws(classOf[CommandExecutionException])
     def equal(inputPipe: InputPipe, outputPipe: OutputPipe, args: List[Object]) {
-
+        val validator = curriedAllowArgumentTypes("compare", allArgumentTypes)(_)
+        def eqOp(a: AnyRef, b: AnyRef): AnyRef = {
+            new java.lang.Boolean(a == b)
+        }
+        val eqElem = alphaNumericCoerceBooleanPassthrough(_: AnyRef, _: AnyRef)(eqOp)
+        reduceArgsThenPipeOut(outputPipe, args, java.lang.Boolean.FALSE, eqElem, validator)
     }
 
     // object equality / inequality --------------------------------------------
