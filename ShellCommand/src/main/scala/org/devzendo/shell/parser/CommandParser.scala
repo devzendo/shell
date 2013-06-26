@@ -51,6 +51,7 @@ class CommandParser(commandExists: CommandExists) {
                 blockPipeline | pipeline
             )
 
+
         def blockPipeline: Parser[BlockCommandPipeline] = (
                 "{" ~> pipeline <~ "}"
             ) ^^ {
@@ -64,9 +65,9 @@ class CommandParser(commandExists: CommandExists) {
                 opt(variable <~ "=") ~
                 command ~ opt("<" ~> variable)
               ~ opt("|" ~> repsep(command, "|"))
-              ~ opt(">" ~> variable)
+              ~ opt(">" ~> variable) ~ opt(";")
               ) ^? ({
-            case store ~ firstCommand ~ from ~ restCommandList ~ to
+            case store ~ firstCommand ~ from ~ restCommandList ~ to ~ semi
                 if (! (store.isDefined && to.isDefined)) => {
                     val pipeline = new CommandPipeline()
                     pipeline.addCommand(firstCommand)

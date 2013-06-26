@@ -332,6 +332,23 @@ public class TestCommandParser {
     }
 
     @Test
+    public void statementCanEndInSemicolon() throws CommandParserException {
+        addValidCommands("foo");
+
+        final CommandPipeline pipeline = (CommandPipeline) parser.parse("foo;");
+        final scala.collection.immutable.List<Command> cmds = pipeline.getCommands();
+
+        assertThat(pipeline.getInputVariable(), nullValue());
+        assertThat(pipeline.getOutputVariable(), nullValue());
+
+        assertThat(cmds.size(), equalTo(1));
+
+        final Command command1 = cmds.apply(0);
+        assertThat(command1.getName(), equalTo("foo"));
+        assertNoArgs(command1);
+    }
+
+    @Test
     public void singleCommandInsideAScopeBlock() throws CommandParserException {
         addValidCommands("command");
 
