@@ -33,7 +33,7 @@ class CommandParser(commandExists: CommandExists) {
         def sanitizedInput = nullToEmpty(inputLine).trim()
         if (sanitizedInput.size > 0) {
             val ccp = new StatementCombinatorParser()
-            val parserOutput = ccp.parseStatement(sanitizedInput)
+            val parserOutput = ccp.parseProgram(sanitizedInput)
             parserOutput match {
                 case ccp.Success(r, _) => return r
                 case x => throw new CommandParserException(x.toString)
@@ -47,8 +47,12 @@ class CommandParser(commandExists: CommandExists) {
     }
 
     private class StatementCombinatorParser extends JavaTokenParsers {
-        def statement: Parser[List[Statement]] = (
-                rep(blockPipeline | pipeline)
+        def program: Parser[List[Statement]] = (
+                rep(statement)
+            )
+
+        def statement: Parser[Statement] = (
+                blockPipeline | pipeline
             )
 
 
@@ -151,8 +155,8 @@ class CommandParser(commandExists: CommandExists) {
               | stringLiteral ^^ (x => x.substring(1, x.length - 1))
               )
         
-        def parseStatement(input: String) = {
-            parseAll(statement, input)
+        def parseProgram(input: String) = {
+            parseAll(program, input)
         }
     }
 }
