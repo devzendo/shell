@@ -50,7 +50,7 @@ public class TestCommandParser {
 
     @Test
     public void nullCommands() throws CommandParserException {
-        final CommandPipeline pipeline = (CommandPipeline) parser.parse(null);
+        final CommandPipeline pipeline = (CommandPipeline) parser.parse(null).apply(0);
         final scala.collection.immutable.List<Command> cmds = pipeline.getCommands();
         assertThat(cmds.size(), equalTo(0));
         assertThat(pipeline.isEmpty(), equalTo(true));
@@ -58,7 +58,7 @@ public class TestCommandParser {
 
     @Test
     public void emptyCommands() throws CommandParserException {
-        final CommandPipeline pipeline = (CommandPipeline) parser.parse("");
+        final CommandPipeline pipeline = (CommandPipeline) parser.parse("").apply(0);
         final scala.collection.immutable.List<Command> cmds = pipeline.getCommands();
         assertThat(cmds.size(), equalTo(0));
         assertThat(pipeline.isEmpty(), equalTo(true));
@@ -75,7 +75,7 @@ public class TestCommandParser {
     public void singleWordCommand() throws CommandParserException {
         addValidCommands("foo");
 
-        final CommandPipeline pipeline = (CommandPipeline) parser.parse("foo");
+        final CommandPipeline pipeline = (CommandPipeline) parser.parse("foo").apply(0);
         final scala.collection.immutable.List<Command> cmds = pipeline.getCommands();
         assertThat(cmds.size(), equalTo(1));
         final Command cmd = cmds.apply(0);
@@ -89,7 +89,7 @@ public class TestCommandParser {
     public void singleWordFunction() throws CommandParserException {
         addValidCommands("foo");
 
-        final CommandPipeline pipeline = (CommandPipeline) parser.parse("foo()");
+        final CommandPipeline pipeline = (CommandPipeline) parser.parse("foo()").apply(0);
         final scala.collection.immutable.List<Command> cmds = pipeline.getCommands();
         assertThat(cmds.size(), equalTo(1));
         final Command cmd = cmds.apply(0);
@@ -102,7 +102,7 @@ public class TestCommandParser {
     public void singleWordCommandWithSwitches() throws CommandParserException {
         addValidCommands("foo");
 
-        final CommandPipeline pipeline = (CommandPipeline) parser.parse("foo -Minus /Slash");
+        final CommandPipeline pipeline = (CommandPipeline) parser.parse("foo -Minus /Slash").apply(0);
         final scala.collection.immutable.List<Command> cmds = pipeline.getCommands();
         assertThat(cmds.size(), equalTo(1));
         final Command cmd = cmds.apply(0);
@@ -118,7 +118,7 @@ public class TestCommandParser {
     public void singleWordFunctionWithSwitches() throws CommandParserException {
         addValidCommands("foo");
 
-        final CommandPipeline pipeline = (CommandPipeline) parser.parse("foo(-Minus, /Slash)");
+        final CommandPipeline pipeline = (CommandPipeline) parser.parse("foo(-Minus, /Slash)").apply(0);
         final scala.collection.immutable.List<Command> cmds = pipeline.getCommands();
         assertThat(cmds.size(), equalTo(1));
         final Command cmd = cmds.apply(0);
@@ -134,7 +134,7 @@ public class TestCommandParser {
     public void singleWordCommandWithSuperfluousParentheses() throws CommandParserException {
         addValidCommands("foo");
 
-        final CommandPipeline pipeline = (CommandPipeline) parser.parse("(foo)");
+        final CommandPipeline pipeline = (CommandPipeline) parser.parse("(foo)").apply(0);
         final scala.collection.immutable.List<Command> cmds = pipeline.getCommands();
         assertThat(cmds.size(), equalTo(1));
         final Command cmd = cmds.apply(0);
@@ -147,7 +147,7 @@ public class TestCommandParser {
     public void takeFromVariable() throws CommandParserException {
         addValidCommands("foo");
 
-        final CommandPipeline pipeline = (CommandPipeline) parser.parse(" foo < var ");
+        final CommandPipeline pipeline = (CommandPipeline) parser.parse(" foo < var ").apply(0);
         final scala.collection.immutable.List<Command> cmds = pipeline.getCommands();
         assertThat(cmds.size(), equalTo(1));
         final Command cmd = cmds.apply(0);
@@ -161,7 +161,7 @@ public class TestCommandParser {
     public void takeFromVariableAndPipe() throws CommandParserException {
         addValidCommands("foo", "bar");
 
-        final CommandPipeline pipeline = (CommandPipeline) parser.parse(" foo < var | bar");
+        final CommandPipeline pipeline = (CommandPipeline) parser.parse(" foo < var | bar").apply(0);
         final scala.collection.immutable.List<Command> cmds = pipeline.getCommands();
         assertThat(cmds.size(), equalTo(2));
         final Command foo = cmds.apply(0);
@@ -189,14 +189,14 @@ public class TestCommandParser {
     public void storeIntoVariableWithDirectTo() throws CommandParserException {
         addValidCommands("foo");
 
-        checkVariableStoring((CommandPipeline) parser.parse("foo > var"));
+        checkVariableStoring((CommandPipeline) parser.parse("foo > var").apply(0));
     }
 
     @Test
     public void storeIntoVariableWithAssignment() throws CommandParserException {
         addValidCommands("foo");
 
-        checkVariableStoring((CommandPipeline) parser.parse("var = foo"));
+        checkVariableStoring((CommandPipeline) parser.parse("var = foo").apply(0));
     }
 
     @Test
@@ -206,7 +206,7 @@ public class TestCommandParser {
         exception.expect(CommandParserException.class);
         exception.expectMessage("Use one of = and >, but not both");
 
-        checkVariableStoring((CommandPipeline) parser.parse("var = foo > var"));
+        checkVariableStoring((CommandPipeline) parser.parse("var = foo > var").apply(0));
     }
 
     @Test
@@ -214,7 +214,7 @@ public class TestCommandParser {
         addValidCommands("cmd1", "cmd2", "cmd3");
 
         final CommandPipeline pipeline = (CommandPipeline) parser.parse(
-            "cmd1 2.0 \"string 'hello' \" 2.3e5 6.8 ident < invar| cmd2 | cmd3 5 true false > outvar");
+            "cmd1 2.0 \"string 'hello' \" 2.3e5 6.8 ident < invar| cmd2 | cmd3 5 true false > outvar").apply(0);
 
         checkComplex(pipeline);
     }
@@ -224,7 +224,7 @@ public class TestCommandParser {
         addValidCommands("cmd1", "cmd2", "cmd3");
 
         final CommandPipeline pipeline = (CommandPipeline) parser.parse(
-                "cmd1(2.0, \"string 'hello' \", 2.3e5, 6.8, ident) < invar| cmd2() | cmd3(5, true, false) > outvar");
+                "cmd1(2.0, \"string 'hello' \", 2.3e5, 6.8, ident) < invar| cmd2() | cmd3(5, true, false) > outvar").apply(0);
 
         checkComplex(pipeline);
     }
@@ -234,7 +234,7 @@ public class TestCommandParser {
         addValidCommands("cmd1", "cmd2", "cmd3");
 
         final CommandPipeline pipeline = (CommandPipeline) parser.parse(
-                "2.0 cmd1 \"string 'hello' \" 2.3e5 6.8 ident < invar| cmd2 | 5 cmd3 true false > outvar");
+                "2.0 cmd1 \"string 'hello' \" 2.3e5 6.8 ident < invar| cmd2 | 5 cmd3 true false > outvar").apply(0);
 
         checkComplex(pipeline);
     }
@@ -244,7 +244,7 @@ public class TestCommandParser {
         addValidCommands("cmd1", "cmd2", "cmd3");
 
         final CommandPipeline pipeline = (CommandPipeline) parser.parse(
-                "2.0 cmd1 \"string 'hello' \" 2.3e5 6.8 ident < invar| cmd2() | cmd3 5 true false > outvar");
+                "2.0 cmd1 \"string 'hello' \" 2.3e5 6.8 ident < invar| cmd2() | cmd3 5 true false > outvar").apply(0);
 
         checkComplex(pipeline);
     }
@@ -292,7 +292,7 @@ public class TestCommandParser {
         addValidCommands("cmd1");
 
         final CommandPipeline pipeline = (CommandPipeline) parser.parse(
-            "cmd1 3 2.5 5");
+            "cmd1 3 2.5 5").apply(0);
 
         final scala.collection.immutable.List<Command> cmds = pipeline.getCommands();
         assertThat(cmds.size(), equalTo(1));
@@ -310,7 +310,7 @@ public class TestCommandParser {
         addValidCommands("zero", "one", "two");
 
         final CommandPipeline pipeline = (CommandPipeline) parser.parse(
-            "zero | one | two");
+            "zero | one | two").apply(0);
         final scala.collection.immutable.List<Command> cmds = pipeline.getCommands();
         
         assertThat(pipeline.getInputVariable(), nullValue());
@@ -335,7 +335,7 @@ public class TestCommandParser {
     public void statementCanEndInSemicolon() throws CommandParserException {
         addValidCommands("foo");
 
-        final CommandPipeline pipeline = (CommandPipeline) parser.parse("foo;");
+        final CommandPipeline pipeline = (CommandPipeline) parser.parse("foo;").apply(0);
         final scala.collection.immutable.List<Command> cmds = pipeline.getCommands();
 
         assertThat(pipeline.getInputVariable(), nullValue());
@@ -352,7 +352,7 @@ public class TestCommandParser {
     public void singleCommandInsideAScopeBlock() throws CommandParserException {
         addValidCommands("command");
 
-        final Statement pipeline = parser.parse("{ command }");
+        final Statement pipeline = parser.parse("{ command }").apply(0);
         assertThat(pipeline, instanceOf(BlockCommandPipeline.class));
     }
 
@@ -378,7 +378,7 @@ public class TestCommandParser {
         };
         addValidCommands(valids);
         for (String valid: valids) {
-            final CommandPipeline pipeline = (CommandPipeline) parser.parse(valid);
+            final CommandPipeline pipeline = (CommandPipeline) parser.parse(valid).apply(0);
             assertThat(pipeline.getCommands().size(), equalTo(1));
             assertThat(pipeline.getCommands().apply(0).getName(), equalTo(valid));
         }
@@ -415,7 +415,7 @@ public class TestCommandParser {
         addValidCommands("*", "+", "/");
 
         final CommandPipeline pipeline = (CommandPipeline) parser.parse(
-                "(2 * 3) + (y / 7)");
+                "(2 * 3) + (y / 7)").apply(0);
 
         checkSubCommandsAreEmbeddedInArguments(pipeline);
     }
@@ -425,7 +425,7 @@ public class TestCommandParser {
         addValidCommands("*", "+", "/");
 
         final CommandPipeline pipeline = (CommandPipeline) parser.parse(
-                "(((2 * 3) + (y / 7)))");
+                "(((2 * 3) + (y / 7)))").apply(0);
 
         checkSubCommandsAreEmbeddedInArguments(pipeline);
     }
@@ -435,7 +435,7 @@ public class TestCommandParser {
         addValidCommands("*", "+", "/");
 
         final CommandPipeline pipeline = (CommandPipeline) parser.parse(
-                "((2 * 3) + (((y / 7))))");
+                "((2 * 3) + (((y / 7))))").apply(0);
 
         checkSubCommandsAreEmbeddedInArguments(pipeline);
     }
@@ -468,7 +468,7 @@ public class TestCommandParser {
         addValidCommands("*", "+", "/");
 
         final CommandPipeline pipeline = (CommandPipeline) parser.parse(
-                "(2 * (3 + (8 / var))) + 1");
+                "(2 * (3 + (8 / var))) + 1").apply(0);
         final scala.collection.immutable.List<Command> cmds = pipeline.getCommands();
 
         assertThat(cmds.size(), equalTo(1));
@@ -503,7 +503,7 @@ public class TestCommandParser {
     public void subCommandsCanContainPipeSymbolsAsOperators() throws CommandParserException {
         addValidCommands("echo", "|", "||");
 
-        final CommandPipeline pipeline = (CommandPipeline) parser.parse("echo (2 | (true || false))");
+        final CommandPipeline pipeline = (CommandPipeline) parser.parse("echo (2 | (true || false))").apply(0);
         final scala.collection.immutable.List<Command> cmds = pipeline.getCommands();
 
         assertThat(cmds.size(), equalTo(1));

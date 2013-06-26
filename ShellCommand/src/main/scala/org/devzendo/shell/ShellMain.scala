@@ -76,6 +76,7 @@ class ShellMain(val argList: List[String]) {
         val lineReader: LineReader = new JLineLineReader(historyFile, completionHandler)
 
         try {
+            variableRegistry.incrementUsage()
             pluginRegistry.loadAndRegisterPluginMethods(List(
                 new InternalShellPlugin(),
                 new VariablesShellPlugin(),
@@ -97,14 +98,17 @@ class ShellMain(val argList: List[String]) {
                 ShellMain.LOGGER.debug("input: [" + input + "]")
                 for (line <- input) {
                     try {
-                        val statement = parser.parse(line.trim())
-                        val commandHandlers = wirer.wire(variableRegistry, statement)
-                        if (ShellMain.LOGGER.isDebugEnabled) {
-                            dumpHandlers(commandHandlers)
-                        }
+                        val statements = parser.parse(line.trim())
+                        for (statement <- statements) {
+                            val commandHandlers = wirer.wire(variableRegistry, statement)
+                            if (ShellMain.LOGGER.isDebugEnabled) {
+                                dumpHandlers(commandHandlers)
+                            }
 
-                        val executionContainer = new ExecutionContainer(commandHandlers)
-                        executionContainer.execute()
+                            val executionContainer = new ExecutionContainer(commandHandlers)
+                            executionContainer.execute()
+                            ShellMain.LOGGER.debug("variable registry: [" + variableRegistry + "]")
+                        }
                     } catch {
                         case cpe: CommandParserException =>
                             ShellMain.LOGGER.warn(cpe.getMessage)
@@ -115,6 +119,7 @@ class ShellMain(val argList: List[String]) {
                     }
                 }
             }
+            variableRegistry.decrementUsage()
         } catch {
             case e: ShellPluginException =>
                 ShellMain.LOGGER.fatal("Can't continue: " + e.getMessage)

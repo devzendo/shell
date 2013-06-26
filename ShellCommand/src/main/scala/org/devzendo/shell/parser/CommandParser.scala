@@ -29,7 +29,7 @@ trait CommandExists {
 class CommandParser(commandExists: CommandExists) {
     
     @throws(classOf[CommandParserException])
-    def parse(inputLine: String): Statement = {
+    def parse(inputLine: String): List[Statement] = {
         def sanitizedInput = nullToEmpty(inputLine).trim()
         if (sanitizedInput.size > 0) {
             val ccp = new StatementCombinatorParser()
@@ -39,7 +39,7 @@ class CommandParser(commandExists: CommandExists) {
                 case x => throw new CommandParserException(x.toString)
             }
         }
-        new CommandPipeline()
+        List(new CommandPipeline())
     }
 
     private def nullToEmpty(input: String): String = {
@@ -47,8 +47,8 @@ class CommandParser(commandExists: CommandExists) {
     }
 
     private class StatementCombinatorParser extends JavaTokenParsers {
-        def statement: Parser[Statement] = (
-                blockPipeline | pipeline
+        def statement: Parser[List[Statement]] = (
+                rep(blockPipeline | pipeline)
             )
 
 
