@@ -21,6 +21,7 @@ import org.devzendo.shell.ast._
 import scala.collection.JavaConversions._
 import org.devzendo.shell.ast.Switch
 import scala.Some
+import org.apache.log4j.Logger
 
 /**
  * Given a command pipeline, create a list of command handlers for each
@@ -32,9 +33,11 @@ import scala.Some
  *
  */
 object CommandHandlerWirer {
+    private val LOGGER = Logger.getLogger(classOf[CommandHandlerWirer])
     val verboseLog = new Log4JLog(true)
     val nonverboseLog = new Log4JLog(false)
 }
+
 case class CommandHandlerWirer(commandRegistry: CommandRegistry) {
 
     private[this] def isFilterVerboseSwitch(p: AnyRef) = p match {
@@ -47,20 +50,29 @@ case class CommandHandlerWirer(commandRegistry: CommandRegistry) {
     @throws[CommandNotFoundException]
     def wire(parentVariableRegistry: VariableRegistry, statement: Statement): List[CommandHandler] = {
         statement match {
-            case blockCommandPipeline: BlockCommandPipeline => wire(parentVariableRegistry, blockCommandPipeline)
-            case commandPipeline: CommandPipeline => wire(parentVariableRegistry, commandPipeline)
+            case blockStatements: BlockStatements => List(wireBlockStatements(parentVariableRegistry, blockStatements))
+            case commandPipeline: CommandPipeline => wireCommandPipeline(parentVariableRegistry, commandPipeline)
         }
     }
 
+
     @throws[CommandNotFoundException]
-    def wire(parentVariableRegistry: VariableRegistry, blockCommandPipeline: BlockCommandPipeline): List[CommandHandler] = {
+    def wireBlockStatements(parentVariableRegistry: VariableRegistry, blockStatements: BlockStatements): CommandHandler = {
         val childVariableRegistry = new VariableRegistry(Some(parentVariableRegistry))
-        blockCommandPipeline.setVariableRegistry(childVariableRegistry)
-        wire(childVariableRegistry, blockCommandPipeline.getCommandPipeline)
+        blockStatements.setVariableRegistry(childVariableRegistry) // needed?
+        val listOfCommandHandlerLists = blockStatements.getStatements.map { wire(childVariableRegistry, _) }
+        val blockCommandHandler = new SequentialCommandHandler(listOfCommandHandlerLists)
+        blockCommandHandler.setVariableRegistry(childVariableRegistry)
+        blockCommandHandler.setVerbose(false)
+        blockCommandHandler.setLog(CommandHandlerWirer.nonverboseLog)
+        blockCommandHandler.setInputPipe(new NullInputPipe())
+        blockCommandHandler.setOutputPipe(new NullOutputPipe())
+
+        blockCommandHandler
     }
 
     @throws[CommandNotFoundException]
-    def wire(variableRegistry: VariableRegistry, commandPipeline: CommandPipeline): List[CommandHandler] = {
+    def wireCommandPipeline(variableRegistry: VariableRegistry, commandPipeline: CommandPipeline): List[CommandHandler] = {
         val handlers = scala.collection.mutable.ArrayBuffer[CommandHandler]()
         for (command <- commandPipeline.getCommands) {
             handlers += initialiseCommandHandler(command, variableRegistry)
@@ -124,6 +136,7 @@ case class CommandHandlerWirer(commandRegistry: CommandRegistry) {
         handler.setArgs(arguments)
         handler.setSubCommandHandlers(subCommandHandlers)
 
+        CommandHandlerWirer.LOGGER.debug("setting command " + command.name + " variable registry to " + variableRegistry)
         handler.setVariableRegistry(variableRegistry)
         handler
     }

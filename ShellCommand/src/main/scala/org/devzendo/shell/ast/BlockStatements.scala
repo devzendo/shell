@@ -21,10 +21,10 @@ import org.devzendo.shell.interpreter.VariableRegistry
 /**
  * A CommandPipeline that has its own local VariableRegistry
  */
-final class BlockCommandPipeline extends Statement {
+final class BlockStatements extends Statement {
     @scala.reflect.BeanProperty
     var variableRegistry: VariableRegistry = null
 
     @scala.reflect.BeanProperty
-    var commandPipeline: CommandPipeline = null
+    var statements: List[Statement] = null
 }

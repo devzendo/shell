@@ -17,8 +17,6 @@ package org.devzendo.shell.parser;
 
 import org.devzendo.shell.ast.*;
 import org.hamcrest.Matchers;
-import org.junit.Assert;
-import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -353,7 +351,7 @@ public class TestCommandParser {
         addValidCommands("command");
 
         final Statement pipeline = parser.parse("{ command }").apply(0);
-        assertThat(pipeline, instanceOf(BlockCommandPipeline.class));
+        assertThat(pipeline, instanceOf(BlockStatements.class));
     }
 
     private void assertNoArgs(final Command cmd) {

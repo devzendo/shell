@@ -112,12 +112,19 @@ class ExperimentalShellPlugin extends AbstractShellPlugin with PluginHelper {
     def echo(outputPipe: OutputPipe, args: java.util.List[Object]) {
         args.foreach((arg: AnyRef) => {
             arg match {
-                case varRef: VariableReference =>
-                    if (executionEnvironment().variableRegistry().exists(varRef)) {
-                        outputPipe.push(executionEnvironment().variableRegistry().getVariable(varRef).get)
+                case varRef: VariableReference => {
+                    // TODO need to get the variable registry directly from
+                    // the command handler, as this mechanism gets the global
+                    // variable registry, and does not allow for children in
+                    // block scopes.
+                    var variableRegistry = executionEnvironment().variableRegistry()
+                    LOGGER.debug("looking up variable reference " + varRef + " in variable registry " + variableRegistry)
+                    if (variableRegistry.exists(varRef)) {
+                        outputPipe.push(variableRegistry.getVariable(varRef).get)
                     } else {
                         LOGGER.warn("No such variable '" + varRef.variableName + "'")
                     }
+                }
                 case str: String =>
                     outputPipe.push(str)
             }

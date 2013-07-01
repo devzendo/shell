@@ -36,7 +36,7 @@ public class TestExecutionContainer {
     private static final scala.Option<VariableRegistry> noneVariableRegistry = scala.Option.apply(null);
     private final VariableRegistry globalRegistry = new VariableRegistry(noneVariableRegistry);
 
-    final class TestCommandHandler extends CommandHandler {
+    public static final class TestCommandHandler extends CommandHandler {
         private Thread mCurrentThread;
         private CommandExecutionException mCommandExecutionException;
 

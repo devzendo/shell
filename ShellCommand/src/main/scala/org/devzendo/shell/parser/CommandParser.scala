@@ -48,20 +48,26 @@ class CommandParser(commandExists: CommandExists) {
 
     private class StatementCombinatorParser extends JavaTokenParsers {
         def program: Parser[List[Statement]] = (
+                statements
+                // may need to introduce distinction between a program and statements
+                // i.e. things only usable at the very top level
+            )
+
+        def statements: Parser[List[Statement]] = (
                 rep(statement)
             )
 
         def statement: Parser[Statement] = (
-                blockPipeline | pipeline
+                blockStatements | pipeline
             )
 
 
-        def blockPipeline: Parser[BlockCommandPipeline] = (
-                "{" ~> pipeline <~ "}"
+        def blockStatements: Parser[BlockStatements] = (
+                "{" ~> statements <~ "}"
             ) ^^ {
-            case innerPipeline =>
-                val blockPipeline = new BlockCommandPipeline()
-                blockPipeline.setCommandPipeline(innerPipeline)
+            case statements =>
+                val blockPipeline = new BlockStatements()
+                blockPipeline.setStatements(statements)
                 blockPipeline
         }
 
