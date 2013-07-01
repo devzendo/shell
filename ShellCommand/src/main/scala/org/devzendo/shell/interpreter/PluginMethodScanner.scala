@@ -88,7 +88,8 @@ class PluginMethodScanner {
             c == classOf[scala.collection.immutable.List[_]] ||
             c == classOf[InputPipe] ||
             c == classOf[OutputPipe] ||
-            c == classOf[Log]
+            c == classOf[Log] ||
+            c == classOf[ExecutionEnvironment]
         })
     }
 }
@@ -99,11 +100,12 @@ class MethodAnalyser {
         val parameterTypes = method.getParameterTypes
         if (parameterTypes.length == 0 ||
                 
-            (parameterTypes.length >= 1 && parameterTypes.length <= 4 &&
+            (parameterTypes.length >= 1 && parameterTypes.length <= 5 &&
              (optionalInput(analysedMethod, parameterTypes) &&
               optionalOutput(analysedMethod, parameterTypes) &&
               optionalArguments(analysedMethod, parameterTypes) &&
-              optionalLog(analysedMethod, parameterTypes)
+              optionalLog(analysedMethod, parameterTypes) &&
+              optionalExecutionEnvironment(analysedMethod, parameterTypes)
              ))) {
             Option(analysedMethod)
         } else {
@@ -131,9 +133,15 @@ class MethodAnalyser {
     }
 
     private def optionalLog(analysedMethod: AnalysedMethod,
-                               parameterTypes: Array[Class[_]]): Boolean = {
+            parameterTypes: Array[Class[_]]): Boolean = {
         optionalParameter(parameterTypes, classOf[Log],
             (o: Option[Integer]) => analysedMethod.setLogPosition(o))
+    }
+
+    private def optionalExecutionEnvironment(analysedMethod: AnalysedMethod,
+            parameterTypes: Array[Class[_]]): Boolean = {
+        optionalParameter(parameterTypes, classOf[ExecutionEnvironment],
+            (o: Option[Integer]) => analysedMethod.setExecutionEnvironmentPosition(o))
     }
 
     private def optionalOutput(analysedMethod: AnalysedMethod,

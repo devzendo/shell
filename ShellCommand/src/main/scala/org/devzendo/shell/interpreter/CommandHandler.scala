@@ -55,6 +55,9 @@ abstract class CommandHandler(
     final var log: Log = null
 
     @scala.reflect.BeanProperty
+    final var executionEnvironment: ExecutionEnvironment = null
+
+    @scala.reflect.BeanProperty
     final var args: List[AnyRef] = List[AnyRef]()
 
     @scala.reflect.BeanProperty

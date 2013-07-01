@@ -35,7 +35,8 @@ public class PluginVariations {
         protected List<Object> mArgs = null;
         protected scala.collection.immutable.List<Object> mScalaArgs = null;
         protected Log mLog = null;
-        
+        protected ExecutionEnvironment mExecEnv = null;
+
         public final List<Object> getArgs() {
             return mArgs;
         }
@@ -54,6 +55,10 @@ public class PluginVariations {
 
         public final Log getLog() {
             return mLog;
+        }
+
+        public final ExecutionEnvironment getExecutionEnvironment() {
+            return mExecEnv;
         }
 
         public final boolean isExecuted() {
@@ -85,33 +90,37 @@ public class PluginVariations {
         }
     }
 
-    public static class VoidReturnListArgsInputPipeOutputPipeLog extends
+    public static class VoidReturnListArgsInputPipeOutputPipeLogExecEnv extends
             AbstractShellPlugin {
         public void funk(
                 final List<Object> args,
                 final InputPipe input,
                 final OutputPipe output,
-                final Log log) {
+                final Log log,
+                final ExecutionEnvironment execEnv) {
             mExecuted = true;
             mArgs = args;
             mInputPipe = input;
             mOutputPipe = output;
             mLog = log;
+            mExecEnv = execEnv;
         }
     }
 
-    public static class VoidReturnScalaListArgsInputPipeOutputPipeLog extends
+    public static class VoidReturnScalaListArgsInputPipeOutputPipeLogExecEnv extends
             AbstractShellPlugin {
         public void funk(
                 final scala.collection.immutable.List<Object> args,
                 final InputPipe input,
                 final OutputPipe output,
-                final Log log) {
+                final Log log,
+                final ExecutionEnvironment execEnv) {
             mExecuted = true;
             mScalaArgs = args;
             mInputPipe = input;
             mOutputPipe = output;
             mLog = log;
+            mExecEnv = execEnv;
         }
     }
 

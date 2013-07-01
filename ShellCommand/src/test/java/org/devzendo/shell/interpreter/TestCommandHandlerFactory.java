@@ -23,13 +23,11 @@ import org.devzendo.shell.pipe.OutputPipe;
 import org.jmock.Mockery;
 import org.jmock.integration.junit4.JMock;
 import org.jmock.integration.junit4.JUnit4Mockery;
-import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -47,6 +45,7 @@ public class TestCommandHandlerFactory {
     private final scala.collection.immutable.List<Object> scalaArgs = ScalaListHelper.<Object>createList("foo");
     private final InputPipe inputPipe = context.mock(InputPipe.class);
     private final OutputPipe outputPipe = context.mock(OutputPipe.class);
+    private final ExecutionEnvironment execEnv = context.mock(ExecutionEnvironment.class);
     private final Log log = context.mock(Log.class);
     
     @BeforeClass
@@ -55,24 +54,24 @@ public class TestCommandHandlerFactory {
     }
     
     @Test
-    public void voidReturnJavaListArgsInputPipeOutputPipeLog() throws CommandExecutionException {
-        final AbstractShellPlugin plugin = new VoidReturnListArgsInputPipeOutputPipeLog();
+    public void voidReturnJavaListArgsInputPipeOutputPipeLogExecEnv() throws CommandExecutionException {
+        final AbstractShellPlugin plugin = new VoidReturnListArgsInputPipeOutputPipeLogExecEnv();
         setupAndExecuteHandler(plugin);
-        assertPluginHasBeenPassed(plugin, args, inputPipe, outputPipe, log);
+        assertPluginHasBeenPassed(plugin, args, inputPipe, outputPipe, log, execEnv);
     }
 
     @Test
-    public void voidReturnScalaListArgsInputPipeOutputPipeLog() throws CommandExecutionException {
-        final AbstractShellPlugin plugin = new VoidReturnScalaListArgsInputPipeOutputPipeLog();
+    public void voidReturnScalaListArgsInputPipeOutputPipeLogExecEnv() throws CommandExecutionException {
+        final AbstractShellPlugin plugin = new VoidReturnScalaListArgsInputPipeOutputPipeLogExecEnv();
         setupAndExecuteHandler(plugin);
-        assertPluginHasBeenPassedScalaArgs(plugin, scalaArgs, inputPipe, outputPipe, log);
+        assertPluginHasBeenPassedScalaArgs(plugin, scalaArgs, inputPipe, outputPipe, log, execEnv);
     }
 
     @Test
     public void voidReturnNoArgs() throws CommandExecutionException {
         final AbstractShellPlugin plugin = new VoidReturnNoArgs();
         setupAndExecuteHandler(plugin);
-        assertPluginHasBeenPassed(plugin, null, null, null, null);
+        assertPluginHasBeenPassed(plugin, null, null, null, null, null);
     }
 
     @Test
@@ -99,35 +98,38 @@ public class TestCommandHandlerFactory {
         handler.setInputPipe(inputPipe);
         handler.setOutputPipe(outputPipe);
         handler.setLog(log);
-        assertPluginHasBeenPassed(plugin, null, null, null, null);
+        handler.setExecutionEnvironment(execEnv);
+        assertPluginHasBeenPassed(plugin, null, null, null, null, null);
         handler.execute();
     }
 
     private void assertPluginHasBeenPassedAllExceptArgs(final AbstractShellPlugin plugin,
-                                           final InputPipe expectedInputPipe,
-                                           final OutputPipe expectedOutputPipe,
-                                           final Log expectedLog) {
+                                                        final InputPipe expectedInputPipe,
+                                                        final OutputPipe expectedOutputPipe,
+                                                        final Log expectedLog,
+                                                        final ExecutionEnvironment execEnv) {
         assertThat(plugin.getInputPipe(), equalTo(expectedInputPipe));
         assertThat(plugin.getOutputPipe(), equalTo(expectedOutputPipe));
         assertThat(plugin.getLog(), equalTo(expectedLog));
+        assertThat(plugin.getExecutionEnvironment(), equalTo(execEnv));
     }
 
     private void assertPluginHasBeenPassed(final AbstractShellPlugin plugin,
-            final List<Object> expectedArgs,
-            final InputPipe expectedInputPipe,
-            final OutputPipe expectedOutputPipe,
-            final Log expectedLog) {
+                                           final List<Object> expectedArgs,
+                                           final InputPipe expectedInputPipe,
+                                           final OutputPipe expectedOutputPipe,
+                                           final Log expectedLog,
+                                           final ExecutionEnvironment execEnv) {
         assertThat(plugin.getArgs(), equalTo(expectedArgs));
-        assertPluginHasBeenPassedAllExceptArgs(plugin, expectedInputPipe, expectedOutputPipe, expectedLog);
+        assertPluginHasBeenPassedAllExceptArgs(plugin, expectedInputPipe, expectedOutputPipe, expectedLog, execEnv);
     }
 
     private void assertPluginHasBeenPassedScalaArgs(final AbstractShellPlugin plugin,
-                                           final scala.collection.immutable.List<Object> expectedArgs,
-                                           final InputPipe expectedInputPipe,
-                                           final OutputPipe expectedOutputPipe,
-                                           final Log expectedLog) {
+                                                    final scala.collection.immutable.List<Object> expectedArgs,
+                                                    final InputPipe expectedInputPipe,
+                                                    final OutputPipe expectedOutputPipe,
+                                                    final Log expectedLog, ExecutionEnvironment execEnv) {
         assertThat(plugin.getScalaArgs(), equalTo(expectedArgs));
-        assertPluginHasBeenPassedAllExceptArgs(plugin, expectedInputPipe, expectedOutputPipe, expectedLog);
+        assertPluginHasBeenPassedAllExceptArgs(plugin, expectedInputPipe, expectedOutputPipe, expectedLog, execEnv);
     }
-
 }

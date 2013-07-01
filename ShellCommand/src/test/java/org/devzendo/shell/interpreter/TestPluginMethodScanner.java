@@ -37,7 +37,7 @@ public class TestPluginMethodScanner {
     @Test
     public void voidReturnNoArgsOkBadInitialiseNotScanned() {
         final AnalysedMethod analysedMethod = getAnalysedMethod(scanner.scanPluginMethods(new VoidReturnNoArgsBadPluginMethodsNotScanned()));
-        positionsAre(analysedMethod, none, none, none, none);
+        positionsAre(analysedMethod, none, none, none, none, none);
     }
     
     @Test
@@ -49,7 +49,7 @@ public class TestPluginMethodScanner {
     @Test
     public void voidReturnNoArgsOk() {
         final AnalysedMethod analysedMethod = getAnalysedMethod(scanner.scanPluginMethods(new VoidReturnNoArgs()));
-        positionsAre(analysedMethod, none, none, none, none);
+        positionsAre(analysedMethod, none, none, none, none, none);
     }
 
     @Test
@@ -58,16 +58,16 @@ public class TestPluginMethodScanner {
     }
     
     @Test
-    public void voidReturnJavaListArgsInputPipeOutputPipeLogOk() {
-        final AnalysedMethod analysedMethod = getAnalysedMethod(scanner.scanPluginMethods(new VoidReturnListArgsInputPipeOutputPipeLog()));
-        positionsAre(analysedMethod, scala.Option.apply(0), scala.Option.apply(1), scala.Option.apply(2), scala.Option.apply(3));
+    public void voidReturnJavaListArgsInputPipeOutputPipeLogExecEnvOk() {
+        final AnalysedMethod analysedMethod = getAnalysedMethod(scanner.scanPluginMethods(new VoidReturnListArgsInputPipeOutputPipeLogExecEnv()));
+        positionsAre(analysedMethod, scala.Option.apply(0), scala.Option.apply(1), scala.Option.apply(2), scala.Option.apply(3), scala.Option.apply(4));
         assertThat(analysedMethod.isScalaArgumentsList(), equalTo(false));
     }
 
     @Test
-    public void voidReturnScalaListArgsInputPipeOutputPipeLogOk() {
-        final AnalysedMethod analysedMethod = getAnalysedMethod(scanner.scanPluginMethods(new VoidReturnScalaListArgsInputPipeOutputPipeLog()));
-        positionsAre(analysedMethod, scala.Option.apply(0), scala.Option.apply(1), scala.Option.apply(2), scala.Option.apply(3));
+    public void voidReturnScalaListArgsInputPipeOutputPipeLogExecEnvOk() {
+        final AnalysedMethod analysedMethod = getAnalysedMethod(scanner.scanPluginMethods(new VoidReturnScalaListArgsInputPipeOutputPipeLogExecEnv()));
+        positionsAre(analysedMethod, scala.Option.apply(0), scala.Option.apply(1), scala.Option.apply(2), scala.Option.apply(3), scala.Option.apply(4));
         assertThat(analysedMethod.isScalaArgumentsList(), equalTo(true));
     }
 
@@ -99,11 +99,13 @@ public class TestPluginMethodScanner {
             final scala.Option<Integer> argPos,
             final scala.Option<Integer> inputPipePos,
             final scala.Option<Integer> outputPipePos,
-            final scala.Option<Integer> logPos) {
+            final scala.Option<Integer> logPos,
+            final scala.Option<Integer> execEnvPos) {
         assertThat(analysedMethod.getArgumentsPosition(), equalTo(argPos));
         assertThat(analysedMethod.getInputPipePosition(), equalTo(inputPipePos));
         assertThat(analysedMethod.getOutputPipePosition(), equalTo(outputPipePos));
         assertThat(analysedMethod.getLogPosition(), equalTo(logPos));
+        assertThat(analysedMethod.getExecutionEnvironmentPosition(), equalTo(execEnvPos));
     }
 
     private void noMethods(scala.collection.immutable.Map<String, AnalysedMethod> map) {
