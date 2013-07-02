@@ -18,7 +18,8 @@ package org.devzendo.shell.interpreter
 
 import org.devzendo.shell.ast.VariableReference
 
-abstract class VariableRegistry(@scala.reflect.BeanProperty val parentScope: Option[VariableRegistry]) {
+trait VariableRegistry {
+    def getParentScope: Option[VariableRegistry]
     def exists(varRef: VariableReference): Boolean
     def getVariable(varRef: VariableReference): Variable
     def setVariable(varRef: VariableReference, variable: Variable)
