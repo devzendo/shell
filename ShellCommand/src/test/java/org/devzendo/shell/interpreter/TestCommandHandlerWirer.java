@@ -35,10 +35,10 @@ import static org.junit.Assert.assertTrue;
 
 public class TestCommandHandlerWirer {
     private static final scala.Option<Integer> noneInteger = scala.Option.apply(null);
-    private static final scala.Option<VariableRegistryLike> noneVariableRegistry = scala.Option.apply(null);
+    private static final scala.Option<VariableRegistry> noneVariableRegistry = scala.Option.apply(null);
     private static final scala.Option<CommandHandler> noneCommandHandler = scala.Option.apply(null);
     final CommandRegistry commandRegistry = new CommandRegistry();
-    final VariableRegistryLike variableRegistry = new DefaultVariableRegistry(noneVariableRegistry);
+    final VariableRegistry variableRegistry = new DefaultVariableRegistry(noneVariableRegistry);
     final CommandHandlerWirer wirer = new CommandHandlerWirer(commandRegistry);
     final CommandPipeline pipeline = new CommandPipeline();
     private AnalysedMethod mAnalysedMethod;

@@ -20,6 +20,6 @@ package org.devzendo.shell.interpreter
 case class DefaultExecutionEnvironment(
     argList: List[String],
     commandRegistry: CommandRegistry,
-    variableRegistry: VariableRegistryLike,
+    variableRegistry: VariableRegistry,
     pluginRegistry: PluginRegistry) extends ExecutionEnvironment {
 }

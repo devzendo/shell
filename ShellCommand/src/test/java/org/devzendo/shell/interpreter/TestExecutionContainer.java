@@ -20,7 +20,6 @@ import org.devzendo.shell.ast.VariableReference;
 import org.devzendo.shell.pipe.InputPipe;
 import org.devzendo.shell.pipe.OutputPipe;
 import org.devzendo.shell.pipe.Pipe;
-import org.junit.Assert;
 import org.junit.Test;
 import scala.Option;
 
@@ -33,8 +32,8 @@ import static org.junit.Assert.fail;
 
 public class TestExecutionContainer {
     private static final Option<Integer> none = Option.apply(null);
-    private static final scala.Option<VariableRegistryLike> noneVariableRegistry = scala.Option.apply(null);
-    private final VariableRegistryLike globalRegistry = new DefaultVariableRegistry(noneVariableRegistry);
+    private static final scala.Option<VariableRegistry> noneVariableRegistry = scala.Option.apply(null);
+    private final VariableRegistry globalRegistry = new DefaultVariableRegistry(noneVariableRegistry);
 
     public static final class TestCommandHandler extends CommandHandler {
         private Thread mCurrentThread;

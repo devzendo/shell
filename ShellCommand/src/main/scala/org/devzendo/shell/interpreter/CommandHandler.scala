@@ -65,7 +65,7 @@ abstract class CommandHandler(
 
     // TODO use Option[VariableRegistry] here instead of null
     @scala.reflect.BeanProperty
-    final var variableRegistry: VariableRegistryLike = null
+    final var variableRegistry: VariableRegistry = null
 
     @scala.reflect.BeanProperty
     final var subCommandHandlers = List[Option[CommandHandler]]()
