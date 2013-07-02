@@ -34,7 +34,7 @@ import org.devzendo.shell.ast.{BlockStatements, CommandPipeline}
 
 class ShellMain(val argList: List[String]) {
     val commandRegistry = new CommandRegistry()
-    val variableRegistry = new VariableRegistry(None)
+    val variableRegistry = new DefaultVariableRegistry(None)
     val pluginRegistry = new DefaultPluginRegistry(ShellMain.SHELLPLUGIN_PROPERTIES, commandRegistry, variableRegistry, argList)
 
     private var quitShell = false

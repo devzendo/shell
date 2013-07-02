@@ -24,9 +24,9 @@ import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertTrue;
 
 
-public class TestVariableRegistry {
-    private static final scala.Option<VariableRegistry> noneVariableRegistry = scala.Option.apply(null);
-    private final VariableRegistry globalRegistry = new VariableRegistry(noneVariableRegistry);
+public class TestDefaultVariableRegistry {
+    private static final scala.Option<VariableRegistryLike> noneVariableRegistry = scala.Option.apply(null);
+    private final VariableRegistryLike globalRegistry = new DefaultVariableRegistry(noneVariableRegistry);
     private static final scala.Option<scala.collection.immutable.List<Object>> none = scala.Option.apply(null);
 
     @Test
@@ -100,7 +100,7 @@ public class TestVariableRegistry {
 
     @Test
     public void parentOfChildVariableRegistryIsParent() {
-        final VariableRegistry localRegistry = new VariableRegistry(scala.Option.apply(globalRegistry));
+        final VariableRegistryLike localRegistry = new DefaultVariableRegistry(scala.Option.apply(globalRegistry));
         assertTrue(localRegistry.getParentScope().isDefined());
         assertThat(localRegistry.getParentScope().get(), equalTo(globalRegistry));
     }
@@ -112,7 +112,7 @@ public class TestVariableRegistry {
         val1.add("global");
         globalRegistry.setVariable(vr1, val1);
 
-        final VariableRegistry localRegistry = new VariableRegistry(scala.Option.apply(globalRegistry));
+        final VariableRegistryLike localRegistry = new DefaultVariableRegistry(scala.Option.apply(globalRegistry));
         assertTrue(localRegistry.exists(vr1));
         assertThat(localRegistry.getVariable(vr1), equalTo(val1));
         assertThat(localRegistry.getVariables().size(), equalTo(1));
@@ -122,7 +122,7 @@ public class TestVariableRegistry {
     public void variableNotInParentRegistryIsNotVisibleInChildren() {
         final VariableReference vr1 = new VariableReference("v1");
 
-        final VariableRegistry localRegistry = new VariableRegistry(scala.Option.apply(globalRegistry));
+        final VariableRegistryLike localRegistry = new DefaultVariableRegistry(scala.Option.apply(globalRegistry));
         assertFalse(localRegistry.exists(vr1));
         assertThat(localRegistry.getVariable(vr1), not(nullValue())); // some new var created
     }
@@ -134,7 +134,7 @@ public class TestVariableRegistry {
         globalVal1.add("global");
         globalRegistry.setVariable(globalVr1, globalVal1);
 
-        final VariableRegistry localRegistry = new VariableRegistry(scala.Option.apply(globalRegistry));
+        final VariableRegistryLike localRegistry = new DefaultVariableRegistry(scala.Option.apply(globalRegistry));
         final VariableReference localVr2 = new VariableReference("v2");
         final Variable localVal2 = new Variable();
         localVal2.add("local");
@@ -158,7 +158,7 @@ public class TestVariableRegistry {
         shadowedContents.add("shadowed");
         globalRegistry.setVariable(globalRef, shadowedContents);
 
-        final VariableRegistry localRegistry = new VariableRegistry(scala.Option.apply(globalRegistry));
+        final VariableRegistryLike localRegistry = new DefaultVariableRegistry(scala.Option.apply(globalRegistry));
         final VariableReference localRef = new VariableReference("fool");
         final Variable localContents = new Variable();
         localContents.add("local");
@@ -184,7 +184,7 @@ public class TestVariableRegistry {
 
     @Test
     public void automaticCloseHappensWhenUsageCountDecrementsToZero() {
-        final VariableRegistry localRegistry = new VariableRegistry(scala.Option.apply(globalRegistry));
+        final VariableRegistryLike localRegistry = new DefaultVariableRegistry(scala.Option.apply(globalRegistry));
         final VariableReference localRef = new VariableReference("localvar");
         final Variable localContents = new Variable();
         localContents.add("local");
@@ -204,13 +204,13 @@ public class TestVariableRegistry {
 
     @Test
     public void childRegistriesGetNewId() {
-        final int count = VariableRegistry.getRegistryCount();
+        final int count = DefaultVariableRegistry.getRegistryCount();
         assertThat(globalRegistry.toString(), equalTo("'parent " + count + "' #vars 0 #usage 0"));
 
-        final VariableRegistry childLocalRegistry = new VariableRegistry(scala.Option.apply(globalRegistry));
+        final VariableRegistryLike childLocalRegistry = new DefaultVariableRegistry(scala.Option.apply(globalRegistry));
         assertThat(childLocalRegistry.toString(), equalTo("'child " + (count + 1)  + "' #vars 0 #usage 0"));
 
-        final VariableRegistry grandChildLocalRegistry = new VariableRegistry(scala.Option.apply(childLocalRegistry));
+        final VariableRegistryLike grandChildLocalRegistry = new DefaultVariableRegistry(scala.Option.apply(childLocalRegistry));
         assertThat(grandChildLocalRegistry.toString(), equalTo("'child " + (count + 2) + "' #vars 0 #usage 0"));
     }
 }

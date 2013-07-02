@@ -33,8 +33,8 @@ import static org.junit.Assert.fail;
 
 public class TestExecutionContainer {
     private static final Option<Integer> none = Option.apply(null);
-    private static final scala.Option<VariableRegistry> noneVariableRegistry = scala.Option.apply(null);
-    private final VariableRegistry globalRegistry = new VariableRegistry(noneVariableRegistry);
+    private static final scala.Option<VariableRegistryLike> noneVariableRegistry = scala.Option.apply(null);
+    private final VariableRegistryLike globalRegistry = new DefaultVariableRegistry(noneVariableRegistry);
 
     public static final class TestCommandHandler extends CommandHandler {
         private Thread mCurrentThread;

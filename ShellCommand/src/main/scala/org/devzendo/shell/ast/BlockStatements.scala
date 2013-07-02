@@ -16,14 +16,14 @@
 
 package org.devzendo.shell.ast
 
-import org.devzendo.shell.interpreter.VariableRegistry
+import org.devzendo.shell.interpreter.VariableRegistryLike
 
 /**
  * A CommandPipeline that has its own local VariableRegistry
  */
 final class BlockStatements extends Statement {
     @scala.reflect.BeanProperty
-    var variableRegistry: VariableRegistry = null
+    var variableRegistry: VariableRegistryLike = null
 
     @scala.reflect.BeanProperty
     var statements: List[Statement] = null

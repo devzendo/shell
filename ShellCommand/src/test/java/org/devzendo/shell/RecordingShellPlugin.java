@@ -17,12 +17,12 @@ package org.devzendo.shell;
 
 import org.devzendo.shell.interpreter.CommandRegistry;
 import org.devzendo.shell.interpreter.ExecutionEnvironment;
-import org.devzendo.shell.interpreter.VariableRegistry;
+import org.devzendo.shell.interpreter.VariableRegistryLike;
 import org.devzendo.shell.plugin.ShellPlugin;
 
 public class RecordingShellPlugin implements ShellPlugin {
     private scala.collection.immutable.List<String> mArgs;
-    private VariableRegistry mVariableRegistry;
+    private VariableRegistryLike mVariableRegistry;
     private CommandRegistry mCommandRegistry;
 
     public final scala.collection.immutable.List<String> getArgs() {
@@ -37,7 +37,7 @@ public class RecordingShellPlugin implements ShellPlugin {
         return mCommandRegistry;
     }
 
-    public VariableRegistry getVariableRegistry() {
+    public VariableRegistryLike getVariableRegistry() {
         return mVariableRegistry;
     }
 

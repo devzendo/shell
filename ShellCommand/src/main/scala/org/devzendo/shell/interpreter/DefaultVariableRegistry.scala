@@ -20,17 +20,17 @@ import org.devzendo.shell.ast.VariableReference
 import org.apache.log4j.Logger
 import java.util.concurrent.atomic.AtomicInteger
 
-object VariableRegistry {
-    private val LOGGER = Logger.getLogger(classOf[VariableRegistry])
+object DefaultVariableRegistry {
+    private val LOGGER = Logger.getLogger(classOf[DefaultVariableRegistry])
     private val registryCount = new AtomicInteger()
     def getRegistryCount = {
         registryCount.get()
     }
 }
 
-class VariableRegistry(@scala.reflect.BeanProperty val parentScope: Option[VariableRegistry]) extends VariableRegistryLike {
+class DefaultVariableRegistry(@scala.reflect.BeanProperty override val parentScope: Option[VariableRegistryLike]) extends VariableRegistryLike(parentScope) {
     private var vars = scala.collection.mutable.Map[String, Variable]()
-    private val id = VariableRegistry.registryCount.incrementAndGet()
+    private val id = DefaultVariableRegistry.registryCount.incrementAndGet()
     private var usageCount = 0
 
     override def toString = {
@@ -46,7 +46,7 @@ class VariableRegistry(@scala.reflect.BeanProperty val parentScope: Option[Varia
         }
     }
 
-    private def getVariableInScopeHierarchy(varRef: VariableReference): Option[Variable] = {
+    def getVariableInScopeHierarchy(varRef: VariableReference): Option[Variable] = {
         vars.synchronized {
             val varName = varRef.variableName
             if (vars.contains(varName)) {
@@ -90,7 +90,7 @@ class VariableRegistry(@scala.reflect.BeanProperty val parentScope: Option[Varia
 
     def close() {
         vars.synchronized {
-            VariableRegistry.LOGGER.debug("Closing variable registry " + toString)
+            DefaultVariableRegistry.LOGGER.debug("Closing variable registry " + toString)
             vars.values.foreach( _.close() )
             vars.clear()
         }
@@ -105,7 +105,7 @@ class VariableRegistry(@scala.reflect.BeanProperty val parentScope: Option[Varia
     def incrementUsage() {
         vars.synchronized {
             usageCount = usageCount + 1
-            VariableRegistry.LOGGER.debug("Variable registry usage count incremented in registry " + toString)
+            DefaultVariableRegistry.LOGGER.debug("Variable registry usage count incremented in registry " + toString)
         }
     }
 
@@ -113,7 +113,7 @@ class VariableRegistry(@scala.reflect.BeanProperty val parentScope: Option[Varia
         vars.synchronized {
             if (usageCount > 0) {
                 usageCount = usageCount - 1
-                VariableRegistry.LOGGER.debug("Variable registry usage count decremented in registry " + toString)
+                DefaultVariableRegistry.LOGGER.debug("Variable registry usage count decremented in registry " + toString)
                 if (usageCount == 0) {
                     close()
                 }

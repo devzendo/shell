@@ -18,11 +18,12 @@ package org.devzendo.shell.interpreter
 
 import org.devzendo.shell.ast.VariableReference
 
-trait VariableRegistryLike {
+abstract class VariableRegistryLike(@scala.reflect.BeanProperty val parentScope: Option[VariableRegistryLike]) {
     def exists(varRef: VariableReference): Boolean
     def getVariable(varRef: VariableReference): Variable
     def setVariable(varRef: VariableReference, variable: Variable)
     def getVariables: Map[String, List[AnyRef]]
+    def getVariableInScopeHierarchy(varRef: VariableReference): Option[Variable]
     def close()
     def currentUsageCount(): Int
     def incrementUsage()

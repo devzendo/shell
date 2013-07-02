@@ -33,8 +33,8 @@ import static org.hamcrest.Matchers.equalTo;
  * limitations under the License.
  */
 public class TestBasicOperatorsPlugin {
-    private static final scala.Option<VariableRegistry> noneVariableRegistry = scala.Option.apply(null);
-    final VariableRegistry varReg = new VariableRegistry(noneVariableRegistry);
+    private static final scala.Option<VariableRegistryLike> noneVariableRegistry = scala.Option.apply(null);
+    final VariableRegistryLike varReg = new DefaultVariableRegistry(noneVariableRegistry);
     final BasicOperatorsPlugin plugin = new BasicOperatorsPlugin();
 
     final NullInputPipe inputPipe = new NullInputPipe();
@@ -67,7 +67,7 @@ public class TestBasicOperatorsPlugin {
             }
 
             @Override
-            public VariableRegistry variableRegistry() {
+            public VariableRegistryLike variableRegistry() {
                 return varReg;
             }
 

@@ -19,7 +19,7 @@ package org.devzendo.shell.interpreter
 import org.devzendo.shell.plugin.{ShellPluginException, ShellPlugin}
 
 class DefaultPluginRegistry(val propertiesResourcePath: String, val commandRegistry: CommandRegistry,
-    val variableRegistry: VariableRegistry,
+    val variableRegistry: VariableRegistryLike,
     val argList: List[String]) extends PluginRegistry {
 
     private val pluginMethodScanner = new PluginMethodScanner()

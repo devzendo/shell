@@ -48,7 +48,7 @@ case class CommandHandlerWirer(commandRegistry: CommandRegistry) {
     }
 
     @throws[CommandNotFoundException]
-    def wire(parentVariableRegistry: VariableRegistry, statement: Statement): List[CommandHandler] = {
+    def wire(parentVariableRegistry: VariableRegistryLike, statement: Statement): List[CommandHandler] = {
         statement match {
             case blockStatements: BlockStatements => List(wireBlockStatements(parentVariableRegistry, blockStatements))
             case commandPipeline: CommandPipeline => wireCommandPipeline(parentVariableRegistry, commandPipeline)
@@ -57,8 +57,8 @@ case class CommandHandlerWirer(commandRegistry: CommandRegistry) {
 
 
     @throws[CommandNotFoundException]
-    def wireBlockStatements(parentVariableRegistry: VariableRegistry, blockStatements: BlockStatements): CommandHandler = {
-        val childVariableRegistry = new VariableRegistry(Some(parentVariableRegistry))
+    def wireBlockStatements(parentVariableRegistry: VariableRegistryLike, blockStatements: BlockStatements): CommandHandler = {
+        val childVariableRegistry = new DefaultVariableRegistry(Some(parentVariableRegistry))
         blockStatements.setVariableRegistry(childVariableRegistry) // needed?
         val listOfCommandHandlerLists = blockStatements.getStatements.map { wire(childVariableRegistry, _) }
         val blockCommandHandler = new SequentialCommandHandler(listOfCommandHandlerLists)
@@ -72,7 +72,7 @@ case class CommandHandlerWirer(commandRegistry: CommandRegistry) {
     }
 
     @throws[CommandNotFoundException]
-    def wireCommandPipeline(variableRegistry: VariableRegistry, commandPipeline: CommandPipeline): List[CommandHandler] = {
+    def wireCommandPipeline(variableRegistry: VariableRegistryLike, commandPipeline: CommandPipeline): List[CommandHandler] = {
         val handlers = scala.collection.mutable.ArrayBuffer[CommandHandler]()
         for (command <- commandPipeline.getCommands) {
             handlers += initialiseCommandHandler(command, variableRegistry)
@@ -112,7 +112,7 @@ case class CommandHandlerWirer(commandRegistry: CommandRegistry) {
         handlers.toList
     }
 
-    private def initialiseCommandHandler(command: Command, variableRegistry: VariableRegistry): CommandHandler = {
+    private def initialiseCommandHandler(command: Command, variableRegistry: VariableRegistryLike): CommandHandler = {
         val handler = commandRegistry.getHandler(command.getName)
         val args = command.getArgs
 
