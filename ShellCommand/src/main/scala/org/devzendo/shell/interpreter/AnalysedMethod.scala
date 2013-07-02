@@ -38,5 +38,5 @@ final class AnalysedMethod(val meth: Method) {
     var logPosition: Option[Integer] = None
 
     @scala.reflect.BeanProperty
-    var executionEnvironmentPosition: Option[Integer] = None
+    var variableRegistryPosition: Option[Integer] = None
 }

@@ -45,7 +45,7 @@ public class TestCommandHandlerFactory {
     private final scala.collection.immutable.List<Object> scalaArgs = ScalaListHelper.<Object>createList("foo");
     private final InputPipe inputPipe = context.mock(InputPipe.class);
     private final OutputPipe outputPipe = context.mock(OutputPipe.class);
-    private final ExecutionEnvironment execEnv = context.mock(ExecutionEnvironment.class);
+    private final VariableRegistry variableRegistry = context.mock(VariableRegistry.class);
     private final Log log = context.mock(Log.class);
     
     @BeforeClass
@@ -55,16 +55,16 @@ public class TestCommandHandlerFactory {
     
     @Test
     public void voidReturnJavaListArgsInputPipeOutputPipeLogExecEnv() throws CommandExecutionException {
-        final AbstractShellPlugin plugin = new VoidReturnListArgsInputPipeOutputPipeLogExecEnv();
+        final AbstractShellPlugin plugin = new VoidReturnListArgsInputPipeOutputPipeLogVariableRegistry();
         setupAndExecuteHandler(plugin);
-        assertPluginHasBeenPassed(plugin, args, inputPipe, outputPipe, log, execEnv);
+        assertPluginHasBeenPassed(plugin, args, inputPipe, outputPipe, log, variableRegistry);
     }
 
     @Test
     public void voidReturnScalaListArgsInputPipeOutputPipeLogExecEnv() throws CommandExecutionException {
-        final AbstractShellPlugin plugin = new VoidReturnScalaListArgsInputPipeOutputPipeLogExecEnv();
+        final AbstractShellPlugin plugin = new VoidReturnScalaListArgsInputPipeOutputPipeLogVariableRegistry();
         setupAndExecuteHandler(plugin);
-        assertPluginHasBeenPassedScalaArgs(plugin, scalaArgs, inputPipe, outputPipe, log, execEnv);
+        assertPluginHasBeenPassedScalaArgs(plugin, scalaArgs, inputPipe, outputPipe, log, variableRegistry);
     }
 
     @Test
@@ -98,7 +98,7 @@ public class TestCommandHandlerFactory {
         handler.setInputPipe(inputPipe);
         handler.setOutputPipe(outputPipe);
         handler.setLog(log);
-        handler.setExecutionEnvironment(execEnv);
+        handler.setVariableRegistry(variableRegistry);
         assertPluginHasBeenPassed(plugin, null, null, null, null, null);
         handler.execute();
     }
@@ -107,11 +107,11 @@ public class TestCommandHandlerFactory {
                                                         final InputPipe expectedInputPipe,
                                                         final OutputPipe expectedOutputPipe,
                                                         final Log expectedLog,
-                                                        final ExecutionEnvironment execEnv) {
+                                                        final VariableRegistry variableRegistry) {
         assertThat(plugin.getInputPipe(), equalTo(expectedInputPipe));
         assertThat(plugin.getOutputPipe(), equalTo(expectedOutputPipe));
         assertThat(plugin.getLog(), equalTo(expectedLog));
-        assertThat(plugin.getExecutionEnvironment(), equalTo(execEnv));
+        assertThat(plugin.getVariableRegistry(), equalTo(variableRegistry));
     }
 
     private void assertPluginHasBeenPassed(final AbstractShellPlugin plugin,
@@ -119,17 +119,18 @@ public class TestCommandHandlerFactory {
                                            final InputPipe expectedInputPipe,
                                            final OutputPipe expectedOutputPipe,
                                            final Log expectedLog,
-                                           final ExecutionEnvironment execEnv) {
+                                           final VariableRegistry variableRegistry) {
         assertThat(plugin.getArgs(), equalTo(expectedArgs));
-        assertPluginHasBeenPassedAllExceptArgs(plugin, expectedInputPipe, expectedOutputPipe, expectedLog, execEnv);
+        assertPluginHasBeenPassedAllExceptArgs(plugin, expectedInputPipe, expectedOutputPipe, expectedLog, variableRegistry);
     }
 
     private void assertPluginHasBeenPassedScalaArgs(final AbstractShellPlugin plugin,
                                                     final scala.collection.immutable.List<Object> expectedArgs,
                                                     final InputPipe expectedInputPipe,
                                                     final OutputPipe expectedOutputPipe,
-                                                    final Log expectedLog, ExecutionEnvironment execEnv) {
+                                                    final Log expectedLog,
+                                                    final VariableRegistry variableRegistry) {
         assertThat(plugin.getScalaArgs(), equalTo(expectedArgs));
-        assertPluginHasBeenPassedAllExceptArgs(plugin, expectedInputPipe, expectedOutputPipe, expectedLog, execEnv);
+        assertPluginHasBeenPassedAllExceptArgs(plugin, expectedInputPipe, expectedOutputPipe, expectedLog, variableRegistry);
     }
 }

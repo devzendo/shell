@@ -89,7 +89,7 @@ class PluginMethodScanner {
             c == classOf[InputPipe] ||
             c == classOf[OutputPipe] ||
             c == classOf[Log] ||
-            c == classOf[ExecutionEnvironment]
+            c == classOf[VariableRegistry]
         })
     }
 }
@@ -105,7 +105,7 @@ class MethodAnalyser {
               optionalOutput(analysedMethod, parameterTypes) &&
               optionalArguments(analysedMethod, parameterTypes) &&
               optionalLog(analysedMethod, parameterTypes) &&
-              optionalExecutionEnvironment(analysedMethod, parameterTypes)
+              optionalVariableRegistry(analysedMethod, parameterTypes)
              ))) {
             Option(analysedMethod)
         } else {
@@ -138,10 +138,10 @@ class MethodAnalyser {
             (o: Option[Integer]) => analysedMethod.setLogPosition(o))
     }
 
-    private def optionalExecutionEnvironment(analysedMethod: AnalysedMethod,
+    private def optionalVariableRegistry(analysedMethod: AnalysedMethod,
             parameterTypes: Array[Class[_]]): Boolean = {
-        optionalParameter(parameterTypes, classOf[ExecutionEnvironment],
-            (o: Option[Integer]) => analysedMethod.setExecutionEnvironmentPosition(o))
+        optionalParameter(parameterTypes, classOf[VariableRegistry],
+            (o: Option[Integer]) => analysedMethod.setVariableRegistryPosition(o))
     }
 
     private def optionalOutput(analysedMethod: AnalysedMethod,

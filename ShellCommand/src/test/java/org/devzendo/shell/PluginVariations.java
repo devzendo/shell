@@ -18,6 +18,7 @@ package org.devzendo.shell;
 import org.devzendo.shell.interpreter.CommandExecutionException;
 import org.devzendo.shell.interpreter.ExecutionEnvironment;
 import org.devzendo.shell.interpreter.Log;
+import org.devzendo.shell.interpreter.VariableRegistry;
 import org.devzendo.shell.pipe.InputPipe;
 import org.devzendo.shell.pipe.OutputPipe;
 import org.devzendo.shell.plugin.CommandAlias;
@@ -35,7 +36,7 @@ public class PluginVariations {
         protected List<Object> mArgs = null;
         protected scala.collection.immutable.List<Object> mScalaArgs = null;
         protected Log mLog = null;
-        protected ExecutionEnvironment mExecEnv = null;
+        protected VariableRegistry mVariableRegistry = null;
 
         public final List<Object> getArgs() {
             return mArgs;
@@ -57,8 +58,8 @@ public class PluginVariations {
             return mLog;
         }
 
-        public final ExecutionEnvironment getExecutionEnvironment() {
-            return mExecEnv;
+        public final VariableRegistry getVariableRegistry() {
+            return mVariableRegistry;
         }
 
         public final boolean isExecuted() {
@@ -90,37 +91,37 @@ public class PluginVariations {
         }
     }
 
-    public static class VoidReturnListArgsInputPipeOutputPipeLogExecEnv extends
+    public static class VoidReturnListArgsInputPipeOutputPipeLogVariableRegistry extends
             AbstractShellPlugin {
         public void funk(
                 final List<Object> args,
                 final InputPipe input,
                 final OutputPipe output,
                 final Log log,
-                final ExecutionEnvironment execEnv) {
+                final VariableRegistry variableRegistry) {
             mExecuted = true;
             mArgs = args;
             mInputPipe = input;
             mOutputPipe = output;
             mLog = log;
-            mExecEnv = execEnv;
+            mVariableRegistry = variableRegistry;
         }
     }
 
-    public static class VoidReturnScalaListArgsInputPipeOutputPipeLogExecEnv extends
+    public static class VoidReturnScalaListArgsInputPipeOutputPipeLogVariableRegistry extends
             AbstractShellPlugin {
         public void funk(
                 final scala.collection.immutable.List<Object> args,
                 final InputPipe input,
                 final OutputPipe output,
                 final Log log,
-                final ExecutionEnvironment execEnv) {
+                final VariableRegistry variableRegistry) {
             mExecuted = true;
             mScalaArgs = args;
             mInputPipe = input;
             mOutputPipe = output;
             mLog = log;
-            mExecEnv = execEnv;
+            mVariableRegistry = variableRegistry;
         }
     }
 

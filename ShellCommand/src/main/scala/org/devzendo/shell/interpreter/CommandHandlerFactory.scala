@@ -63,8 +63,8 @@ class CommandHandlerFactory {
                         argsMap += (pos -> getOutputPipe)
                     for (pos <- analysedMethod.getLogPosition)
                         argsMap += (pos -> getLog)
-                    for (pos <- analysedMethod.getExecutionEnvironmentPosition)
-                        argsMap += (pos -> getExecutionEnvironment)
+                    for (pos <- analysedMethod.getVariableRegistryPosition)
+                        argsMap += (pos -> getVariableRegistry)
                     val argsList = (0 until argsMap.size).map { argsMap(_) }
                     val array = argsList.toArray
                     method.invoke(plugin, array:_*) // :_* ensures varargs gets called correctly
