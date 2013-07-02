@@ -28,17 +28,6 @@ object VariableRegistry {
     }
 }
 
-trait VariableRegistryLike {
-    def exists(varRef: VariableReference): Boolean
-    def getVariable(varRef: VariableReference): Variable
-    def setVariable(varRef: VariableReference, variable: Variable)
-    def getVariables: Map[String, List[AnyRef]]
-    def close()
-    def currentUsageCount(): Int
-    def incrementUsage()
-    def decrementUsage()
-}
-
 class VariableRegistry(@scala.reflect.BeanProperty val parentScope: Option[VariableRegistry]) extends VariableRegistryLike {
     private var vars = scala.collection.mutable.Map[String, Variable]()
     private val id = VariableRegistry.registryCount.incrementAndGet()
