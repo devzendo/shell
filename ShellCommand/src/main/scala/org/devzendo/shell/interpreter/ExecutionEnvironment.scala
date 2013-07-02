@@ -16,6 +16,8 @@
 
 package org.devzendo.shell.interpreter
 
+import scala.deprecated
+
 
 trait ExecutionEnvironment {
 
@@ -23,6 +25,9 @@ trait ExecutionEnvironment {
 
     def commandRegistry(): CommandRegistry
 
+    // TODO deprecate this; plugin methods can request it in their signature,
+    // and they get the registry from the block, not just the global one.
+    @deprecated
     def variableRegistry(): VariableRegistry
 
     def pluginRegistry(): PluginRegistry

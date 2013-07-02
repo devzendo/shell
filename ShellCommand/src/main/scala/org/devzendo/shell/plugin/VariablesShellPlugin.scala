@@ -17,15 +17,15 @@
 package org.devzendo.shell.plugin
 
 import org.devzendo.shell.pipe.OutputPipe
+import org.devzendo.shell.interpreter.VariableRegistry
 
 class VariablesShellPlugin extends AbstractShellPlugin {
     def getName = "Variables"
 
-    def listVariables(outputPipe: OutputPipe) {
-        val varMap: Map[String, List[AnyRef]] = executionEnvironment().variableRegistry().getVariables
+    def listVariables(variableRegistry: VariableRegistry, outputPipe: OutputPipe) {
+        val varMap: Map[String, List[AnyRef]] = variableRegistry.getVariables
         for (varEntry <- varMap) {
             outputPipe.push(varEntry._1 + "=" + varEntry._2)
         }
     }
-
 }

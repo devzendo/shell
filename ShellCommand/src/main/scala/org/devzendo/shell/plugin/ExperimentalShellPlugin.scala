@@ -24,6 +24,7 @@ import scala.collection.JavaConversions._
 import scala.io.Source
 import scala.Option
 import org.devzendo.shell.ast.VariableReference
+import org.devzendo.shell.interpreter.VariableRegistry
 
 class ExperimentalShellPlugin extends AbstractShellPlugin with PluginHelper {
     def getName = {
@@ -109,15 +110,10 @@ class ExperimentalShellPlugin extends AbstractShellPlugin with PluginHelper {
     }
 
     // echo --------------------------------------------------------------------
-    def echo(outputPipe: OutputPipe, args: java.util.List[Object]) {
+    def echo(variableRegistry: VariableRegistry, outputPipe: OutputPipe, args: java.util.List[Object]) {
         args.foreach((arg: AnyRef) => {
             arg match {
                 case varRef: VariableReference => {
-                    // TODO need to get the variable registry directly from
-                    // the command handler, as this mechanism gets the global
-                    // variable registry, and does not allow for children in
-                    // block scopes.
-                    var variableRegistry = executionEnvironment().variableRegistry()
                     LOGGER.debug("looking up variable reference " + varRef + " in variable registry " + variableRegistry)
                     if (variableRegistry.exists(varRef)) {
                         outputPipe.push(variableRegistry.getVariable(varRef).get)

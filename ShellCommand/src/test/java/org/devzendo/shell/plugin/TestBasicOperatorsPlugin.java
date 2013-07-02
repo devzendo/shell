@@ -55,6 +55,7 @@ public class TestBasicOperatorsPlugin {
     @Before
     public void setUp() throws Exception {
         BasicConfigurator.configure();
+        // TODO is this still needed?
         final ExecutionEnvironment execEnv = new ExecutionEnvironment() {
             @Override
             public List<String> argList() {
@@ -83,13 +84,13 @@ public class TestBasicOperatorsPlugin {
     // operator framework ------------------------------------------------------
 
     private void assertAddition(List<Object> inputs, List<Object> outputs) throws CommandExecutionException {
-        plugin.plus(inputPipe, outputPipe, inputs);
+        plugin.plus(varReg, inputPipe, outputPipe, inputs);
         assertThat(outputVariable.get(), equalTo(outputs));
     }
 
     private void assertAdditionFails(List<Object> inputs, String message) {
         try {
-            plugin.plus(inputPipe, outputPipe, inputs);
+            plugin.plus(varReg, inputPipe, outputPipe, inputs);
             Assert.fail("Expected a CommandExecutionException");
         } catch (CommandExecutionException e) {
             assertThat(e.getMessage(), equalTo(message));
@@ -241,13 +242,13 @@ public class TestBasicOperatorsPlugin {
 
     // minus -------------------------------------------------------------------
     private void assertSubtraction(List<Object> inputs, List<Object> outputs) throws CommandExecutionException {
-        plugin.minus(inputPipe, outputPipe, inputs);
+        plugin.minus(varReg, inputPipe, outputPipe, inputs);
         assertThat(outputVariable.get(), equalTo(outputs));
     }
 
     private void assertSubtractionFails(List<Object> inputs, String message) {
         try {
-            plugin.minus(inputPipe, outputPipe, inputs);
+            plugin.minus(varReg, inputPipe, outputPipe, inputs);
             Assert.fail("Expected a CommandExecutionException");
         } catch (CommandExecutionException e) {
             assertThat(e.getMessage(), equalTo(message));
@@ -300,13 +301,13 @@ public class TestBasicOperatorsPlugin {
 
     // times -------------------------------------------------------------------
     private void assertMultiplication(List<Object> inputs, List<Object> outputs) throws CommandExecutionException {
-        plugin.times(inputPipe, outputPipe, inputs);
+        plugin.times(varReg, inputPipe, outputPipe, inputs);
         assertThat(outputVariable.get(), equalTo(outputs));
     }
 
     private void assertMultiplicationFails(List<Object> inputs, String message) {
         try {
-            plugin.times(inputPipe, outputPipe, inputs);
+            plugin.times(varReg, inputPipe, outputPipe, inputs);
             Assert.fail("Expected a CommandExecutionException");
         } catch (CommandExecutionException e) {
             assertThat(e.getMessage(), equalTo(message));
@@ -379,13 +380,13 @@ public class TestBasicOperatorsPlugin {
 
     // divide ------------------------------------------------------------------
     private void assertDivision(List<Object> inputs, List<Object> outputs) throws CommandExecutionException {
-        plugin.divide(inputPipe, outputPipe, inputs);
+        plugin.divide(varReg, inputPipe, outputPipe, inputs);
         assertThat(outputVariable.get(), equalTo(outputs));
     }
 
     private void assertDivisionFails(List<Object> inputs, String message) {
         try {
-            plugin.divide(inputPipe, outputPipe, inputs);
+            plugin.divide(varReg, inputPipe, outputPipe, inputs);
             Assert.fail("Expected a CommandExecutionException");
         } catch (CommandExecutionException e) {
             assertThat(e.getMessage(), equalTo(message));
@@ -429,13 +430,13 @@ public class TestBasicOperatorsPlugin {
 
     // logical not -------------------------------------------------------------
     private void assertLogicalNot(List<Object> inputs, List<Object> outputs) throws CommandExecutionException {
-        plugin.logicalNot(inputPipe, outputPipe, inputs);
+        plugin.logicalNot(varReg, inputPipe, outputPipe, inputs);
         assertThat(outputVariable.get(), equalTo(outputs));
     }
 
     private void assertLogicalNotFails(List<Object> inputs, String message) {
         try {
-            plugin.logicalNot(inputPipe, outputPipe, inputs);
+            plugin.logicalNot(varReg, inputPipe, outputPipe, inputs);
             Assert.fail("Expected a CommandExecutionException");
         } catch (CommandExecutionException e) {
             assertThat(e.getMessage(), equalTo(message));
@@ -482,13 +483,13 @@ public class TestBasicOperatorsPlugin {
 
     // modulus -----------------------------------------------------------------
     private void assertModulus(List<Object> inputs, List<Object> outputs) throws CommandExecutionException {
-        plugin.mod(inputPipe, outputPipe, inputs);
+        plugin.mod(varReg, inputPipe, outputPipe, inputs);
         assertThat(outputVariable.get(), equalTo(outputs));
     }
 
     private void assertModulusFails(List<Object> inputs, String message) {
         try {
-            plugin.mod(inputPipe, outputPipe, inputs);
+            plugin.mod(varReg, inputPipe, outputPipe, inputs);
             Assert.fail("Expected a CommandExecutionException");
         } catch (CommandExecutionException e) {
             assertThat(e.getMessage(), equalTo(message));
@@ -516,13 +517,13 @@ public class TestBasicOperatorsPlugin {
 
     // bitwise xor -------------------------------------------------------------
     private void assertXor(List<Object> inputs, List<Object> outputs) throws CommandExecutionException {
-        plugin.bitwiseXor(inputPipe, outputPipe, inputs);
+        plugin.bitwiseXor(varReg, inputPipe, outputPipe, inputs);
         assertThat(outputVariable.get(), equalTo(outputs));
     }
 
     private void assertXorFails(List<Object> inputs, String message) {
         try {
-            plugin.bitwiseXor(inputPipe, outputPipe, inputs);
+            plugin.bitwiseXor(varReg, inputPipe, outputPipe, inputs);
             Assert.fail("Expected a CommandExecutionException");
         } catch (CommandExecutionException e) {
             assertThat(e.getMessage(), equalTo(message));
@@ -596,13 +597,13 @@ public class TestBasicOperatorsPlugin {
 
     // bitwise or --------------------------------------------------------------
     private void assertOr(List<Object> inputs, List<Object> outputs) throws CommandExecutionException {
-        plugin.bitwiseOr(inputPipe, outputPipe, inputs);
+        plugin.bitwiseOr(varReg, inputPipe, outputPipe, inputs);
         assertThat(outputVariable.get(), equalTo(outputs));
     }
 
     private void assertOrFails(List<Object> inputs, String message) {
         try {
-            plugin.bitwiseOr(inputPipe, outputPipe, inputs);
+            plugin.bitwiseOr(varReg, inputPipe, outputPipe, inputs);
             Assert.fail("Expected a CommandExecutionException");
         } catch (CommandExecutionException e) {
             assertThat(e.getMessage(), equalTo(message));
@@ -675,13 +676,13 @@ public class TestBasicOperatorsPlugin {
 
     // bitwise and -------------------------------------------------------------
     private void assertAnd(List<Object> inputs, List<Object> outputs) throws CommandExecutionException {
-        plugin.bitwiseAnd(inputPipe, outputPipe, inputs);
+        plugin.bitwiseAnd(varReg, inputPipe, outputPipe, inputs);
         assertThat(outputVariable.get(), equalTo(outputs));
     }
 
     private void assertAndFails(List<Object> inputs, String message) {
         try {
-            plugin.bitwiseAnd(inputPipe, outputPipe, inputs);
+            plugin.bitwiseAnd(varReg, inputPipe, outputPipe, inputs);
             Assert.fail("Expected a CommandExecutionException");
         } catch (CommandExecutionException e) {
             assertThat(e.getMessage(), equalTo(message));
@@ -754,13 +755,13 @@ public class TestBasicOperatorsPlugin {
 
     // bitwise complement ------------------------------------------------------
     private void assertComplement(List<Object> inputs, List<Object> outputs) throws CommandExecutionException {
-        plugin.bitwiseComplement(inputPipe, outputPipe, inputs);
+        plugin.bitwiseComplement(varReg, inputPipe, outputPipe, inputs);
         assertThat(outputVariable.get(), equalTo(outputs));
     }
 
     private void assertComplementFails(List<Object> inputs, String message) {
         try {
-            plugin.bitwiseComplement(inputPipe, outputPipe, inputs);
+            plugin.bitwiseComplement(varReg, inputPipe, outputPipe, inputs);
             Assert.fail("Expected a CommandExecutionException");
         } catch (CommandExecutionException e) {
             assertThat(e.getMessage(), equalTo(message));
@@ -805,13 +806,13 @@ public class TestBasicOperatorsPlugin {
 
     // logical and -------------------------------------------------------------
     private void assertLAnd(List<Object> inputs, List<Object> outputs) throws CommandExecutionException {
-        plugin.logicalAnd(inputPipe, outputPipe, inputs);
+        plugin.logicalAnd(varReg, inputPipe, outputPipe, inputs);
         assertThat(outputVariable.get(), equalTo(outputs));
     }
 
     private void assertLAndFails(List<Object> inputs, String message) {
         try {
-            plugin.logicalAnd(inputPipe, outputPipe, inputs);
+            plugin.logicalAnd(varReg, inputPipe, outputPipe, inputs);
             Assert.fail("Expected a CommandExecutionException");
         } catch (CommandExecutionException e) {
             assertThat(e.getMessage(), equalTo(message));
@@ -861,13 +862,13 @@ public class TestBasicOperatorsPlugin {
 
     // logical or --------------------------------------------------------------
     private void assertLOr(List<Object> inputs, List<Object> outputs) throws CommandExecutionException {
-        plugin.logicalOr(inputPipe, outputPipe, inputs);
+        plugin.logicalOr(varReg, inputPipe, outputPipe, inputs);
         assertThat(outputVariable.get(), equalTo(outputs));
     }
 
     private void assertLOrFails(List<Object> inputs, String message) {
         try {
-            plugin.logicalOr(inputPipe, outputPipe, inputs);
+            plugin.logicalOr(varReg, inputPipe, outputPipe, inputs);
             Assert.fail("Expected a CommandExecutionException");
         } catch (CommandExecutionException e) {
             assertThat(e.getMessage(), equalTo(message));
@@ -917,13 +918,13 @@ public class TestBasicOperatorsPlugin {
 
     // logical xor --------------------------------------------------------------
     private void assertLXor(List<Object> inputs, List<Object> outputs) throws CommandExecutionException {
-        plugin.logicalXor(inputPipe, outputPipe, inputs);
+        plugin.logicalXor(varReg, inputPipe, outputPipe, inputs);
         assertThat(outputVariable.get(), equalTo(outputs));
     }
 
     private void assertLXorFails(List<Object> inputs, String message) {
         try {
-            plugin.logicalXor(inputPipe, outputPipe, inputs);
+            plugin.logicalXor(varReg, inputPipe, outputPipe, inputs);
             Assert.fail("Expected a CommandExecutionException");
         } catch (CommandExecutionException e) {
             assertThat(e.getMessage(), equalTo(message));
@@ -973,13 +974,13 @@ public class TestBasicOperatorsPlugin {
 
     // less than ---------------------------------------------------------------
     private void assertLessThan(List<Object> inputs, List<Object> outputs) throws CommandExecutionException {
-        plugin.lessThan(inputPipe, outputPipe, inputs);
+        plugin.lessThan(varReg, inputPipe, outputPipe, inputs);
         assertThat(outputVariable.get(), equalTo(outputs));
     }
 
     private void assertLessThanFails(List<Object> inputs, String message) {
         try {
-            plugin.lessThan(inputPipe, outputPipe, inputs);
+            plugin.lessThan(varReg, inputPipe, outputPipe, inputs);
             Assert.fail("Expected a CommandExecutionException");
         } catch (CommandExecutionException e) {
             assertThat(e.getMessage(), equalTo(message));
@@ -1084,13 +1085,13 @@ public class TestBasicOperatorsPlugin {
 
     // greater than ------------------------------------------------------------
     private void assertGreaterThan(List<Object> inputs, List<Object> outputs) throws CommandExecutionException {
-        plugin.greaterThan(inputPipe, outputPipe, inputs);
+        plugin.greaterThan(varReg, inputPipe, outputPipe, inputs);
         assertThat(outputVariable.get(), equalTo(outputs));
     }
 
     private void assertGreaterThanFails(List<Object> inputs, String message) {
         try {
-            plugin.greaterThan(inputPipe, outputPipe, inputs);
+            plugin.greaterThan(varReg, inputPipe, outputPipe, inputs);
             Assert.fail("Expected a CommandExecutionException");
         } catch (CommandExecutionException e) {
             assertThat(e.getMessage(), equalTo(message));
@@ -1195,13 +1196,13 @@ public class TestBasicOperatorsPlugin {
 
     // less than or equal ------------------------------------------------------
     private void assertLessThanEqual(List<Object> inputs, List<Object> outputs) throws CommandExecutionException {
-        plugin.lessThanOrEqual(inputPipe, outputPipe, inputs);
+        plugin.lessThanOrEqual(varReg, inputPipe, outputPipe, inputs);
         assertThat(outputVariable.get(), equalTo(outputs));
     }
 
     private void assertLessThanEqualFails(List<Object> inputs, String message) {
         try {
-            plugin.lessThanOrEqual(inputPipe, outputPipe, inputs);
+            plugin.lessThanOrEqual(varReg, inputPipe, outputPipe, inputs);
             Assert.fail("Expected a CommandExecutionException");
         } catch (CommandExecutionException e) {
             assertThat(e.getMessage(), equalTo(message));
@@ -1306,13 +1307,13 @@ public class TestBasicOperatorsPlugin {
 
     // greater than or equal ---------------------------------------------------
     private void assertGreaterThanEqual(List<Object> inputs, List<Object> outputs) throws CommandExecutionException {
-        plugin.greaterThanOrEqual(inputPipe, outputPipe, inputs);
+        plugin.greaterThanOrEqual(varReg, inputPipe, outputPipe, inputs);
         assertThat(outputVariable.get(), equalTo(outputs));
     }
 
     private void assertGreaterThanEqualFails(List<Object> inputs, String message) {
         try {
-            plugin.greaterThanOrEqual(inputPipe, outputPipe, inputs);
+            plugin.greaterThanOrEqual(varReg, inputPipe, outputPipe, inputs);
             Assert.fail("Expected a CommandExecutionException");
         } catch (CommandExecutionException e) {
             assertThat(e.getMessage(), equalTo(message));
@@ -1417,13 +1418,13 @@ public class TestBasicOperatorsPlugin {
 
     // not equal ---------------------------------------------------
     private void assertNotEqual(List<Object> inputs, List<Object> outputs) throws CommandExecutionException {
-        plugin.notEqual(inputPipe, outputPipe, inputs);
+        plugin.notEqual(varReg, inputPipe, outputPipe, inputs);
         assertThat(outputVariable.get(), equalTo(outputs));
     }
 
     private void assertNotEqualFails(List<Object> inputs, String message) {
         try {
-            plugin.notEqual(inputPipe, outputPipe, inputs);
+            plugin.notEqual(varReg, inputPipe, outputPipe, inputs);
             Assert.fail("Expected a CommandExecutionException");
         } catch (CommandExecutionException e) {
             assertThat(e.getMessage(), equalTo(message));
@@ -1527,13 +1528,13 @@ public class TestBasicOperatorsPlugin {
 
     // equal -------------------------------------------------------------------
     private void assertEqual(List<Object> inputs, List<Object> outputs) throws CommandExecutionException {
-        plugin.equal(inputPipe, outputPipe, inputs);
+        plugin.equal(varReg, inputPipe, outputPipe, inputs);
         assertThat(outputVariable.get(), equalTo(outputs));
     }
 
     private void assertEqualFails(List<Object> inputs, String message) {
         try {
-            plugin.equal(inputPipe, outputPipe, inputs);
+            plugin.equal(varReg, inputPipe, outputPipe, inputs);
             Assert.fail("Expected a CommandExecutionException");
         } catch (CommandExecutionException e) {
             assertThat(e.getMessage(), equalTo(message));

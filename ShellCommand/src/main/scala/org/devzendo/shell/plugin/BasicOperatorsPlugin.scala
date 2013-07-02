@@ -17,7 +17,7 @@
 package org.devzendo.shell.plugin
 
 import org.devzendo.shell.pipe.{OutputPipe, InputPipe}
-import org.devzendo.shell.interpreter.{CommandExecutionException, Variable}
+import org.devzendo.shell.interpreter.{VariableRegistry, CommandExecutionException, Variable}
 import org.devzendo.shell.ast.VariableReference
 import org.apache.log4j.Logger
 import scala.annotation.tailrec
@@ -33,11 +33,11 @@ class BasicOperatorsPlugin extends AbstractShellPlugin with PluginHelper {
     def getName = "Operators"
 
     // Convert an arg to a list, expanding variable references.
-    private def wrapArgAsList(arg: AnyRef): List[AnyRef] = arg match {
+    private def wrapArgAsList(variableRegistry: VariableRegistry)(arg: AnyRef): List[AnyRef] = arg match {
         case v: Variable =>
             v.asList()
         case vr: VariableReference =>
-            executionEnvironment().variableRegistry().getVariable(vr).asList()
+            variableRegistry.getVariable(vr).asList()
         case null => // unsure...
             List[AnyRef]()
         case x: AnyRef =>
@@ -45,9 +45,9 @@ class BasicOperatorsPlugin extends AbstractShellPlugin with PluginHelper {
     }
 
     // Convert all args to lists, expanding variable references.
-    private def wrapAsList(args: List[AnyRef]): List[List[AnyRef]] = {
+    private def wrapAsList(variableRegistry: VariableRegistry)(args: List[AnyRef]): List[List[AnyRef]] = {
         LOGGER.debug("Wrapping args as lists: " + dump(args))
-        val out = args map wrapArgAsList
+        val out = args map wrapArgAsList(variableRegistry)
         LOGGER.debug("Wrapped args as lists: " + out)
         out
     }
@@ -95,13 +95,14 @@ class BasicOperatorsPlugin extends AbstractShellPlugin with PluginHelper {
 
     // Reduce expanded arguments to a single list transformed by an operation and identity, and pipe the results out.
     private def reduceArgsThenPipeOut(
+             variableRegistry: VariableRegistry,
              outputPipe: OutputPipe,
              args: List[AnyRef],
              identity: AnyRef,
              op: ((AnyRef, AnyRef) => AnyRef),
              validate: (List[AnyRef]) => Unit) {
         LOGGER.debug("Wrapping args: " + args)
-        val argsAsLists = wrapAsList(args)
+        val argsAsLists = wrapAsList(variableRegistry)(args)
         LOGGER.debug("Validating wrapped args: " + argsAsLists)
         argsAsLists foreach validate
         LOGGER.debug("Padding validated wrapped args")
@@ -115,12 +116,13 @@ class BasicOperatorsPlugin extends AbstractShellPlugin with PluginHelper {
 
     // Map expanded argument to a single list transformed by an operation, and pipe the results out.
     private def mapArgThenPipeOut(
+             variableRegistry: VariableRegistry,
              outputPipe: OutputPipe,
              arg: AnyRef,
              op: ((AnyRef) => AnyRef),
              validate: (List[AnyRef]) => Unit) {
         LOGGER.debug("Wrapping arg: " + arg)
-        val argList = wrapArgAsList(arg)
+        val argList = wrapArgAsList(variableRegistry)(arg)
         LOGGER.debug("Validating wrapped arg: " + argList)
         validate(argList)
         LOGGER.debug("Mapping arg")
@@ -239,7 +241,7 @@ class BasicOperatorsPlugin extends AbstractShellPlugin with PluginHelper {
      */
     @CommandName(name = "+")
     @throws(classOf[CommandExecutionException])
-    def plus(inputPipe: InputPipe, outputPipe: OutputPipe, args: List[AnyRef]) {
+    def plus(variableRegistry: VariableRegistry, inputPipe: InputPipe, outputPipe: OutputPipe, args: List[AnyRef]) {
         val validator = curriedAllowArgumentTypes("add", allArgumentTypes)(_)
         def plusElem(a: AnyRef, b: AnyRef): AnyRef = {
             (a, b) match {
@@ -266,7 +268,7 @@ class BasicOperatorsPlugin extends AbstractShellPlugin with PluginHelper {
                 case (aBoo: java.lang.Boolean, bBoo: java.lang.Boolean) => new java.lang.Boolean(aBoo || bBoo)
             }
         }
-        reduceArgsThenPipeOut(outputPipe, args, new Integer(0), plusElem, validator)
+        reduceArgsThenPipeOut(variableRegistry, outputPipe, args, new Integer(0), plusElem, validator)
     }
 
     // minus -------------------------------------------------------------------
@@ -277,7 +279,7 @@ class BasicOperatorsPlugin extends AbstractShellPlugin with PluginHelper {
      */
     @CommandName(name = "-")
     @throws(classOf[CommandExecutionException])
-    def minus(inputPipe: InputPipe, outputPipe: OutputPipe, args: List[AnyRef]) {
+    def minus(variableRegistry: VariableRegistry, inputPipe: InputPipe, outputPipe: OutputPipe, args: List[AnyRef]) {
         val validator = curriedAllowArgumentTypes("subtract", numericArgumentTypes)(_)
         def minusOp(a: AnyRef, b: AnyRef): AnyRef = {
             (a, b) match {
@@ -288,9 +290,9 @@ class BasicOperatorsPlugin extends AbstractShellPlugin with PluginHelper {
         val minusElem = numericCoerce(_: AnyRef, _: AnyRef)(minusOp)
         if (args.size == 1) {
             def negate(a: AnyRef): AnyRef = { minusElem(new java.lang.Integer(0), a) }
-            mapArgThenPipeOut(outputPipe, args(0), negate, validator)
+            mapArgThenPipeOut(variableRegistry, outputPipe, args(0), negate, validator)
         } else {
-            reduceArgsThenPipeOut(outputPipe, args, new Integer(0), minusElem, validator)
+            reduceArgsThenPipeOut(variableRegistry, outputPipe, args, new Integer(0), minusElem, validator)
         }
     }
 
@@ -303,7 +305,7 @@ class BasicOperatorsPlugin extends AbstractShellPlugin with PluginHelper {
      */
     @CommandName(name = "*")
     @throws(classOf[CommandExecutionException])
-    def times(inputPipe: InputPipe, outputPipe: OutputPipe, args: List[Object]) {
+    def times(variableRegistry: VariableRegistry, inputPipe: InputPipe, outputPipe: OutputPipe, args: List[Object]) {
         val validator = curriedAllowArgumentTypes("multiply", numericAndStringArgumentTypes)(_)
         def replicate(n: Integer, str: String): String = {
             if (n < 0) {
@@ -326,7 +328,7 @@ class BasicOperatorsPlugin extends AbstractShellPlugin with PluginHelper {
                 case (aStr: String, bDbl: java.lang.Double) => throw new CommandExecutionException("Cannot replicate the String '" + aStr + "' by the Double '" + bDbl + "'")
             }
         }
-        reduceArgsThenPipeOut(outputPipe, args, new Integer(1), timesElem, validator)
+        reduceArgsThenPipeOut(variableRegistry, outputPipe, args, new Integer(1), timesElem, validator)
     }
 
 
@@ -337,7 +339,7 @@ class BasicOperatorsPlugin extends AbstractShellPlugin with PluginHelper {
      */
     @CommandName(name = "/")
     @throws(classOf[CommandExecutionException])
-    def divide(inputPipe: InputPipe, outputPipe: OutputPipe, args: List[Object]) {
+    def divide(variableRegistry: VariableRegistry, inputPipe: InputPipe, outputPipe: OutputPipe, args: List[Object]) {
         val validator = curriedAllowArgumentTypes("divide", numericArgumentTypes)(_)
         def divideOp(a: AnyRef, b: AnyRef): AnyRef = {
             (a, b) match {
@@ -346,7 +348,7 @@ class BasicOperatorsPlugin extends AbstractShellPlugin with PluginHelper {
             }
         }
         val divideElem = numericCoerce(_: AnyRef, _: AnyRef)(divideOp)
-        reduceArgsThenPipeOut(outputPipe, args, new Integer(1), divideElem, validator)
+        reduceArgsThenPipeOut(variableRegistry, outputPipe, args, new Integer(1), divideElem, validator)
     }
 
     // logical not -------------------------------------------------------------
@@ -356,13 +358,13 @@ class BasicOperatorsPlugin extends AbstractShellPlugin with PluginHelper {
     @CommandName(name = "!")
     @CommandAlias(alias = "¬")
     @throws(classOf[CommandExecutionException])
-    def logicalNot(inputPipe: InputPipe, outputPipe: OutputPipe, args: List[Object]) {
+    def logicalNot(variableRegistry: VariableRegistry, inputPipe: InputPipe, outputPipe: OutputPipe, args: List[Object]) {
         val validator = curriedAllowArgumentTypes("negate", booleanArgumentTypes)(_)
         if (args.size == 1) {
             def negate(a: AnyRef): AnyRef = a match {
                 case b: java.lang.Boolean => new java.lang.Boolean(!b)
             }
-            mapArgThenPipeOut(outputPipe, args(0), negate, validator)
+            mapArgThenPipeOut(variableRegistry, outputPipe, args(0), negate, validator)
         } else {
             throw new CommandExecutionException("Boolean negation is a unary operation")
         }
@@ -374,14 +376,14 @@ class BasicOperatorsPlugin extends AbstractShellPlugin with PluginHelper {
      */
     @CommandName(name = "%")
     @throws(classOf[CommandExecutionException])
-    def mod(inputPipe: InputPipe, outputPipe: OutputPipe, args: List[Object]) {
+    def mod(variableRegistry: VariableRegistry, inputPipe: InputPipe, outputPipe: OutputPipe, args: List[Object]) {
         val validator = curriedAllowArgumentTypes("take the modulus of", integerArgumentTypes)(_)
         def modElem(a: AnyRef, b: AnyRef): AnyRef = {
             (a, b) match {
                 case (aInt: java.lang.Integer, bInt: java.lang.Integer) => new Integer(aInt % bInt)
             }
         }
-        reduceArgsThenPipeOut(outputPipe, args, new Integer(1), modElem, validator)
+        reduceArgsThenPipeOut(variableRegistry, outputPipe, args, new Integer(1), modElem, validator)
     }
 
     // bitwise exclusive or ----------------------------------------------------
@@ -390,7 +392,7 @@ class BasicOperatorsPlugin extends AbstractShellPlugin with PluginHelper {
      */
     @CommandName(name = "^")
     @throws(classOf[CommandExecutionException])
-    def bitwiseXor(inputPipe: InputPipe, outputPipe: OutputPipe, args: List[Object]) {
+    def bitwiseXor(variableRegistry: VariableRegistry, inputPipe: InputPipe, outputPipe: OutputPipe, args: List[Object]) {
         val validator = curriedAllowArgumentTypes("bitwise xor", integerBooleanArgumentTypes)(_)
         def xorOp(a: AnyRef, b: AnyRef): AnyRef = {
             (a, b) match {
@@ -399,7 +401,7 @@ class BasicOperatorsPlugin extends AbstractShellPlugin with PluginHelper {
             }
         }
         val xorElem = bitwiseCoerce(_: AnyRef, _: AnyRef)(xorOp)
-        reduceArgsThenPipeOut(outputPipe, args, new Integer(0), xorElem, validator)
+        reduceArgsThenPipeOut(variableRegistry, outputPipe, args, new Integer(0), xorElem, validator)
     }
 
     // bitwise or --------------------------------------------------------------
@@ -408,7 +410,7 @@ class BasicOperatorsPlugin extends AbstractShellPlugin with PluginHelper {
      */
     @CommandName(name = "|")
     @throws(classOf[CommandExecutionException])
-    def bitwiseOr(inputPipe: InputPipe, outputPipe: OutputPipe, args: List[Object]) {
+    def bitwiseOr(variableRegistry: VariableRegistry, inputPipe: InputPipe, outputPipe: OutputPipe, args: List[Object]) {
         val validator = curriedAllowArgumentTypes("bitwise or", integerBooleanArgumentTypes)(_)
         def orOp(a: AnyRef, b: AnyRef): AnyRef = {
             (a, b) match {
@@ -417,7 +419,7 @@ class BasicOperatorsPlugin extends AbstractShellPlugin with PluginHelper {
             }
         }
         val orElem = bitwiseCoerce(_: AnyRef, _: AnyRef)(orOp)
-        reduceArgsThenPipeOut(outputPipe, args, new Integer(0), orElem, validator)
+        reduceArgsThenPipeOut(variableRegistry, outputPipe, args, new Integer(0), orElem, validator)
     }
 
     // bitwise and -------------------------------------------------------------
@@ -426,7 +428,7 @@ class BasicOperatorsPlugin extends AbstractShellPlugin with PluginHelper {
      */
     @CommandName(name = "&")
     @throws(classOf[CommandExecutionException])
-    def bitwiseAnd(inputPipe: InputPipe, outputPipe: OutputPipe, args: List[Object]) {
+    def bitwiseAnd(variableRegistry: VariableRegistry, inputPipe: InputPipe, outputPipe: OutputPipe, args: List[Object]) {
         val validator = curriedAllowArgumentTypes("bitwise and", integerBooleanArgumentTypes)(_)
         def andOp(a: AnyRef, b: AnyRef): AnyRef = {
             (a, b) match {
@@ -435,7 +437,7 @@ class BasicOperatorsPlugin extends AbstractShellPlugin with PluginHelper {
             }
         }
         val andElem = bitwiseCoerce(_: AnyRef, _: AnyRef)(andOp)
-        reduceArgsThenPipeOut(outputPipe, args, new Integer(0), andElem, validator)
+        reduceArgsThenPipeOut(variableRegistry, outputPipe, args, new Integer(0), andElem, validator)
     }
 
     // bitwise complement ------------------------------------------------------
@@ -444,14 +446,14 @@ class BasicOperatorsPlugin extends AbstractShellPlugin with PluginHelper {
      */
     @CommandName(name = "~")
     @throws(classOf[CommandExecutionException])
-    def bitwiseComplement(inputPipe: InputPipe, outputPipe: OutputPipe, args: List[Object]) {
+    def bitwiseComplement(variableRegistry: VariableRegistry, inputPipe: InputPipe, outputPipe: OutputPipe, args: List[Object]) {
         val validator = curriedAllowArgumentTypes("complement", integerBooleanArgumentTypes)(_)
         if (args.size == 1) {
             def complement(a: AnyRef): AnyRef = a match {
                 case b: java.lang.Boolean => new java.lang.Boolean(!b)
                 case i: java.lang.Integer => new java.lang.Integer(~i)
             }
-            mapArgThenPipeOut(outputPipe, args(0), complement, validator)
+            mapArgThenPipeOut(variableRegistry, outputPipe, args(0), complement, validator)
         } else {
             throw new CommandExecutionException("Bitwise complement is a unary operation")
         }
@@ -463,14 +465,14 @@ class BasicOperatorsPlugin extends AbstractShellPlugin with PluginHelper {
      */
     @CommandName(name = "&&")
     @throws(classOf[CommandExecutionException])
-    def logicalAnd(inputPipe: InputPipe, outputPipe: OutputPipe, args: List[Object]) {
+    def logicalAnd(variableRegistry: VariableRegistry, inputPipe: InputPipe, outputPipe: OutputPipe, args: List[Object]) {
         val validator = curriedAllowArgumentTypes("logically and", booleanArgumentTypes)(_)
         def andElem(a: AnyRef, b: AnyRef): AnyRef = {
             (a, b) match {
                 case (aBoo: java.lang.Boolean, bBoo: java.lang.Boolean) => new java.lang.Boolean(aBoo & bBoo)
             }
         }
-        reduceArgsThenPipeOut(outputPipe, args, java.lang.Boolean.FALSE, andElem, validator)
+        reduceArgsThenPipeOut(variableRegistry, outputPipe, args, java.lang.Boolean.FALSE, andElem, validator)
     }
 
     // logical or --------------------------------------------------------------
@@ -479,14 +481,14 @@ class BasicOperatorsPlugin extends AbstractShellPlugin with PluginHelper {
      */
     @CommandName(name = "||")
     @throws(classOf[CommandExecutionException])
-    def logicalOr(inputPipe: InputPipe, outputPipe: OutputPipe, args: List[Object]) {
+    def logicalOr(variableRegistry: VariableRegistry, inputPipe: InputPipe, outputPipe: OutputPipe, args: List[Object]) {
         val validator = curriedAllowArgumentTypes("logically or", booleanArgumentTypes)(_)
         def orElem(a: AnyRef, b: AnyRef): AnyRef = {
             (a, b) match {
                 case (aBoo: java.lang.Boolean, bBoo: java.lang.Boolean) => new java.lang.Boolean(aBoo | bBoo)
             }
         }
-        reduceArgsThenPipeOut(outputPipe, args, java.lang.Boolean.FALSE, orElem, validator)
+        reduceArgsThenPipeOut(variableRegistry, outputPipe, args, java.lang.Boolean.FALSE, orElem, validator)
     }
 
     // logical xor -------------------------------------------------------------
@@ -495,14 +497,14 @@ class BasicOperatorsPlugin extends AbstractShellPlugin with PluginHelper {
      */
     @CommandName(name = "^^")
     @throws(classOf[CommandExecutionException])
-    def logicalXor(inputPipe: InputPipe, outputPipe: OutputPipe, args: List[Object]) {
+    def logicalXor(variableRegistry: VariableRegistry, inputPipe: InputPipe, outputPipe: OutputPipe, args: List[Object]) {
         val validator = curriedAllowArgumentTypes("logically xor", booleanArgumentTypes)(_)
         def xorElem(a: AnyRef, b: AnyRef): AnyRef = {
             (a, b) match {
                 case (aBoo: java.lang.Boolean, bBoo: java.lang.Boolean) => new java.lang.Boolean(aBoo ^ bBoo)
             }
         }
-        reduceArgsThenPipeOut(outputPipe, args, java.lang.Boolean.FALSE, xorElem, validator)
+        reduceArgsThenPipeOut(variableRegistry, outputPipe, args, java.lang.Boolean.FALSE, xorElem, validator)
     }
 
     // ordering relations ------------------------------------------------------
@@ -512,7 +514,7 @@ class BasicOperatorsPlugin extends AbstractShellPlugin with PluginHelper {
      */
     @CommandName(name = "<") // hmmm parser?
     @throws(classOf[CommandExecutionException])
-    def lessThan(inputPipe: InputPipe, outputPipe: OutputPipe, args: List[Object]) {
+    def lessThan(variableRegistry: VariableRegistry, inputPipe: InputPipe, outputPipe: OutputPipe, args: List[Object]) {
         val validator = curriedAllowArgumentTypes("order", numericAndStringArgumentTypes)(_)
         def ltOp(a: AnyRef, b: AnyRef): AnyRef = {
             (a, b) match {
@@ -522,12 +524,12 @@ class BasicOperatorsPlugin extends AbstractShellPlugin with PluginHelper {
             }
         }
         val ltElem = alphaNumericCoerce(_: AnyRef, _: AnyRef)(ltOp)
-        reduceArgsThenPipeOut(outputPipe, args, java.lang.Boolean.FALSE, ltElem, validator)
+        reduceArgsThenPipeOut(variableRegistry, outputPipe, args, java.lang.Boolean.FALSE, ltElem, validator)
     }
 
     @CommandName(name = ">") // hmmm parser?
     @throws(classOf[CommandExecutionException])
-    def greaterThan(inputPipe: InputPipe, outputPipe: OutputPipe, args: List[Object]) {
+    def greaterThan(variableRegistry: VariableRegistry, inputPipe: InputPipe, outputPipe: OutputPipe, args: List[Object]) {
         val validator = curriedAllowArgumentTypes("order", numericAndStringArgumentTypes)(_)
         def gtOp(a: AnyRef, b: AnyRef): AnyRef = {
             (a, b) match {
@@ -537,13 +539,13 @@ class BasicOperatorsPlugin extends AbstractShellPlugin with PluginHelper {
             }
         }
         val gtElem = alphaNumericCoerce(_: AnyRef, _: AnyRef)(gtOp)
-        reduceArgsThenPipeOut(outputPipe, args, java.lang.Boolean.FALSE, gtElem, validator)
+        reduceArgsThenPipeOut(variableRegistry, outputPipe, args, java.lang.Boolean.FALSE, gtElem, validator)
     }
 
     @CommandName(name = "<=") // hmmm parser?
     @CommandAlias(alias = "≤")
     @throws(classOf[CommandExecutionException])
-    def lessThanOrEqual(inputPipe: InputPipe, outputPipe: OutputPipe, args: List[Object]) {
+    def lessThanOrEqual(variableRegistry: VariableRegistry, inputPipe: InputPipe, outputPipe: OutputPipe, args: List[Object]) {
         val validator = curriedAllowArgumentTypes("order", numericAndStringArgumentTypes)(_)
         def ltEqOp(a: AnyRef, b: AnyRef): AnyRef = {
             (a, b) match {
@@ -553,13 +555,13 @@ class BasicOperatorsPlugin extends AbstractShellPlugin with PluginHelper {
             }
         }
         val ltEqElem = alphaNumericCoerce(_: AnyRef, _: AnyRef)(ltEqOp)
-        reduceArgsThenPipeOut(outputPipe, args, java.lang.Boolean.FALSE, ltEqElem, validator)
+        reduceArgsThenPipeOut(variableRegistry, outputPipe, args, java.lang.Boolean.FALSE, ltEqElem, validator)
     }
 
     @CommandName(name = ">=") // hmmm parser?
     @CommandAlias(alias = "≥")
     @throws(classOf[CommandExecutionException])
-    def greaterThanOrEqual(inputPipe: InputPipe, outputPipe: OutputPipe, args: List[Object]) {
+    def greaterThanOrEqual(variableRegistry: VariableRegistry, inputPipe: InputPipe, outputPipe: OutputPipe, args: List[Object]) {
         val validator = curriedAllowArgumentTypes("order", numericAndStringArgumentTypes)(_)
         def gtEqOp(a: AnyRef, b: AnyRef): AnyRef = {
             (a, b) match {
@@ -569,7 +571,7 @@ class BasicOperatorsPlugin extends AbstractShellPlugin with PluginHelper {
             }
         }
         val gtEqElem = alphaNumericCoerce(_: AnyRef, _: AnyRef)(gtEqOp)
-        reduceArgsThenPipeOut(outputPipe, args, java.lang.Boolean.FALSE, gtEqElem, validator)
+        reduceArgsThenPipeOut(variableRegistry, outputPipe, args, java.lang.Boolean.FALSE, gtEqElem, validator)
     }
 
     // value equality / inequality ---------------------------------------------
@@ -578,54 +580,54 @@ class BasicOperatorsPlugin extends AbstractShellPlugin with PluginHelper {
     @CommandAlias(alias = "<>")
 //    @CommandAlias(alias = "≠")
     @throws(classOf[CommandExecutionException])
-    def notEqual(inputPipe: InputPipe, outputPipe: OutputPipe, args: List[Object]) {
+    def notEqual(variableRegistry: VariableRegistry, inputPipe: InputPipe, outputPipe: OutputPipe, args: List[Object]) {
         val validator = curriedAllowArgumentTypes("compare", allArgumentTypes)(_)
         def notEqOp(a: AnyRef, b: AnyRef): AnyRef = {
             new java.lang.Boolean(a != b)
         }
         val notEqElem = alphaNumericCoerceBooleanPassthrough(_: AnyRef, _: AnyRef)(notEqOp)
-        reduceArgsThenPipeOut(outputPipe, args, java.lang.Boolean.FALSE, notEqElem, validator)
+        reduceArgsThenPipeOut(variableRegistry, outputPipe, args, java.lang.Boolean.FALSE, notEqElem, validator)
     }
 
     @CommandName(name = "==")
     @throws(classOf[CommandExecutionException])
-    def equal(inputPipe: InputPipe, outputPipe: OutputPipe, args: List[Object]) {
+    def equal(variableRegistry: VariableRegistry, inputPipe: InputPipe, outputPipe: OutputPipe, args: List[Object]) {
         val validator = curriedAllowArgumentTypes("compare", allArgumentTypes)(_)
         def eqOp(a: AnyRef, b: AnyRef): AnyRef = {
             new java.lang.Boolean(a == b)
         }
         val eqElem = alphaNumericCoerceBooleanPassthrough(_: AnyRef, _: AnyRef)(eqOp)
-        reduceArgsThenPipeOut(outputPipe, args, java.lang.Boolean.FALSE, eqElem, validator)
+        reduceArgsThenPipeOut(variableRegistry, outputPipe, args, java.lang.Boolean.FALSE, eqElem, validator)
     }
 
     // object equality / inequality --------------------------------------------
 
     @CommandName(name = "ne")
     @throws(classOf[CommandExecutionException])
-    def notEqualReference(inputPipe: InputPipe, outputPipe: OutputPipe, args: List[Object]) {
+    def notEqualReference(variableRegistry: VariableRegistry, inputPipe: InputPipe, outputPipe: OutputPipe, args: List[Object]) {
 
     }
 
     @CommandName(name = "eq")
     @throws(classOf[CommandExecutionException])
-    def equalReference(inputPipe: InputPipe, outputPipe: OutputPipe, args: List[Object]) {
+    def equalReference(variableRegistry: VariableRegistry, inputPipe: InputPipe, outputPipe: OutputPipe, args: List[Object]) {
 
     }
 
     // bit shifts --------------------------------------------------------------
 
     @CommandName(name = ">>") // hmmm parser?
-    def shiftRight(inputPipe: InputPipe, outputPipe: OutputPipe, args: java.util.List[Object]) {
+    def shiftRight(variableRegistry: VariableRegistry, inputPipe: InputPipe, outputPipe: OutputPipe, args: java.util.List[Object]) {
 
     }
 
     @CommandName(name = ">>>") // hmmm parser?
-    def shiftRightUnsigned(inputPipe: InputPipe, outputPipe: OutputPipe, args: java.util.List[Object]) {
+    def shiftRightUnsigned(variableRegistry: VariableRegistry, inputPipe: InputPipe, outputPipe: OutputPipe, args: java.util.List[Object]) {
 
     }
 
     @CommandName(name = "<<") // hmmm parser?
-    def shiftLeft(inputPipe: InputPipe, outputPipe: OutputPipe, args: java.util.List[Object]) {
+    def shiftLeft(variableRegistry: VariableRegistry, inputPipe: InputPipe, outputPipe: OutputPipe, args: java.util.List[Object]) {
 
     }
 }

@@ -25,8 +25,6 @@ abstract class AbstractShellPlugin extends ShellPlugin {
         execEnvironment = env
     }
 
-    // TODO deprecate this; plugin methods can request it in their signature
-    @deprecated
     def executionEnvironment(): ExecutionEnvironment = {
         execEnvironment
     }
