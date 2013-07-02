@@ -80,7 +80,6 @@ public class TestPluginRegistry {
         assertThat(plugins.size(), equalTo(1));
         final RecordingShellPlugin recordingPlugin = (RecordingShellPlugin) plugins.iterator().next();
         assertThat(recordingPlugin.getCommandRegistry(), equalTo(mCommandRegistry));
-        assertThat(recordingPlugin.getVariableRegistry(), equalTo(mVariableRegistry));
         assertThat(recordingPlugin.getArgs().size(), equalTo(2));
         assertThat(recordingPlugin.getArgs().apply(0), equalTo("one"));
         assertThat(recordingPlugin.getArgs().apply(1), equalTo("two"));

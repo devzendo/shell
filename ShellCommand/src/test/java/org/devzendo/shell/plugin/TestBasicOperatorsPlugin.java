@@ -55,29 +55,6 @@ public class TestBasicOperatorsPlugin {
     @Before
     public void setUp() throws Exception {
         BasicConfigurator.configure();
-        // TODO is this still needed?
-        final ExecutionEnvironment execEnv = new ExecutionEnvironment() {
-            @Override
-            public List<String> argList() {
-                return null;
-            }
-
-            @Override
-            public CommandRegistry commandRegistry() {
-                return null;
-            }
-
-            @Override
-            public VariableRegistry variableRegistry() {
-                return varReg;
-            }
-
-            @Override
-            public PluginRegistry pluginRegistry() {
-                return null;
-            }
-        };
-        plugin.initialise(execEnv);
     }
 
 
