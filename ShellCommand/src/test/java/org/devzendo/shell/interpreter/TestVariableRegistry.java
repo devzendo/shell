@@ -201,4 +201,16 @@ public class TestVariableRegistry {
         // now it doesn't.
         assertFalse(localRegistry.exists(localRef));
     }
+
+    @Test
+    public void childRegistriesGetNewId() {
+        final int count = VariableRegistry.getRegistryCount();
+        assertThat(globalRegistry.toString(), equalTo("'parent " + count + "' #vars 0 #usage 0"));
+
+        final VariableRegistry childLocalRegistry = new VariableRegistry(scala.Option.apply(globalRegistry));
+        assertThat(childLocalRegistry.toString(), equalTo("'child " + (count + 1)  + "' #vars 0 #usage 0"));
+
+        final VariableRegistry grandChildLocalRegistry = new VariableRegistry(scala.Option.apply(childLocalRegistry));
+        assertThat(grandChildLocalRegistry.toString(), equalTo("'child " + (count + 2) + "' #vars 0 #usage 0"));
+    }
 }

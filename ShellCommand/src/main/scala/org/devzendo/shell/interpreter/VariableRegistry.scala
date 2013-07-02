@@ -23,11 +23,25 @@ import java.util.concurrent.atomic.AtomicInteger
 object VariableRegistry {
     private val LOGGER = Logger.getLogger(classOf[VariableRegistry])
     private val registryCount = new AtomicInteger()
+    def getRegistryCount = {
+        registryCount.get()
+    }
 }
 
-class VariableRegistry(@scala.reflect.BeanProperty val parentScope: Option[VariableRegistry]) {
+trait VariableRegistryLike {
+    def exists(varRef: VariableReference): Boolean
+    def getVariable(varRef: VariableReference): Variable
+    def setVariable(varRef: VariableReference, variable: Variable)
+    def getVariables: Map[String, List[AnyRef]]
+    def close()
+    def currentUsageCount(): Int
+    def incrementUsage()
+    def decrementUsage()
+}
+
+class VariableRegistry(@scala.reflect.BeanProperty val parentScope: Option[VariableRegistry]) extends VariableRegistryLike {
     private var vars = scala.collection.mutable.Map[String, Variable]()
-    private var id = VariableRegistry.registryCount.incrementAndGet()
+    private val id = VariableRegistry.registryCount.incrementAndGet()
     private var usageCount = 0
 
     override def toString = {
