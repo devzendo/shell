@@ -30,7 +30,6 @@ import collection.JavaConverters._
 import org.devzendo.shell.parser.{CommandExists, CommandParserException, CommandParser}
 import org.devzendo.shell.interpreter._
 import org.devzendo.shell.interpreter.CommandHandlerWirer
-import org.devzendo.shell.ast.{BlockStatements, CommandPipeline}
 
 class ShellMain(val argList: List[String]) {
     val commandRegistry = new CommandRegistry()

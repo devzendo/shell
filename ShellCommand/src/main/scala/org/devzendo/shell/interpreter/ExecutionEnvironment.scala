@@ -16,9 +16,6 @@
 
 package org.devzendo.shell.interpreter
 
-import scala.deprecated
-
-
 trait ExecutionEnvironment {
 
     def argList(): List[String]

@@ -18,7 +18,6 @@ package org.devzendo.shell.interpreter
 
 import org.apache.log4j.Logger
 import org.devzendo.shell.pipe.{OutputPipe, InputPipe}
-import java.util
 
 object CommandHandler {
     private val LOGGER = Logger.getLogger(classOf[CommandHandler])

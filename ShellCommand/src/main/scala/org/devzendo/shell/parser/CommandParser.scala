@@ -21,7 +21,6 @@ import org.devzendo.shell.ast._
 import org.devzendo.shell.ast.VariableReference
 import org.devzendo.shell.ast.Switch
 import org.devzendo.shell.ast.Command
-import java.util
 
 trait CommandExists {
     def commandExists(name: String): Boolean

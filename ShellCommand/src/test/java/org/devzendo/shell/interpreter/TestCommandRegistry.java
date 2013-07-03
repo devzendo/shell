@@ -16,7 +16,6 @@
 package org.devzendo.shell.interpreter;
 
 import org.devzendo.shell.plugin.ShellPlugin;
-import org.junit.Assert;
 import org.junit.Test;
 
 import java.lang.reflect.Method;
@@ -24,9 +23,7 @@ import java.lang.reflect.Method;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.notNullValue;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
 
 public class TestCommandRegistry {
     final CommandRegistry registry = new CommandRegistry();
