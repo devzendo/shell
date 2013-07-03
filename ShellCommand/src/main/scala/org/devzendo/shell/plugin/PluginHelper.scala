@@ -17,13 +17,6 @@
 package org.devzendo.shell.plugin
 
 import org.devzendo.shell.interpreter.CommandExecutionException
-import org.apache.log4j.Logger
-
-object PluginHelper {
-    private val LOGGER = Logger.getLogger(classOf[PluginHelper])
-}
-
-import PluginHelper._
 
 trait PluginHelper {
     def streamForeach(producer: => Option[Object], processor: (Object) => Unit) {
@@ -42,7 +35,6 @@ trait PluginHelper {
 
     @throws(classOf[CommandExecutionException])
     def onlyAllowArgumentTypes(commandNameAsVerb: String, args: List[AnyRef], allowedClasses: Seq[Class[_]]) {
-        LOGGER.debug("Validating argument types of " + args + " - they should be in " + allowedClasses)
         val argsAndTheirClasses = args.map( (arg: AnyRef) => {
             val argClass = arg match {
                 case null => classOf[Null].asInstanceOf[Class[_]]

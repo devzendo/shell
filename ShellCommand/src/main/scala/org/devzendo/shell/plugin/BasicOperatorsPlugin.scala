@@ -46,9 +46,9 @@ class BasicOperatorsPlugin extends AbstractShellPlugin with PluginHelper {
 
     // Convert all args to lists, expanding variable references.
     private def wrapAsList(variableRegistry: VariableRegistry)(args: List[AnyRef]): List[List[AnyRef]] = {
-        LOGGER.debug("Wrapping args as lists: " + dump(args))
+        // LOGGER.debug("Wrapping args as lists: " + dump(args))
         val out = args map wrapArgAsList(variableRegistry)
-        LOGGER.debug("Wrapped args as lists: " + out)
+        // LOGGER.debug("Wrapped args as lists: " + out)
         out
     }
 
@@ -63,11 +63,11 @@ class BasicOperatorsPlugin extends AbstractShellPlugin with PluginHelper {
     // Pad all lists out to the same length with some identity.
     private def padLists(args: List[List[AnyRef]], fill: AnyRef) = {
         val maxLen = (0 /: args) ((curLen: Int, list: List[AnyRef]) =>  Math.max(curLen, list.size))
-        LOGGER.debug("Padding args with fill(" + fill + ") to maxlen(" + maxLen + ") args: " + args)
+        // LOGGER.debug("Padding args with fill(" + fill + ") to maxlen(" + maxLen + ") args: " + args)
         val out = args.map( (argList: List[AnyRef]) => {
             argList.padTo(maxLen, fill)
         } )
-        LOGGER.debug("Padded args: " + out)
+        // LOGGER.debug("Padded args: " + out)
         out
     }
 
@@ -101,15 +101,15 @@ class BasicOperatorsPlugin extends AbstractShellPlugin with PluginHelper {
              identity: AnyRef,
              op: ((AnyRef, AnyRef) => AnyRef),
              validate: (List[AnyRef]) => Unit) {
-        LOGGER.debug("Wrapping args: " + args)
+        // LOGGER.debug("Wrapping args: " + args)
         val argsAsLists = wrapAsList(variableRegistry)(args)
-        LOGGER.debug("Validating wrapped args: " + argsAsLists)
+        // LOGGER.debug("Validating wrapped args: " + argsAsLists)
         argsAsLists foreach validate
-        LOGGER.debug("Padding validated wrapped args")
+        // LOGGER.debug("Padding validated wrapped args")
         val argsAsPaddedLists = padLists(argsAsLists, identity)
-        LOGGER.debug("Reducing args: " + argsAsPaddedLists)
+        // LOGGER.debug("Reducing args: " + argsAsPaddedLists)
         val reduced = reduce(argsAsPaddedLists, op)
-        LOGGER.debug("Reduced args: " + dump(reduced))
+        // LOGGER.debug("Reduced args: " + dump(reduced))
 
         reduced.foreach( outputPipe.push(_) )
     }
@@ -121,13 +121,13 @@ class BasicOperatorsPlugin extends AbstractShellPlugin with PluginHelper {
              arg: AnyRef,
              op: ((AnyRef) => AnyRef),
              validate: (List[AnyRef]) => Unit) {
-        LOGGER.debug("Wrapping arg: " + arg)
+        // LOGGER.debug("Wrapping arg: " + arg)
         val argList = wrapArgAsList(variableRegistry)(arg)
-        LOGGER.debug("Validating wrapped arg: " + argList)
+        // LOGGER.debug("Validating wrapped arg: " + argList)
         validate(argList)
-        LOGGER.debug("Mapping arg")
+        // LOGGER.debug("Mapping arg")
         val mapped = argList map op
-        LOGGER.debug("Mapped arg: " + mapped)
+        // LOGGER.debug("Mapped arg: " + mapped)
         mapped.foreach( outputPipe.push(_) )
     }
 

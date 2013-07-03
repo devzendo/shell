@@ -17,11 +17,6 @@
 package org.devzendo.shell.pipe
 
 import org.devzendo.shell.interpreter.Variable
-import org.apache.log4j.Logger
-
-object VariableOutputPipe {
-    private val LOGGER = Logger.getLogger(classOf[VariableOutputPipe])
-}
 
 class VariableOutputPipe(variable: Variable) extends VariablePipe(variable) with OutputPipe {
     private var terminated = false
@@ -34,7 +29,6 @@ class VariableOutputPipe(variable: Variable) extends VariablePipe(variable) with
         if (terminated) {
             throw new IllegalStateException("Cannot push into a terminated pipe")
         }
-        VariableOutputPipe.LOGGER.debug("Pushing " + obj + " into variable " + variable)
         variable.add(obj)
     }
 }
