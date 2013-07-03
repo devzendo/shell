@@ -528,4 +528,42 @@ public class TestCommandParser {
         bitwiseOrExpectedArgs.addAll(asList(2, logicalOrCommand));
         assertThat(bitwiseOrCommandArgs, equalTo(bitwiseOrExpectedArgs));
     }
+
+    @Test
+    public void blocksCanBeArguments() throws CommandParserException {
+        addValidCommands("echo", "foo", "bar");
+
+        final CommandPipeline pipeline = (CommandPipeline) parser.parse("echo { foo 2; bar 3; }").apply(0);
+        final scala.collection.immutable.List<Command> cmds = pipeline.getCommands();
+
+        assertThat(cmds.size(), equalTo(1));
+        final Command mainEchoCommand = cmds.apply(0);
+        assertThat(mainEchoCommand.getName(), equalTo("echo"));
+
+        final List<Object> mainEchoCommandArgs = mainEchoCommand.getArgs();
+        assertThat(mainEchoCommandArgs.size(), equalTo(1));
+
+        final BlockStatements mainEchoBlockArg = (BlockStatements) mainEchoCommandArgs.get(0);
+        final scala.collection.immutable.List<Statement> mainEchoBlockArgStatements = mainEchoBlockArg.getStatements();
+        assertThat(mainEchoBlockArgStatements.size(), equalTo(2));
+
+
+        final CommandPipeline fooPipeline = (CommandPipeline) mainEchoBlockArgStatements.apply(0);
+        final scala.collection.immutable.List<Command> fooPipelineCommands = fooPipeline.getCommands();
+        assertThat(fooPipelineCommands.size(), equalTo(1));
+        final Command fooCommand = fooPipelineCommands.apply(0);
+        assertThat(fooCommand.getName(), equalTo("foo"));
+        final List<Object> fooCommandArgs = new ArrayList<Object>();
+        fooCommandArgs.addAll(asList(2));
+        assertThat(fooCommand.getArgs(), equalTo(fooCommandArgs));
+
+        final CommandPipeline barPipeline = (CommandPipeline) mainEchoBlockArgStatements.apply(1);
+        final scala.collection.immutable.List<Command> barPipelineCommands = barPipeline.getCommands();
+        assertThat(barPipelineCommands.size(), equalTo(1));
+        final Command barCommand = barPipelineCommands.apply(0);
+        assertThat(barCommand.getName(), equalTo("bar"));
+        final List<Object> barCommandArgs = new ArrayList<Object>();
+        barCommandArgs.addAll(asList(3));
+        assertThat(barCommand.getArgs(), equalTo(barCommandArgs));
+    }
 }

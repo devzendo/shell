@@ -65,9 +65,9 @@ class CommandParser(commandExists: CommandExists) {
                 "{" ~> statements <~ "}"
             ) ^^ {
             case statements =>
-                val blockPipeline = new BlockStatements()
-                blockPipeline.setStatements(statements)
-                blockPipeline
+                val blockStatements = new BlockStatements()
+                blockStatements.setStatements(statements)
+                blockStatements
         }
 
         def pipeline: Parser[CommandPipeline] = (
@@ -158,6 +158,7 @@ class CommandParser(commandExists: CommandExists) {
               | floatingPointNumber ^^ (_.toDouble)
               | variable
               | stringLiteral ^^ (x => x.substring(1, x.length - 1))
+              | blockStatements
               )
         
         def parseProgram(input: String) = {
