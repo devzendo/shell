@@ -5,14 +5,12 @@ import org.devzendo.shell.ScalaListHelper;
 import org.devzendo.shell.ast.BlockStatements;
 import org.devzendo.shell.ast.Switch;
 import org.devzendo.shell.ast.VariableReference;
-import org.devzendo.shell.interpreter.CommandExecutionException;
-import org.devzendo.shell.interpreter.DefaultVariableRegistry;
-import org.devzendo.shell.interpreter.Variable;
-import org.devzendo.shell.interpreter.VariableRegistry;
+import org.devzendo.shell.interpreter.*;
 import org.devzendo.shell.pipe.VariableOutputPipe;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import scala.Option;
 import scala.collection.immutable.List;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -35,13 +33,24 @@ import static org.hamcrest.Matchers.equalTo;
  */
 public class TestControlShellPlugin {
     private static final scala.Option<VariableRegistry> noneVariableRegistry = scala.Option.apply(null);
+    private static final scala.Option<Integer> noneInteger = scala.Option.apply(null);
+
     final VariableRegistry varReg = new DefaultVariableRegistry(noneVariableRegistry);
     final ControlShellPlugin plugin = new ControlShellPlugin();
     final Variable outputVariable = new Variable();
     final VariableOutputPipe outputPipe = new VariableOutputPipe(outputVariable);
-    final BlockStatements thenBlock = new BlockStatements();
-    final BlockStatements elseBlock = new BlockStatements();
-    final BlockStatements spuriousBlock = new BlockStatements();
+    private static class DummyCommandHandler extends CommandHandler {
+        public DummyCommandHandler() {
+            super("<block>", noneInteger, noneInteger, noneInteger, noneInteger);
+        }
+
+        @Override
+        public void execute() {
+        }
+    }
+    final CommandHandler thenBlock = new DummyCommandHandler();
+    final CommandHandler elseBlock = new DummyCommandHandler();
+    final CommandHandler spuriousBlock = new DummyCommandHandler();
 
 
     @Before
@@ -194,5 +203,4 @@ public class TestControlShellPlugin {
     public void conditionalBooleanAndNonBlockNotOk5() throws CommandExecutionException {
         assertConditionalArgsMustBeBlocks(ScalaListHelper.createObjectList(Boolean.FALSE, new Switch("xyz")));
     }
-
 }

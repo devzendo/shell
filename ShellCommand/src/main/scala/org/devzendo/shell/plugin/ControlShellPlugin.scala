@@ -16,38 +16,36 @@
 
 package org.devzendo.shell.plugin
 
-import org.devzendo.shell.interpreter.{VariableRegistry, CommandExecutionException}
+import org.devzendo.shell.interpreter.{NoopCommandHandler, CommandHandler, VariableRegistry, CommandExecutionException}
 import org.devzendo.shell.pipe.OutputPipe
 import org.devzendo.shell.ast.BlockStatements
 
 class ControlShellPlugin extends AbstractShellPlugin with PluginHelper {
     def getName = "Control"
 
-    val noop = new BlockStatements()
-
     @CommandName(name = "if")
     @throws(classOf[CommandExecutionException])
     def conditionalBlockExecution(variableRegistry: VariableRegistry, outputPipe: OutputPipe, args: List[AnyRef]) {
 
-        def validateBlock(block: AnyRef): BlockStatements = {
+        def validateBlock(block: AnyRef): CommandHandler = {
             block match {
-                case (bS: BlockStatements) => bS
+                case (cH: CommandHandler) => cH
                 case _ => throw new CommandExecutionException("Arguments to if must be a Boolean, and up to two blocks")
             }
         }
 
-        def validateWithNoBlocks(condList: List[AnyRef]): BlockStatements = {
+        def validateWithNoBlocks(condList: List[AnyRef]): CommandHandler = {
             validate(condList)
-            noop
+            NoopCommandHandler
         }
 
-        def validateWithThen(condList: List[AnyRef], thenBlock: AnyRef): BlockStatements = {
+        def validateWithThen(condList: List[AnyRef], thenBlock: AnyRef): CommandHandler = {
             val cond = validate(condList)
             val thenBlockStatements = validateBlock(thenBlock)
-            if (cond) thenBlockStatements else noop
+            if (cond) thenBlockStatements else NoopCommandHandler
         }
 
-        def validateWithThenAndElse(condList: List[AnyRef], thenBlock: AnyRef, elseBlock: AnyRef): BlockStatements = {
+        def validateWithThenAndElse(condList: List[AnyRef], thenBlock: AnyRef, elseBlock: AnyRef): CommandHandler = {
             val cond = validate(condList)
             val thenBlockStatements = validateBlock(thenBlock)
             val elseBlockStatements = validateBlock(elseBlock)
