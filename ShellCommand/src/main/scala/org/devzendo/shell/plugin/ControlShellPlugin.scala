@@ -62,6 +62,7 @@ class ControlShellPlugin extends AbstractShellPlugin with PluginHelper {
         }
 
         /*val blockStatements =*/ args match {
+                // could be argued that if with no blocks is pointless
             case List(cond) => validateWithNoBlocks(wrapArgAsList(variableRegistry)(cond))
             case List(cond, thenBlock) => validateWithThen(wrapArgAsList(variableRegistry)(cond), thenBlock)
             case List(cond, thenBlock, elseBlock) => validateWithThenAndElse(wrapArgAsList(variableRegistry)(cond), thenBlock, elseBlock)

@@ -350,14 +350,13 @@ public class TestCommandHandlerWirer {
     }
 
     private BlockStatements createSampleBlockStatements() throws DuplicateCommandException {
-        commandRegistry.registerCommand("foo", null, mAnalysedMethod);
+        commandRegistry.registerCommand("block", null, mAnalysedMethod);
         @SuppressWarnings("unchecked")
-        final Command command = new Command("foo", EMPTY_LIST);
-        pipeline.addCommand(command);
-        final Statement pipelineStatement = pipeline;
-        final scala.collection.immutable.List<Statement> statements = ScalaListHelper.createList(pipelineStatement);
+        final Command blockCommand = new Command("block", EMPTY_LIST);
+        final CommandPipeline blockCommandPipeline = new CommandPipeline();
+        blockCommandPipeline.addCommand(blockCommand);
         final BlockStatements blockStatements = new BlockStatements();
-        blockStatements.setStatements(statements);
+        blockStatements.setStatements(ScalaListHelper.createList((Statement) blockCommandPipeline));
         return blockStatements;
     }
 
@@ -371,6 +370,33 @@ public class TestCommandHandlerWirer {
         sequentialCommandHandler.execute();
 
         assertThat(testCommandHandler.getExecuteThread(), equalTo(Thread.currentThread()));
+    }
+
+    @Test
+    public void blockStatementsCanBeArgumentsAndHaveChildVariableRegistries() throws CommandNotFoundException, DuplicateCommandException {
+        final BlockStatements blockStatements = createSampleBlockStatements();
+
+        commandRegistry.registerCommand("command", null, mAnalysedMethod);
+        final List<Object> blockStatementsList = asList(new Object[] {blockStatements});
+        @SuppressWarnings("unchecked")
+        final Command command = new Command("command", blockStatementsList);
+        pipeline.addCommand(command);
+        scala.collection.immutable.List<CommandHandler> handlers = wirer.wireCommandPipeline(variableRegistry, pipeline);
+        assertThat(handlers.size(), equalTo(1));
+        final CommandHandler commandHandler = handlers.apply(0);
+        assertThat(commandHandler.getVariableRegistry(), equalTo(variableRegistry)); // global
+
+        final CommandHandler blockCommandHandler = (CommandHandler) commandHandler.getArgs().apply(0);
+        assertThat(blockCommandHandler.getName(), equalTo("<block>"));
+        // weak, < > used to indicate internal command handlers,
+        // rather than "proper" command handlers.
+        assertThat(blockCommandHandler.getVariableRegistry(), not(equalTo(variableRegistry)));
+        assertThat(blockCommandHandler.getVariableRegistry().getParentScope().get(), equalTo(variableRegistry));
+
+        assertThat(blockCommandHandler.argumentsPos(), equalTo(noneInteger));
+        assertThat(blockCommandHandler.inputPipePos(), equalTo(noneInteger));
+        assertThat(blockCommandHandler.outputPipePos(), equalTo(noneInteger));
+        assertThat(blockCommandHandler.logPos(), equalTo(noneInteger));
     }
 
 

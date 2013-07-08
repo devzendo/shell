@@ -66,7 +66,7 @@ case class CommandHandlerWirer(commandRegistry: CommandRegistry) {
         blockCommandHandler.setVerbose(false)
         blockCommandHandler.setLog(CommandHandlerWirer.nonverboseLog)
         blockCommandHandler.setInputPipe(new NullInputPipe())
-        blockCommandHandler.setOutputPipe(new NullOutputPipe())
+        blockCommandHandler.setOutputPipe(new NullOutputPipe())  // note, blocks as args use a VariableOutputPipe
 
         blockCommandHandler
     }
@@ -129,6 +129,17 @@ case class CommandHandlerWirer(commandRegistry: CommandRegistry) {
                     subCommandHandler.setInputPipe(new NullInputPipe())
                     subCommandHandler.setOutputPipe(avp)
                     (Some(subCommandHandler), avp.contents)
+
+                case block: BlockStatements =>
+                    val blockCommandHandler = wireBlockStatements(variableRegistry, block)
+                    // wireBlockStatements fills in a NullInputPipe, and NullOutputPipe, but we
+                    // want to store the output in an anonymous variable, so that output can be
+                    // captured by the block executor (e.g. 'if', 'while', etc.) after lazy
+                    // evaluation
+                    val avp = new AnonymousVariablePipe()
+                    blockCommandHandler.setOutputPipe(avp)
+                    (Some(blockCommandHandler), blockCommandHandler)
+
                 case x: AnyRef =>
                     (None, x)
             }
