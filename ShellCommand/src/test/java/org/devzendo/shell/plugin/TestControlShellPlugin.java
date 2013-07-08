@@ -2,7 +2,6 @@ package org.devzendo.shell.plugin;
 
 import org.apache.log4j.BasicConfigurator;
 import org.devzendo.shell.ScalaListHelper;
-import org.devzendo.shell.ast.BlockStatements;
 import org.devzendo.shell.ast.Switch;
 import org.devzendo.shell.ast.VariableReference;
 import org.devzendo.shell.interpreter.*;
@@ -10,11 +9,12 @@ import org.devzendo.shell.pipe.VariableOutputPipe;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import scala.Option;
 import scala.collection.immutable.List;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Copyright (C) 2008-2012 Matt Gumbley, DevZendo.org <http://devzendo.org>
@@ -39,18 +39,24 @@ public class TestControlShellPlugin {
     final ControlShellPlugin plugin = new ControlShellPlugin();
     final Variable outputVariable = new Variable();
     final VariableOutputPipe outputPipe = new VariableOutputPipe(outputVariable);
-    private static class DummyCommandHandler extends CommandHandler {
-        public DummyCommandHandler() {
+    private static class StubCommandHandler extends CommandHandler {
+        private boolean executed = false;
+        public StubCommandHandler() {
             super("<block>", noneInteger, noneInteger, noneInteger, noneInteger);
         }
 
         @Override
         public void execute() {
+            executed = true;
+        }
+
+        private boolean isExecuted() {
+            return executed;
         }
     }
-    final CommandHandler thenBlock = new DummyCommandHandler();
-    final CommandHandler elseBlock = new DummyCommandHandler();
-    final CommandHandler spuriousBlock = new DummyCommandHandler();
+    final StubCommandHandler thenBlock = new StubCommandHandler();
+    final StubCommandHandler elseBlock = new StubCommandHandler();
+    final CommandHandler spuriousBlock = new StubCommandHandler();
 
 
     @Before
@@ -202,5 +208,31 @@ public class TestControlShellPlugin {
     @Test
     public void conditionalBooleanAndNonBlockNotOk5() throws CommandExecutionException {
         assertConditionalArgsMustBeBlocks(ScalaListHelper.createObjectList(Boolean.FALSE, new Switch("xyz")));
+    }
+
+    @Test
+    public void conditionalTrueCallsThenBlockAndNotElseBlock() throws CommandExecutionException {
+        callConditional(ScalaListHelper.createObjectList(Boolean.TRUE, thenBlock, elseBlock));
+        assertTrue(thenBlock.isExecuted());
+        assertFalse(elseBlock.isExecuted());
+    }
+
+    @Test
+    public void conditionalFalseCallsElseBlockAndNotThenBlock() throws CommandExecutionException {
+        callConditional(ScalaListHelper.createObjectList(Boolean.FALSE, thenBlock, elseBlock));
+        assertFalse(thenBlock.isExecuted());
+        assertTrue(elseBlock.isExecuted());
+    }
+
+    @Test
+    public void conditionalFalseDoesNotCallSoleThenBlock() throws CommandExecutionException {
+        callConditional(ScalaListHelper.createObjectList(Boolean.FALSE, thenBlock));
+        assertFalse(thenBlock.isExecuted());
+    }
+
+    @Test
+    public void conditionalTrueCallsSoleThenBlock() throws CommandExecutionException {
+        callConditional(ScalaListHelper.createObjectList(Boolean.TRUE, thenBlock));
+        assertTrue(thenBlock.isExecuted());
     }
 }

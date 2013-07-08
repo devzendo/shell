@@ -59,7 +59,8 @@ class ControlShellPlugin extends AbstractShellPlugin with PluginHelper {
             }
         }
 
-        /*val blockStatements =*/ args match {
+        // Which CommandHandler should be executed? (Could be Noop)
+        val commandHandler = args match {
                 // could be argued that if with no blocks is pointless
             case List(cond) => validateWithNoBlocks(wrapArgAsList(variableRegistry)(cond))
             case List(cond, thenBlock) => validateWithThen(wrapArgAsList(variableRegistry)(cond), thenBlock)
@@ -67,6 +68,6 @@ class ControlShellPlugin extends AbstractShellPlugin with PluginHelper {
             case _ => throw new CommandExecutionException("Arguments to if must be a Boolean, and up to two blocks")
         }
 
-        // now execute it...
+        commandHandler.execute()
     }
 }
