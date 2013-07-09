@@ -16,10 +16,16 @@
 
 package org.devzendo.shell.ast
 
+import scala.collection.JavaConversions._
+
 case class Command(
     @scala.reflect.BeanProperty
     name: String,
 
     @scala.reflect.BeanProperty
     args: java.util.List[AnyRef]) {
+
+    override def toString(): String = {
+        "Command " + name + " (" + (args.map( (x: AnyRef) => x.getClass().getSimpleName + "@" + x).mkString(", ")) + ")"
+    }
 }
