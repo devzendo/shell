@@ -138,7 +138,7 @@ case class CommandHandlerWirer(commandRegistry: CommandRegistry) {
                     // evaluation
                     val avp = new AnonymousVariablePipe()
                     blockCommandHandler.setOutputPipe(avp)
-                    (Some(blockCommandHandler), blockCommandHandler)
+                    (None, blockCommandHandler)
 
                 case x: AnyRef =>
                     (None, x)
