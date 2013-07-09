@@ -69,6 +69,10 @@ abstract class CommandHandler(
     @throws[CommandExecutionException]
     def execute()
 
+    override def toString(): String = {
+        "<" + inputPipe + " " + getName + "( [VR " + variableRegistry + "] " + args.mkString(", ") + ") >" + outputPipe
+    }
+
     @throws[CommandExecutionException]
     final def executeAndTerminatePipes() {
         try {

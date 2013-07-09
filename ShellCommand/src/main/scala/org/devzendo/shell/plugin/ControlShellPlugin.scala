@@ -19,6 +19,11 @@ package org.devzendo.shell.plugin
 import org.devzendo.shell.interpreter.{NoopCommandHandler, CommandHandler, VariableRegistry, CommandExecutionException}
 import org.devzendo.shell.pipe.OutputPipe
 import org.devzendo.shell.ast.BlockStatements
+import org.apache.log4j.Logger
+
+object ControlShellPlugin {
+    private val LOGGER = Logger.getLogger(classOf[ControlShellPlugin])
+}
 
 class ControlShellPlugin extends AbstractShellPlugin with PluginHelper {
     def getName = "Control"

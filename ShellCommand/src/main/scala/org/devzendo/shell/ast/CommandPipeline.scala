@@ -40,4 +40,9 @@ final class CommandPipeline extends Statement {
     def isEmpty: Boolean = {
         commands.isEmpty
     }
+
+    override def toString(): String = {
+        "<" + inputVariable + " [" +
+        commands.mkString(" ") + "] >" + inputVariable
+    }
 }

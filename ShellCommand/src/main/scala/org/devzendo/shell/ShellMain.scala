@@ -83,6 +83,7 @@ class ShellMain(val argList: List[String]) {
                 new CommandsShellPlugin(),
                 new LoggingShellPlugin(),
                 new BasicOperatorsPlugin(),
+                new ControlShellPlugin(),
                 new ExperimentalShellPlugin())
             )
 
@@ -98,14 +99,27 @@ class ShellMain(val argList: List[String]) {
                 for (line <- input) {
                     try {
                         val statements = parser.parse(line.trim())
+                        if (ShellMain.LOGGER.isDebugEnabled) {
+                            ShellMain.LOGGER.debug(">>> parsed statements...")
+                            for (statement <- statements) {
+                                ShellMain.LOGGER.debug("  " + statement)
+                            }
+                            ShellMain.LOGGER.debug("<<< parsed statements")
+
+                        }
                         for (statement <- statements) {
                             val commandHandlers = wirer.wire(variableRegistry, statement)
                             if (ShellMain.LOGGER.isDebugEnabled) {
-                                dumpHandlers(commandHandlers)
+                                ShellMain.LOGGER.debug(">>> wired command handlers...")
+                                ShellMain.LOGGER.debug("  " + dumpHandlers(commandHandlers))
+                                ShellMain.LOGGER.debug("<<< wired command handlers")
                             }
 
+                            ShellMain.LOGGER.debug(">>> executing...")
                             val executionContainer = new ExecutionContainer(commandHandlers)
                             executionContainer.execute()
+                            ShellMain.LOGGER.debug("<<< executed")
+
                             ShellMain.LOGGER.debug("variable registry: [" + variableRegistry + "]")
                         }
                     } catch {
@@ -168,7 +182,7 @@ class ShellMain(val argList: List[String]) {
         if (sb.length > 0) {
             sb.deleteCharAt(sb.length -1)
         }
-        ShellMain.LOGGER.debug("pipeline: " + sb.toString())
+        sb.toString()
     }
 
 }

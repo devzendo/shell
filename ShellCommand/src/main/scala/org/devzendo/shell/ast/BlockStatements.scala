@@ -27,4 +27,8 @@ final class BlockStatements extends Statement {
 
     @scala.reflect.BeanProperty
     var statements: List[Statement] = null
+
+    override def toString(): String = {
+        "{ [VR " + variableRegistry + "] " + statements.mkString("; ") + " }"
+    }
 }
