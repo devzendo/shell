@@ -69,7 +69,8 @@ public class TestCommandParser {
     public void commandThatIsNotDefined() throws CommandParserException {
         exception.expect(CommandParserException.class);
         exception.expectMessage("Command 'foo' is not defined");
-        parser.parse("foo");
+        final scala.collection.immutable.List<Statement> statementList = parser.parse("foo");
+        System.out.println(statementList);
     }
 
     @Test
@@ -279,6 +280,24 @@ public class TestCommandParser {
         assertThat(((Boolean)cmd3args.get(1)), equalTo(true));
         assertThat(((Boolean)cmd3args.get(2)), equalTo(false));
     }
+
+    /*
+    @Test
+    public void evalCommand() throws CommandParserException {
+        final CommandPipeline pipeline = (CommandPipeline) parser.parse("true 2.0 5 \"foo\"").apply(0);
+        final scala.collection.immutable.List<Command> cmds = pipeline.getCommands();
+        assertThat(cmds.size(), equalTo(1));
+
+        final Command evalCommand = cmds.apply(0);
+        assertThat(evalCommand.getName(), equalTo("eval"));
+        final List<Object> evalArgs = evalCommand.getArgs();
+        assertThat(evalArgs.size(), equalTo(4));
+        assertThat(((java.lang.Boolean)evalArgs.get(0)), equalTo(Boolean.TRUE));
+        assertThat(((java.lang.Double)evalArgs.get(1)), closeTo(2.0, 0.001));
+        assertThat(((java.lang.Integer)evalArgs.get(2)), equalTo(5));
+        assertThat(((String)evalArgs.get(3)), equalTo("foo"));
+    }
+    */
 
     @SuppressWarnings("unused")
     private void dumpArgs(final List<Object> args) {

@@ -97,7 +97,7 @@ class CommandParser(commandExists: CommandExists) {
             }, ( _ => "Use one of = and >, but not both" )
             )
 
-        def commandVariant: Parser[Command] = (infixCommand | prefixFunction | prefixCommand)
+        def commandVariant: Parser[Command] = (infixCommand | prefixFunction | prefixCommand /*| implicitEvalCommand */)
 
         def command: Parser[Command] = (
             commandVariant |
@@ -126,6 +126,14 @@ class CommandParser(commandExists: CommandExists) {
                 new Command(name, argumentJavaList)
         }
 
+/*        def implicitEvalCommand: Parser[Command] = literal ~ rep(literal) ^^ {
+            case firstArgument ~ remainingArgumentList =>
+                val argumentJavaList = new java.util.ArrayList[Object]
+                argumentJavaList.add(firstArgument.asInstanceOf[Object])
+                remainingArgumentList.foreach (x => argumentJavaList.add(x.asInstanceOf[Object]))
+                new Command("eval", argumentJavaList)
+        }
+*/
         def operatorIdentifier: Parser[String] =
             """[\p{Sm}\p{So}\p{Punct}&&[^()\[\]{}'"_.;`]]*""".r
         // Inspired initially from Scala's operator identifier; Odersky et al,
@@ -148,17 +156,21 @@ class CommandParser(commandExists: CommandExists) {
         def variable: Parser[VariableReference] = ident ^^ (x => new VariableReference(x.toString))
         
         def wholeIntegerNumber: Parser[String] = """-?\d+(?!\.)""".r
-        
+
         def argument: Parser[Any] = (
+                literal
+            | "(" ~> command <~ ")"
+            | blockStatements
+            )
+
+        def literal: Parser[Any] = (
                 "true" ^^^ true
               | "false" ^^^ false
-              | "(" ~> command <~ ")"
               | "[-/]".r ~> ident ^^ ( x => new Switch(x.toString) )
               | wholeIntegerNumber ^^ (_.toInt)
               | floatingPointNumber ^^ (_.toDouble)
               | variable
               | stringLiteral ^^ (x => x.substring(1, x.length - 1))
-              | blockStatements
               )
         
         def parseProgram(input: String) = {
