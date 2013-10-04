@@ -1,6 +1,5 @@
-
 syntax: regexp
-^target$
+target/
 syntax: glob
 .cache
 .scala_dependencies
