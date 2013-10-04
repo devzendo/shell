@@ -37,7 +37,7 @@
                     <plugin>
                         <groupId>org.devzendo</groupId>
                         <artifactId>CrossPlatformLauncherPlugin</artifactId>
-                        <version>0.2.1</version>
+                        <version>0.2.2</version>
                         <configuration>
                             <os>Windows</os>
                             <applicationName>${appName}</applicationName>
