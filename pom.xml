@@ -40,10 +40,10 @@
     </properties>
 
     <modules>
-        <module>ShellCommand</module>
-        <module>ShellCommandLinux</module>
-        <module>ShellCommandMacOSX</module>
-        <module>ShellCommandWindows</module>
+        <module>shell-command</module>
+        <module>shell-command-linux</module>
+        <module>shell-command-mac-osx</module>
+        <module>shell-command-windows</module>
     </modules>
 
     <dependencies>
