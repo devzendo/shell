@@ -3,17 +3,17 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.devzendo</groupId>
-    <artifactId>ShellCommandMacOSX</artifactId>
+    <artifactId>shell-command-mac-osx</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>ShellCommandMacOSX</name>
+    <name>shell-command-mac-osx</name>
     <packaging>pom</packaging>
     <description>MacOSX launcher for the Shell command line utility.
-        (Apache License v2) 2011-2013 Matt Gumbley, DevZendo.org
+        (Apache License v2) 2011-2015 Matt Gumbley, DevZendo.org
     </description>
 
     <parent>
         <groupId>org.devzendo</groupId>
-        <artifactId>Shell</artifactId>
+        <artifactId>shell</artifactId>
         <version>0.0.1-SNAPSHOT</version>
     </parent>
 
@@ -37,8 +37,8 @@
                     -->
                     <plugin>
                         <groupId>org.devzendo</groupId>
-                        <artifactId>CrossPlatformLauncherPlugin</artifactId>
-                        <version>0.2.2</version>
+                        <artifactId>cross-platform-launcher-plugin</artifactId>
+                        <version>1.1.0-SNAPSHOT</version>
                         <configuration>
                             <os>MacOSX</os>
                             <launcherType>Console</launcherType>
@@ -141,7 +141,7 @@
     <dependencies>
         <dependency>
             <groupId>org.devzendo</groupId>
-            <artifactId>ShellCommand</artifactId>
+            <artifactId>shell-command</artifactId>
             <version>0.0.1-SNAPSHOT</version>
         </dependency>
         <dependency>
