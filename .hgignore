@@ -3,4 +3,4 @@ target/
 syntax: glob
 .cache
 .scala_dependencies
-Shell*.iml
+*.iml
