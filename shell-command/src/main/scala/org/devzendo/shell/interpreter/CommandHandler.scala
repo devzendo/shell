@@ -44,26 +44,26 @@ abstract class CommandHandler(
     def getLogPos = logPos
 
     // TODO use Option[Input|OutputPipe] here instead of null
-    @scala.reflect.BeanProperty
+    @scala.beans.BeanProperty
     final var inputPipe: InputPipe = null
 
-    @scala.reflect.BeanProperty
+    @scala.beans.BeanProperty
     final var outputPipe: OutputPipe = null
 
-    @scala.reflect.BeanProperty
+    @scala.beans.BeanProperty
     final var log: Log = null
 
-    @scala.reflect.BeanProperty
+    @scala.beans.BeanProperty
     final var args: List[AnyRef] = List[AnyRef]()
 
-    @scala.reflect.BeanProperty
+    @scala.beans.BeanProperty
     var verbose: Boolean = false
 
     // TODO use Option[VariableRegistry] here instead of null
-    @scala.reflect.BeanProperty
+    @scala.beans.BeanProperty
     final var variableRegistry: VariableRegistry = null
 
-    @scala.reflect.BeanProperty
+    @scala.beans.BeanProperty
     final var subCommandHandlers = List[Option[CommandHandler]]()
 
     @throws[CommandExecutionException]

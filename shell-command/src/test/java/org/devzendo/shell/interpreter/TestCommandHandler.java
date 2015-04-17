@@ -19,11 +19,9 @@ import org.apache.log4j.BasicConfigurator;
 import org.devzendo.shell.pipe.InputPipe;
 import org.devzendo.shell.pipe.OutputPipe;
 import org.jmock.Expectations;
-import org.jmock.Mockery;
-import org.jmock.integration.junit4.JMock;
-import org.jmock.integration.junit4.JUnit4Mockery;
+import org.jmock.integration.junit4.JUnitRuleMockery;
+import org.junit.Rule;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import scala.Option;
 import scala.Option$;
 
@@ -31,11 +29,12 @@ import static org.devzendo.shell.ScalaListHelper.createList;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 
-@RunWith(JMock.class)
 public class TestCommandHandler {
     private static final scala.Option<Integer> none = scala.Option.apply(null);
-    
-    private final Mockery context = new JUnit4Mockery();
+
+    @Rule
+    public final JUnitRuleMockery context = new JUnitRuleMockery();
+
     private final InputPipe inputPipe = context.mock(InputPipe.class);
     private final OutputPipe outputPipe = context.mock(OutputPipe.class);
 
@@ -45,7 +44,7 @@ public class TestCommandHandler {
             "foo", none, none, none, none ) {
 
             @Override
-            public void execute() throws CommandExecutionException {
+            public void execute() {
                 // do nothing
                 
             }

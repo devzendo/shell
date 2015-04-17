@@ -28,7 +28,7 @@ object DefaultVariableRegistry {
     }
 }
 
-class DefaultVariableRegistry(@scala.reflect.BeanProperty val parentScope: Option[VariableRegistry]) extends VariableRegistry {
+class DefaultVariableRegistry(@scala.beans.BeanProperty val parentScope: Option[VariableRegistry]) extends VariableRegistry {
     private var vars = scala.collection.mutable.Map[String, Variable]()
     private val id = DefaultVariableRegistry.registryCount.incrementAndGet()
     private var usageCount = 0

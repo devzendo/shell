@@ -20,23 +20,24 @@ import java.lang.reflect.Method
 
 final class AnalysedMethod(val meth: Method) {
 
-    @scala.reflect.BeanProperty
+    @scala.beans.BeanProperty
     val method: Method = meth
 
-    @scala.reflect.BeanProperty
+    @scala.beans.BeanProperty
     var argumentsPosition: Option[Integer] = None
-    @scala.reflect.BeanProperty
+
+    @scala.beans.BeanProperty
     var isScalaArgumentsList: Boolean = false // only makes sense if argumentsPosition is Some
 
-    @scala.reflect.BeanProperty
+    @scala.beans.BeanProperty
     var inputPipePosition: Option[Integer] = None
 
-    @scala.reflect.BeanProperty
+    @scala.beans.BeanProperty
     var outputPipePosition: Option[Integer] = None
 
-    @scala.reflect.BeanProperty
+    @scala.beans.BeanProperty
     var logPosition: Option[Integer] = None
 
-    @scala.reflect.BeanProperty
+    @scala.beans.BeanProperty
     var variableRegistryPosition: Option[Integer] = None
 }

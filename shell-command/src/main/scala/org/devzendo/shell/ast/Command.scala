@@ -19,10 +19,10 @@ package org.devzendo.shell.ast
 import scala.collection.JavaConversions._
 
 case class Command(
-    @scala.reflect.BeanProperty
+    @scala.beans.BeanProperty
     name: String,
 
-    @scala.reflect.BeanProperty
+    @scala.beans.BeanProperty
     args: java.util.List[AnyRef]) {
 
     override def toString(): String = {

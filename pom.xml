@@ -30,9 +30,9 @@
     </developers>
 
     <parent>
-        <groupId>org.devzendo</groupId>
-        <artifactId>group-parent</artifactId>
-        <version>1.1.0-SNAPSHOT</version>
+        <groupId>org.sonatype.oss</groupId>
+        <artifactId>oss-parent</artifactId>
+        <version>7</version>
     </parent>
 
     <modules>

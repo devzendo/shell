@@ -19,10 +19,10 @@ package org.devzendo.shell.ast
 final class CommandPipeline extends Statement {
     var commands = scala.collection.mutable.ArrayBuffer[Command]()
 
-    @scala.reflect.BeanProperty
+    @scala.beans.BeanProperty
     var inputVariable: VariableReference = null
 
-    @scala.reflect.BeanProperty
+    @scala.beans.BeanProperty
     var outputVariable: VariableReference = null
 
     def getCommands: List[Command] = {

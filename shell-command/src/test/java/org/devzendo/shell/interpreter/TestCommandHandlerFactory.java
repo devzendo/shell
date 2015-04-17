@@ -20,12 +20,10 @@ import org.devzendo.shell.PluginVariations.*;
 import org.devzendo.shell.ScalaListHelper;
 import org.devzendo.shell.pipe.InputPipe;
 import org.devzendo.shell.pipe.OutputPipe;
-import org.jmock.Mockery;
-import org.jmock.integration.junit4.JMock;
-import org.jmock.integration.junit4.JUnit4Mockery;
+import org.jmock.integration.junit4.JUnitRuleMockery;
 import org.junit.BeforeClass;
+import org.junit.Rule;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 
 import java.util.Arrays;
 import java.util.List;
@@ -34,9 +32,10 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.fail;
 
-@RunWith(JMock.class)
 public class TestCommandHandlerFactory {
-    private final Mockery context = new JUnit4Mockery();
+    @Rule
+    public final JUnitRuleMockery context = new JUnitRuleMockery();
+
     private final PluginMethodScanner scanner = new PluginMethodScanner();
     private final CommandHandlerFactory factory = new CommandHandlerFactory();
     @SuppressWarnings("unchecked")

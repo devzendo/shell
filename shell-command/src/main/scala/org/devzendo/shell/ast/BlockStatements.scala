@@ -22,10 +22,10 @@ import org.devzendo.shell.interpreter.VariableRegistry
  * A CommandPipeline that has its own local VariableRegistry
  */
 final class BlockStatements extends Statement {
-    @scala.reflect.BeanProperty
+    @scala.beans.BeanProperty
     var variableRegistry: VariableRegistry = null
 
-    @scala.reflect.BeanProperty
+    @scala.beans.BeanProperty
     var statements: List[Statement] = null
 
     override def toString(): String = {

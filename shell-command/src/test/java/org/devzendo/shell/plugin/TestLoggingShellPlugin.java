@@ -15,8 +15,8 @@
  */
 package org.devzendo.shell.plugin;
 
-import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
 import org.apache.log4j.spi.LoggingEvent;
 import org.devzendo.commoncode.logging.CapturingAppender;
 import org.devzendo.shell.ScalaListHelper;
@@ -25,26 +25,30 @@ import org.devzendo.shell.interpreter.DefaultPluginRegistry;
 import org.devzendo.shell.interpreter.PluginRegistry;
 import org.devzendo.shell.pipe.InputPipe;
 import org.jmock.Expectations;
-import org.jmock.Mockery;
-import org.jmock.integration.junit4.JMock;
-import org.jmock.integration.junit4.JUnit4Mockery;
-import org.junit.Assert;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.jmock.integration.junit4.JUnitRuleMockery;
+import org.junit.*;
 import scala.Option;
 
 import java.util.List;
 
-@RunWith(JMock.class)
 public class TestLoggingShellPlugin {
-    private CapturingAppender mCapturingAppender;
-    private final Mockery context = new JUnit4Mockery();
+    private CapturingAppender mCapturingAppender = new CapturingAppender();
+    private Logger root = Logger.getRootLogger();
 
+    @Rule
+    public final JUnitRuleMockery context = new JUnitRuleMockery();
+
+    // Note - NOT a @Before, it gets set up at a particular place in the test,
+    // if it were set up before the test runs, many events would be logged that
+    // I'm not interested in.
     public void setupLogging() {
-        BasicConfigurator.resetConfiguration();
-        mCapturingAppender = new CapturingAppender();
-        BasicConfigurator.configure(mCapturingAppender);
+        root.addAppender(mCapturingAppender);
         Assert.assertEquals(0, mCapturingAppender.getEvents().size());
+    }
+
+    @After
+    public void teardownLogging() {
+        root.removeAppender(mCapturingAppender);
     }
 
     @Test
