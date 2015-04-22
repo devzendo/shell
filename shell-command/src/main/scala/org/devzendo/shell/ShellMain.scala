@@ -37,6 +37,8 @@ class ShellMain(val argList: List[String]) {
     val pluginRegistry = new DefaultPluginRegistry(ShellMain.SHELLPLUGIN_PROPERTIES, commandRegistry, variableRegistry, argList)
 
     private var quitShell = false
+    private var showBanner = true
+
 
     class InternalShellPlugin extends ShellPlugin {
         @Override
@@ -55,17 +57,26 @@ class ShellMain(val argList: List[String]) {
         }
     }
 
+    def isatty() = System.console() != null
+
     def start() {
         ShellMain.LOGGER.debug("Starting DevZendo.org shell")
-        argList.foreach( (f: String) => { ShellMain.LOGGER.debug("ARG: [" + f + "]") } )
+        argList.foreach( (f: String) => {
+            ShellMain.LOGGER.debug("ARG: [" + f + "]")
+            f match {
+                case "-nobanner" => showBanner = false
+            }
+        })
 
         val prefsLocation: PrefsLocation = new DefaultPrefsLocation(".shell", "prefs.ini")
         val historyFile = new File(prefsLocation.getPrefsDir, "history.txt")
 
-        // if isatty... {
-        AnsiConsole.systemInstall()
-        banner()
-        // }
+        if (isatty()) {
+            AnsiConsole.systemInstall()
+            if (showBanner) {
+                banner()
+            }
+        }
         val completionHandler = new CompletionHandler() {
             def complete(reader: ConsoleReader, candidates: util.List[CharSequence], position: Int) = {
                 false
