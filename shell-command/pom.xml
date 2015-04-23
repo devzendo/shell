@@ -128,4 +128,17 @@
 
     </dependencies>
 
+    <!-- for runtime detection of project version -->
+    <build>
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>true</filtering>
+                <includes>
+                    <include>shell.properties</include>
+                </includes>
+            </resource>
+        </resources>
+    </build>
+
 </project>

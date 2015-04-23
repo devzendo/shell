@@ -23,4 +23,6 @@ trait ExecutionEnvironment {
     def commandRegistry(): CommandRegistry
 
     def pluginRegistry(): PluginRegistry
+
+    def variableRegistry(): VariableRegistry
 }
