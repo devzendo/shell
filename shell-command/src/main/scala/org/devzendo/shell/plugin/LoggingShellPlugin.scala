@@ -16,7 +16,6 @@
  
 package org.devzendo.shell.plugin
 
-import org.apache.log4j.Level
 import org.devzendo.shell.pipe.InputPipe
 import org.devzendo.shell.ShellMain.LOGGER
 import org.devzendo.shell.interpreter.Log
@@ -26,25 +25,21 @@ class LoggingShellPlugin extends AbstractShellPlugin with PluginHelper {
         "Logging"
     }
     
-    private def logInputPipeAtLevel(inputPipe: InputPipe, level: Level) = {
-        streamForeach(inputPipe.next(), (a: Object) => LOGGER.log(level, a))
-    }
-
     // Log each InputPipe object at various levels...
     def logDebug(inputPipe: InputPipe) {
-        logInputPipeAtLevel(inputPipe, Level.DEBUG)
+        streamForeach(inputPipe.next(), (a: Object) => LOGGER.debug(a))
     }
     def logInfo(inputPipe: InputPipe) {
-        logInputPipeAtLevel(inputPipe, Level.INFO)
+        streamForeach(inputPipe.next(), (a: Object) => LOGGER.info(a))
     }
     def logWarn(inputPipe: InputPipe) {
-        logInputPipeAtLevel(inputPipe, Level.WARN)
+        streamForeach(inputPipe.next(), (a: Object) => LOGGER.warn(a))
     }
     def logError(inputPipe: InputPipe) {
-        logInputPipeAtLevel(inputPipe, Level.ERROR)
+        streamForeach(inputPipe.next(), (a: Object) => LOGGER.error(a))
     }
     def logFatal(inputPipe: InputPipe) {
-        logInputPipeAtLevel(inputPipe, Level.FATAL)
+        streamForeach(inputPipe.next(), (a: Object) => LOGGER.fatal(a))
     }
 
     def logVerbose(inputPipe: InputPipe, log: Log) {
