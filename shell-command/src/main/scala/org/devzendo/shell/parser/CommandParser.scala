@@ -26,6 +26,7 @@ trait CommandExists {
     def commandExists(name: String): Boolean
 }
 class CommandParser(commandExists: CommandExists) {
+    private val LINE_SEPARATOR = System.getProperty("line.separator")
     
     @throws(classOf[CommandParserException])
     def parse(inputLine: String): List[Statement] = {
@@ -74,7 +75,7 @@ class CommandParser(commandExists: CommandExists) {
                 opt(variable <~ "=") ~
                 command ~ opt("<" ~> variable)
               ~ opt("|" ~> repsep(command, "|"))
-              ~ opt(">" ~> variable) ~ opt(";")
+              ~ opt(">" ~> variable) ~ opt(";") // ~ opt(LINE_SEPARATOR)
               ) ^? ({
             case store ~ firstCommand ~ from ~ restCommandList ~ to ~ semi
                 if (! (store.isDefined && to.isDefined)) => {
