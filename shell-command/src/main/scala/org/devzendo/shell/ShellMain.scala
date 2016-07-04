@@ -32,9 +32,22 @@ import org.devzendo.shell.interpreter._
 import org.devzendo.shell.interpreter.CommandHandlerWirer
 import org.devzendo.commoncode.resource.ResourceLoader
 import org.devzendo.shell.ast.VariableReference
+import scala.io.Source
+
+
+object ExecutionMode extends Enumeration {
+    type ExecutionMode = Value
+    val Interactive, Script, OneLiner = Value
+}
+
+trait ScriptSource {
+    def initialise
+    def nextScript: Option[String]
+}
 
 class ShellMain(val argList: List[String]) {
     import ShellMain._
+    import ExecutionMode._
 
     val commandRegistry = new CommandRegistry()
     val variableRegistry = new DefaultVariableRegistry(None)
@@ -42,8 +55,6 @@ class ShellMain(val argList: List[String]) {
     val shellProperties = loadShellProperties()
     
     private var quitShell = false
-    private var showBanner = true
-
 
     class InternalShellPlugin extends ShellPlugin {
         @Override
@@ -53,6 +64,7 @@ class ShellMain(val argList: List[String]) {
 
         @CommandAlias(alias = "exit")
         def quit() {
+            LOGGER.debug("Requesting interpreter termination")
             quitShell = true
         }
 
@@ -77,16 +89,19 @@ class ShellMain(val argList: List[String]) {
     def usage() {
         LOGGER.info("dzsh [options] [script.dzsh ... script.dzsh]")
         LOGGER.info("Shell options:")
-        LOGGER.info("-nobanner   - do not display banner on startup")
-        LOGGER.info("-help, -?   - just display this help text")
-        LOGGER.info("-version    - just display the version of dzsh")
+        LOGGER.info("-nobanner      - do not display banner on startup")
+        LOGGER.info("-help, -?      - just display this help text")
+        LOGGER.info("-version       - just display the version of dzsh")
+        LOGGER.info("-script '....' - execute a 'one-liner' script")
         LOGGER.info("Log4j output control options:")
-        LOGGER.info("-debug      - set the log level to debug (default is info)")
-        LOGGER.info("-warn       - set the log level to warning")
-        LOGGER.info("-level      - show log levels of each log line output")
-        LOGGER.info("-classes    - show class names in each log line output")
-        LOGGER.info("-threads    - show thread names in each log line output")
-        LOGGER.info("-times      - show timing data in each log line output")
+        LOGGER.info("-debug         - set the log level to debug (default is info)")
+        LOGGER.info("-warn          - set the log level to warning")
+        LOGGER.info("-level         - show log levels of each log line output")
+        LOGGER.info("-classes       - show class names in each log line output")
+        LOGGER.info("-threads       - show thread names in each log line output")
+        LOGGER.info("-times         - show timing data in each log line output")
+        LOGGER.info("Interactive mode is used if no -script ... or script file")
+        LOGGER.info("names are given.")
     }
 
     def exit() {
@@ -116,13 +131,32 @@ class ShellMain(val argList: List[String]) {
         ShellMain.LOGGER.debug("Starting " + SHELL_NAME)
         val shellProperties = loadShellProperties()
         var scripts = new scala.collection.mutable.ListBuffer[File]
-        argList.foreach( (f: String) => {
+        var oneLiner = new scala.collection.mutable.ListBuffer[String]
+        var executionMode = Interactive
+        var showBanner = true
+
+        var argIndex = 0
+        while (argIndex < argList.length)
+        {
+            val f = argList(argIndex)
+
             ShellMain.LOGGER.debug("ARG: [" + f + "]")
             f match {
                 case "-nobanner" => showBanner = false
                 case "-help" => { usage(); exit() }
                 case "-?" => { usage(); exit() }
                 case "-version"  => { version(); exit() }
+
+                case "-script" => {
+                    if (argIndex == argList.length - 1) {
+                        LOGGER.error("-script requires a script as its argument")
+                        exit()
+                    }
+                    oneLiner += argList(argIndex + 1)
+                    executionMode = OneLiner
+                    argIndex += 1
+                }
+
                 case _ => {
                     if (f.startsWith("-")) {
                         LOGGER.error("Unknown command line option: '" + f + "'")
@@ -136,26 +170,81 @@ class ShellMain(val argList: List[String]) {
                     }
                 }
             }
-        })
+
+            argIndex += 1
+        }
+
+        if (!scripts.isEmpty) {
+            executionMode = Script
+        }
 
         // TODO prefs only loaded if this is an interactive shell?
         val prefsLocation: PrefsLocation = new DefaultPrefsLocation(".dzsh", "dzsh.ini")
         val historyFile = new File(prefsLocation.getPrefsDir, "history.txt")
 
-        // TODO console handling only done if this is an interactive shell i.e. not launching a script
-        if (isatty()) {
-            AnsiConsole.systemInstall()
-            if (showBanner) {
-                banner()
+        val scriptSource = executionMode match {
+            case Interactive => new ScriptSource {
+                val completionHandler = new CompletionHandler() {
+                    def complete(reader: ConsoleReader, candidates: util.List[CharSequence], position: Int) = {
+                        false
+                    }
+                }
+
+                val lineReader: LineReader = new JLineLineReader(historyFile, completionHandler)
+
+                def initialise: Unit = {
+                    // TODO console handling only done if this is an interactive shell i.e. not launching a script
+                    if (isatty()) {
+                        AnsiConsole.systemInstall()
+                        if (showBanner) {
+                            banner()
+                        }
+                    }
+
+                }
+
+                def nextScript: Option[String] = {
+                    lineReader.readLine("] ") match {
+                        case Some(x) => Some(x.trim())
+                        case None => None
+                    }
+                }
             }
-        }
-        val completionHandler = new CompletionHandler() {
-            def complete(reader: ConsoleReader, candidates: util.List[CharSequence], position: Int) = {
-                false
+
+            case OneLiner => new ScriptSource {
+                // TODO this seems a bit funky...
+                oneLiner += "\nquit\n"
+                LOGGER.info("one line script: " + oneLiner)
+                val it = oneLiner.iterator
+                def initialise: Unit = {}
+
+                def nextScript: Option[String] = {
+                    if (it.hasNext) {
+                        Some(it.next())
+                    } else {
+                        None
+                    }
+                }
+            }
+
+            case Script => new ScriptSource {
+                // TODO investigate incremental parsing with combinators
+                // TODO funky bodging in of a quit
+                val scriptsAsStrings = scripts.map { Source.fromFile(_).getLines().toList.mkString("\n") ++ "\nquit\n" }
+                val scriptIterator = scriptsAsStrings.iterator
+
+                def initialise: Unit = {}
+
+                def nextScript: Option[String] = {
+                    if (scriptIterator.hasNext) {
+                        Some(scriptIterator.next())
+                    } else {
+                        None
+                    }
+                }
             }
         }
 
-        val lineReader: LineReader = new JLineLineReader(historyFile, completionHandler)
 
         try {
             variableRegistry.incrementUsage()
@@ -177,13 +266,13 @@ class ShellMain(val argList: List[String]) {
 
             val parser = new CommandParser(commandExists)
             val wirer = new CommandHandlerWirer(commandRegistry)
-            // TODO load and parse scripts, execute them.
+
             while (!quitShell) {
-                val input = lineReader.readLine("] ")
+                val input = scriptSource.nextScript
                 ShellMain.LOGGER.debug("input: [" + input + "]")
                 for (line <- input) {
                     try {
-                        val statements = parser.parse(line.trim())
+                        val statements = parser.parse(line)
                         if (ShellMain.LOGGER.isDebugEnabled) {
                             ShellMain.LOGGER.debug(">>> parsed statements...")
                             for (statement <- statements) {
