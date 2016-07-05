@@ -52,6 +52,19 @@ public class TestLoggingShellPlugin {
     }
 
     @Test
+    public void logDebugLogsAtDebugLevel() throws ShellPluginException {
+        final LoggingShellPlugin plugin = createLoggingShellPlugin();
+        try {
+            setupLogging();
+            plugin.logDebug(pipeWithSomeData());
+        } finally {
+            teardownLogging();
+        }
+
+        checkEvents(Level.DEBUG);
+    }
+
+    @Test
     public void logInfoLogsAtInfoLevel() throws ShellPluginException {
         final LoggingShellPlugin plugin = createLoggingShellPlugin();
         try {
@@ -62,6 +75,19 @@ public class TestLoggingShellPlugin {
         }
 
         checkEvents(Level.INFO);
+    }
+
+    @Test
+    public void logWarnLogsAtWarnLevel() throws ShellPluginException {
+        final LoggingShellPlugin plugin = createLoggingShellPlugin();
+        try {
+            setupLogging();
+            plugin.logWarn(pipeWithSomeData());
+        } finally {
+            teardownLogging();
+        }
+
+        checkEvents(Level.WARN);
     }
 
     private void checkEvents(Level level) {
