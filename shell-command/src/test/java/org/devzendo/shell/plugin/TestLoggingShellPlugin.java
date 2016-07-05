@@ -46,39 +46,57 @@ public class TestLoggingShellPlugin {
         Assert.assertEquals(0, mCapturingAppender.getEvents().size());
     }
 
-    @After
+    // Similarly
     public void teardownLogging() {
         root.removeAppender(mCapturingAppender);
     }
 
     @Test
     public void logInfoLogsAtInfoLevel() throws ShellPluginException {
-        final ShellPlugin plugin = new LoggingShellPlugin();
-        @SuppressWarnings("unchecked")
-        final scala.collection.immutable.List<String> noArgs = ScalaListHelper.createList();
-        final PluginRegistry pluginRegistry = new DefaultPluginRegistry("irrelevant", new CommandRegistry(), null, noArgs);
-        pluginRegistry.loadAndRegisterPluginMethods(ScalaListHelper.createList(plugin));
+        final LoggingShellPlugin plugin = createLoggingShellPlugin();
+        try {
+            setupLogging();
+            plugin.logInfo(pipeWithSomeData());
+        } finally {
+            teardownLogging();
+        }
 
-        setupLogging();
-        final InputPipe inputPipe = context.mock(InputPipe.class);
-        context.checking(new Expectations() { {
-            oneOf(inputPipe).next();
-                will(returnValue(Option.<Object>apply("one")));
-            oneOf(inputPipe).next();
-                will(returnValue(Option.<Object>apply("two")));
-            oneOf(inputPipe).next();
-                will(returnValue(Option.<Object>apply(null)));
-        } });
+        checkEvents(Level.INFO);
+    }
 
-        ((LoggingShellPlugin)plugin).logInfo(inputPipe);
-        
+    private void checkEvents(Level level) {
         final List<LoggingEvent> events = mCapturingAppender.getEvents();
         Assert.assertEquals(2, events.size());
         final LoggingEvent loggingEventOne = events.get(0);
-        Assert.assertEquals(Level.INFO, loggingEventOne.getLevel());
+        Assert.assertEquals(level, loggingEventOne.getLevel());
         Assert.assertEquals("one", loggingEventOne.getMessage().toString());
         final LoggingEvent loggingEventTwo = events.get(1);
-        Assert.assertEquals(Level.INFO, loggingEventTwo.getLevel());
+        Assert.assertEquals(level, loggingEventTwo.getLevel());
         Assert.assertEquals("two", loggingEventTwo.getMessage().toString());
+    }
+
+    private LoggingShellPlugin createLoggingShellPlugin() throws ShellPluginException {
+        final LoggingShellPlugin plugin = new LoggingShellPlugin();
+        @SuppressWarnings("unchecked")
+        final scala.collection.immutable.List<String> noArgs = ScalaListHelper.createList();
+        final PluginRegistry pluginRegistry = new DefaultPluginRegistry("irrelevant", new CommandRegistry(), null, noArgs);
+        pluginRegistry.loadAndRegisterPluginMethods(ScalaListHelper.createList((ShellPlugin) plugin));
+
+        return plugin;
+    }
+
+    private InputPipe pipeWithSomeData() {
+        final InputPipe inputPipe = context.mock(InputPipe.class);
+        context.checking(new Expectations() {
+            {
+                oneOf(inputPipe).next();
+                will(returnValue(Option.<Object>apply("one")));
+                oneOf(inputPipe).next();
+                will(returnValue(Option.<Object>apply("two")));
+                oneOf(inputPipe).next();
+                will(returnValue(Option.<Object>apply(null)));
+            }
+        });
+        return inputPipe;
     }
 }
