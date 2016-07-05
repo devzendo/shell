@@ -15,6 +15,7 @@
  */
 package org.devzendo.shell.plugin;
 
+import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.log4j.spi.LoggingEvent;
@@ -37,6 +38,11 @@ public class TestLoggingShellPlugin {
 
     @Rule
     public final JUnitRuleMockery context = new JUnitRuleMockery();
+
+    @BeforeClass
+    public static void resetLogging() {
+        BasicConfigurator.resetConfiguration();
+    }
 
     // Note - NOT a @Before, it gets set up at a particular place in the test,
     // if it were set up before the test runs, many events would be logged that
