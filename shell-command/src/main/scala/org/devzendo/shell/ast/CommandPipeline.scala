@@ -42,7 +42,8 @@ final class CommandPipeline extends Statement {
     }
 
     override def toString(): String = {
-        "<" + inputVariable + " [" +
-        commands.mkString(" ") + "] >" + inputVariable
+        val indiag = if (inputVariable == null) "" else "<" + inputVariable + " "
+        val outdiag = if (outputVariable == null) "" else " >" + outputVariable
+        indiag + "[" + commands.mkString(" ") + "]" + outdiag
     }
 }
