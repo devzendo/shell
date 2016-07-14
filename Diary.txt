@@ -1,3 +1,18 @@
+14/06/2016
+
+] var = 45 * 3
+] 1 2 3 > foo
+] bar=3
+] listVariables
+SHELL_VERSION=List(0.0.1-SNAPSHOT)
+var=List(135)
+foo=List(List(1, 2, 3))
+bar=List(List(3))
+
+
+Hmmm..
+
+
 14/07/2016
 In order to better validate variable assignments, added a semantic analyser. This currently just checks that
 variables don't have the same name as commands. This was proving impossible to do lexically (other parts of the
@@ -23,10 +38,9 @@ Literal assignment and implicit eval both use the 'eval' command, which takes it
 output pipe. Literal assignment just attaches the named variable to the end of that pipe.
 
 
-
-
 05/07/2016
 Picked up again. Split this diary out of Notes.txt.
+
 
 10/07/2013
 Current status: project paused. I want to add an 'implicit eval command', so you

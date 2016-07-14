@@ -16,4 +16,8 @@
 
 package org.devzendo.shell.ast
 
-case class VariableReference(variableName: String)
+case class VariableReference(variableName: String) {
+
+    override def toString(): String = variableName
+
+}

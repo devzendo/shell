@@ -27,6 +27,14 @@ args:
   strings
   variable references
   switches
+
+variable = [args]
+[args] > variable
+  the literal arguments are stored in the variable
+
+[args]
+  the literal arguments are emitted on the output pipe
+
                                               _ buffer-it2 stored in foo var
 execution mechanics:                         /
       command1      command2     varstore foo
@@ -66,9 +74,13 @@ funcdef ::= 'def' functionname '(' [argname [':' typename] [',' argname [':' typ
 
 block ::= '{' statement* '}'
 
-statement ::= funcdef | pipeline
+statement ::= funcdef | pipeline | literalassignment | impliciteval
 
 pipeline ::= [variablename '='] command ['<' variablename] ['|' command]* ['>' variablename]
+
+literalassignment ::= [variablename '='] argument [argument] ['>' variablename]
+
+impliciteval ::= argument [argument]
 
 command ::= prefix-function | prefix-command | infix-command
 
@@ -92,7 +104,7 @@ argument ::=
   block
 
 Core commands
-Need a 'return' command that takes args and pushes to the output pipe.
+The 'eval' command takes args and pushes to the output pipe.
 New - creates an object:
   new classname argument*
   new '(' classname [, argument [',' argument]*] ')'
@@ -122,6 +134,7 @@ Need to control/sense:
   Standard error should be redirectable (with "2> variable", or "2| command " ?)
   Run in background with & ? Need to introduce job control..
   Obtain exit code.
+  Variable expansion (in the PluginHelper expand... functions)
 
 Extra semantics needed:
   Blocks executed lazily for 'if' and short-circuiting (by-name parameters)

@@ -1,0 +1,49 @@
+I don't have a bug database system, but this'll do!
+14/06/2016 Issue #1 Outstanding
+
+] var = 45 * 3
+] 1 2 3 > foo
+] bar=3
+] listVariables
+SHELL_VERSION=List(0.0.1-SNAPSHOT)
+var=List(135)
+foo=List(List(1, 2, 3))
+bar=List(List(3))
+
+Hmmm..
+
+
+14/07/2016 Issue #2 Investigate
+Semantic analyser, checking that variables don't have the same name as commands: how can it know that it has to use a
+variable registry in the eval command 'x = { z = 5; 2 + z }' (to know where to find z)?
+
+
+14/07/2016 Issue #3 Investigate
+Although the language has progressed to almost the point of being useful,
+it's pretty hairy, with a few cases that make me wonder whether it is /too weird/,
+e.g.
+  if false { "it is false" }
+... works fine, one 'if' command with 'false' as its conditional, and the block as
+its 'then block'. No output emitted, since the conditional is false.
+
+However:
+  if (false) { "it is false" }
+... is parsed as two commands - an 'if' with 'false' as conditional and no
+blocks (which is useless, but catered for), and a block pipeline that emits List("it is false").
+
+WTF?
+The reason this happens is that the parens around the 'false' make the parser
+see the call to 'if' as a function, and the block is not inside those parens,
+and so the 'if' only has 'false' as its only arg.
+
+And:
+  if (false { "it is false" } )
+... fails to parse.
+
+But:
+  if (false, { "it is false" } )
+... parses as a correct if function, which executes correctly (does not emit anything), but is a weird thing to say.
+
+So, I tell users, don't put parens around literals. But if you want to use an
+expression as the conditional [ (x || y) say ], then you have to.
+if (x || y} { echo "truth" } works fine, if x or y are true.
