@@ -1,3 +1,30 @@
+14/07/2016
+In order to better validate variable assignments, added a semantic analyser. This currently just checks that
+variables don't have the same name as commands. This was proving impossible to do lexically (other parts of the
+grammar were blowing up when I validated existence of variables in the variable partial function), so allow
+lexically-valid but semantically-invalid statements out of the parser, and then validate them semantically.
+
+Added more debugging to the parser.
+
+Parser enhancements:
+
+1) Literal assignment: added the ability to assign literals to variables without any actual commands. Many literals can
+   be added as a list to a variable, and echoing the syntax of pipelines, there are two forms:
+      3 4 5 > variable
+      variable = "hello" "is" "it" "me"
+   (there is still work to do on this, see below)
+
+2) Implicit eval: added the ability to mention literals directly with no variable assignment or command, and have them
+   output:
+   "hello" 1 2 3
+   # List("hello", 1, 2, 3)
+
+Literal assignment and implicit eval both use the 'eval' command, which takes its arguments, and puts them into its
+output pipe. Literal assignment just attaches the named variable to the end of that pipe.
+
+
+
+
 05/07/2016
 Picked up again. Split this diary out of Notes.txt.
 

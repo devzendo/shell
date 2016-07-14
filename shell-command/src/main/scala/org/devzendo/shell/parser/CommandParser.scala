@@ -16,28 +16,53 @@
 
 package org.devzendo.shell.parser
 
+import org.apache.log4j.Logger
+import org.devzendo.shell.analyser.SemanticAnalyser
+
 import scala.util.parsing.combinator._
 import org.devzendo.shell.ast._
 import org.devzendo.shell.ast.VariableReference
 import org.devzendo.shell.ast.Switch
 import org.devzendo.shell.ast.Command
 
-trait CommandExists {
-    def commandExists(name: String): Boolean
+trait ExistenceChecker {
+    def exists(name: String): Boolean
 }
-class CommandParser(commandExists: CommandExists) {
+
+object CommandParser {
+    private val LOGGER = Logger.getLogger(classOf[CommandParser])
+}
+
+class CommandParser(commandExists: ExistenceChecker, debugParser: Boolean = false, analyser: SemanticAnalyser) {
+    import CommandParser.LOGGER;
+
     private val LINE_SEPARATOR = System.getProperty("line.separator")
-    
+
     @throws(classOf[CommandParserException])
     def parse(inputLine: String): List[Statement] = {
         def sanitizedInput = nullToEmpty(inputLine).trim()
+        if (debugParser) {
+            LOGGER.debug("parsing |" + sanitizedInput + "|")
+        }
         if (sanitizedInput.size > 0) {
             val ccp = new StatementCombinatorParser()
             val parserOutput = ccp.parseProgram(sanitizedInput)
             parserOutput match {
-                case ccp.Success(r, _) => return r
+                case ccp.Success(r, _) => {
+                    analyser.analyse(inputLine, r)
+                    val rList = r.asInstanceOf[List[Statement]] // unsure why r is not right type
+                    if (debugParser) {
+                        LOGGER.debug("returning " + rList.size + " AST element(s):")
+                        val astDescriptions: List[String] = rList.map(ast => ast.getClass.getSimpleName + " => " + ast)
+                        LOGGER.debug("  " + astDescriptions.mkString(", "))
+                    }
+                    return rList
+                }
                 case x => throw new CommandParserException(x.toString)
             }
+        }
+        if (debugParser) {
+            LOGGER.debug("empty list")
         }
         List(new CommandPipeline())
     }
@@ -47,6 +72,11 @@ class CommandParser(commandExists: CommandExists) {
     }
 
     private class StatementCombinatorParser extends JavaTokenParsers {
+        def diag(s: String) = {
+            println(s)
+            true
+        }
+
         def program: Parser[List[Statement]] = (
                 statements
                 // may need to introduce distinction between a program and statements
@@ -58,7 +88,7 @@ class CommandParser(commandExists: CommandExists) {
             )
 
         def statement: Parser[Statement] = (
-                blockStatements | pipeline
+                blockStatements | pipeline | literalAssignment | implicitEvalCommand
             )
 
 
@@ -66,10 +96,47 @@ class CommandParser(commandExists: CommandExists) {
                 "{" ~> statements <~ "}"
             ) ^^ {
             case statements =>
+                if (debugParser) LOGGER.debug("in blockStatements")
                 val blockStatements = new BlockStatements()
                 blockStatements.setStatements(statements)
                 blockStatements
         }
+
+        def implicitEvalCommand: Parser[CommandPipeline] = literal ~ rep(literal) ^^ {
+            case firstArgument ~ remainingArgumentList =>
+                if (debugParser) LOGGER.debug("in implicitEvalCommand")
+                val argumentJavaList = new java.util.ArrayList[Object]
+                argumentJavaList.add(firstArgument.asInstanceOf[Object])
+                remainingArgumentList.foreach (x => argumentJavaList.add(x.asInstanceOf[Object]))
+                val pipeline = new CommandPipeline()
+                pipeline.addCommand(new Command("eval", argumentJavaList))
+                pipeline
+        }
+
+        def literalAssignment: Parser[CommandPipeline] = (
+                  opt(variable <~ "=") ~
+                  literal ~ rep(literal) ~
+                  opt(">" ~> variable) ~ opt(";")
+              ) ^? ({
+                  case store ~ literal ~ restOfLiterals ~ to ~ semi
+                      if (store.isDefined ^ to.isDefined) => {
+                      if (debugParser) LOGGER.debug("in literalAssignment")
+                          val argumentJavaList = new java.util.ArrayList[Object]
+                          argumentJavaList.add(literal.asInstanceOf[Object])
+                          restOfLiterals.foreach (x => argumentJavaList.add(x.asInstanceOf[Object]))
+                          val pipeline = new CommandPipeline()
+                          val cmd: Command = new Command("eval", argumentJavaList)
+                          pipeline.addCommand(cmd)
+                          if (store.isDefined) {
+                              pipeline.setOutputVariable(store.get)
+                          }
+                          if (to.isDefined) {
+                              pipeline.setOutputVariable(to.get)
+                          }
+                          pipeline
+                  }
+              }, ( _ => "Use one of = and >, but not both" )
+        )
 
         def pipeline: Parser[CommandPipeline] = (
                 opt(variable <~ "=") ~
@@ -79,6 +146,7 @@ class CommandParser(commandExists: CommandExists) {
               ) ^? ({
             case store ~ firstCommand ~ from ~ restCommandList ~ to ~ semi
                 if (! (store.isDefined && to.isDefined)) => {
+                    if (debugParser) LOGGER.debug("in pipeline")
                     val pipeline = new CommandPipeline()
                     pipeline.addCommand(firstCommand)
                     if (store.isDefined) {
@@ -95,10 +163,11 @@ class CommandParser(commandExists: CommandExists) {
                     }
                     pipeline
                 }
-            }, ( _ => "Use one of = and >, but not both" )
-            )
 
-        def commandVariant: Parser[Command] = (infixCommand | prefixFunction | prefixCommand /*| implicitEvalCommand */)
+            }, ( _ => "Use one of = and >, but not both" )
+        )
+
+        def commandVariant: Parser[Command] = (infixCommand | prefixFunction | prefixCommand)
 
         def command: Parser[Command] = (
             commandVariant |
@@ -107,6 +176,7 @@ class CommandParser(commandExists: CommandExists) {
 
         def infixCommand: Parser[Command] = argument ~ existingCommandName ~ rep(argument) ^^ {
             case firstArgument ~ name ~ remainingArgumentList =>
+                if (debugParser) LOGGER.debug("in infixcommand")
                 val argumentJavaList = new java.util.ArrayList[Object]
                 argumentJavaList.add(firstArgument.asInstanceOf[Object])
                 remainingArgumentList.foreach (x => argumentJavaList.add(x.asInstanceOf[Object]))
@@ -114,7 +184,8 @@ class CommandParser(commandExists: CommandExists) {
         }
 
         def prefixCommand: Parser[Command] = existingCommandName ~ rep(argument) ^^ {
-            case name ~ argumentList => 
+            case name ~ argumentList =>
+                if (debugParser) LOGGER.debug("in prefixcommand")
                 val argumentJavaList = new java.util.ArrayList[Object]
                 argumentList.foreach (x => argumentJavaList.add(x.asInstanceOf[Object]))
                 new Command(name, argumentJavaList)
@@ -122,19 +193,12 @@ class CommandParser(commandExists: CommandExists) {
 
         def prefixFunction: Parser[Command] = (existingCommandName <~ "(") ~ (repsep(argument, ",") <~ ")") ^^ {
             case name ~ argumentList =>
+                if (debugParser) LOGGER.debug("in prefixfunction")
                 val argumentJavaList = new java.util.ArrayList[Object]
                 argumentList.foreach (x => argumentJavaList.add(x.asInstanceOf[Object]))
                 new Command(name, argumentJavaList)
         }
 
-/*        def implicitEvalCommand: Parser[Command] = literal ~ rep(literal) ^^ {
-            case firstArgument ~ remainingArgumentList =>
-                val argumentJavaList = new java.util.ArrayList[Object]
-                argumentJavaList.add(firstArgument.asInstanceOf[Object])
-                remainingArgumentList.foreach (x => argumentJavaList.add(x.asInstanceOf[Object]))
-                new Command("eval", argumentJavaList)
-        }
-*/
         def operatorIdentifier: Parser[String] =
             """[\p{Sm}\p{So}\p{Punct}&&[^()\[\]{}'"_.;`]]*""".r
         // Inspired initially from Scala's operator identifier; Odersky et al,
@@ -148,14 +212,14 @@ class CommandParser(commandExists: CommandExists) {
 
         def existingCommandName: Parser[String] = identifier ^? ({
             case possibleCommand
-                if (commandExists.commandExists(possibleCommand)) => {
+                if (commandExists.exists(possibleCommand)) => {
                     possibleCommand
                 }
             }, ( badCommand => "Command '" + badCommand + "' is not defined")
         )
-        
+
         def variable: Parser[VariableReference] = ident ^^ (x => new VariableReference(x.toString))
-        
+
         def wholeIntegerNumber: Parser[String] = """-?\d+(?!\.)""".r
 
         def argument: Parser[Any] = (

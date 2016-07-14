@@ -20,18 +20,23 @@ import org.apache.log4j.Logger
 import org.devzendo.commoncode.logging.Logging
 import org.devzendo.commonapp.prefs.{DefaultPrefsLocation, PrefsLocation}
 import java.io.File
-import org.fusesource.jansi.{AnsiRenderer, AnsiConsole}
+
+import org.fusesource.jansi.{AnsiConsole, AnsiRenderer}
 import jline.console.completer.CompletionHandler
 import jline.console.ConsoleReader
 import java.util
+
 import org.devzendo.shell.plugin._
-import org.devzendo.shell.pipe.{VariableOutputPipe, VariableInputPipe}
+import org.devzendo.shell.pipe.{VariableInputPipe, VariableOutputPipe}
+
 import collection.JavaConverters._
-import org.devzendo.shell.parser.{CommandExists, CommandParserException, CommandParser}
+import org.devzendo.shell.parser.{CommandParser, CommandParserException, ExistenceChecker}
 import org.devzendo.shell.interpreter._
 import org.devzendo.shell.interpreter.CommandHandlerWirer
 import org.devzendo.commoncode.resource.ResourceLoader
+import org.devzendo.shell.analyser.SemanticAnalyser
 import org.devzendo.shell.ast.VariableReference
+
 import scala.io.Source
 
 
@@ -260,11 +265,12 @@ class ShellMain(val argList: List[String]) {
                 new ExperimentalShellPlugin())
             )
 
-            val commandExists = new CommandExists {
-                def commandExists(name: String) = commandRegistry.exists(name)
+            val commandExists = new ExistenceChecker {
+                def exists(name: String) = commandRegistry.exists(name)
             }
 
-            val parser = new CommandParser(commandExists)
+            val semanticAnalyser = new SemanticAnalyser(commandExists)
+            val parser = new CommandParser(commandExists, false, semanticAnalyser)
             val wirer = new CommandHandlerWirer(commandRegistry)
 
             while (!quitShell) {
@@ -284,6 +290,8 @@ class ShellMain(val argList: List[String]) {
                         for (statement <- statements) {
                             val commandHandlers = wirer.wire(variableRegistry, statement)
                             if (ShellMain.LOGGER.isDebugEnabled) {
+                                ShellMain.LOGGER.debug(">>> parsed & wired statement: ")
+                                ShellMain.LOGGER.debug("  " + statement)
                                 ShellMain.LOGGER.debug(">>> wired command handlers...")
                                 ShellMain.LOGGER.debug("  " + dumpHandlers(commandHandlers))
                                 ShellMain.LOGGER.debug("<<< wired command handlers")
@@ -299,10 +307,13 @@ class ShellMain(val argList: List[String]) {
                     } catch {
                         case cpe: CommandParserException =>
                             ShellMain.LOGGER.warn(cpe.getMessage)
+                            ShellMain.LOGGER.debug(cpe.getMessage, cpe)
                         case cnfe: CommandNotFoundException =>
                             ShellMain.LOGGER.warn(cnfe.getMessage)
+                            ShellMain.LOGGER.debug(cnfe.getMessage, cnfe)
                         case cee: CommandExecutionException =>
                             ShellMain.LOGGER.warn(cee.getMessage)
+                            ShellMain.LOGGER.debug(cee.getMessage, cee)
                     }
                 }
             }

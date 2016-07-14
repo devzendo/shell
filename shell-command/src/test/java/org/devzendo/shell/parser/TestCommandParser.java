@@ -15,8 +15,12 @@
  */
 package org.devzendo.shell.parser;
 
+import org.apache.log4j.BasicConfigurator;
+import org.devzendo.shell.analyser.SemanticAnalyser;
 import org.devzendo.shell.ast.*;
+import org.hamcrest.Matcher;
 import org.hamcrest.Matchers;
+import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -37,14 +41,24 @@ public class TestCommandParser {
     private void addValidCommands(String ... commands) {
         validCommands.addAll(asList(commands));
     }
-    final CommandExists commandExists = new CommandExists() {
+
+    final ExistenceChecker commandExistenceChecker = new ExistenceChecker() {
 
         @Override
-        public boolean commandExists(String name) {
+        public boolean exists(String name) {
             return validCommands.contains(name);
         }
     };
-    final CommandParser parser = new CommandParser(commandExists);
+
+    final boolean debugParser = true;
+    final SemanticAnalyser analyser = new SemanticAnalyser(commandExistenceChecker);
+    final CommandParser parser = new CommandParser(commandExistenceChecker, debugParser, analyser);
+
+    @BeforeClass
+    public static void resetLogging() {
+        BasicConfigurator.resetConfiguration();
+        BasicConfigurator.configure();
+    }
 
     @Rule
     public ExpectedException exception = ExpectedException.none();
@@ -66,10 +80,40 @@ public class TestCommandParser {
     }
 
     @Test
-    public void commandThatIsNotDefined() throws CommandParserException {
+    public void commandThatIsNotDefinedIsTreatedAsAnImplicitEvalVariableReference() throws CommandParserException {
+        // .. and will be failed at execution by eval
+        // This used to detect that the command foo is not defined, but the language has become more complex
+        // so that can't so easily be detected by the parser.
+//        exception.expect(CommandParserException.class);
+//        exception.expectMessage("Command 'foo' is not defined");
+        final CommandPipeline pipeline = (CommandPipeline) parser.parse("foo").apply(0);
+        final scala.collection.immutable.List<Command> cmds = pipeline.getCommands();
+        assertThat(cmds.size(), equalTo(1));
+
+        final Command evalCommand = (Command) cmds.apply(0);
+        assertThat(evalCommand.getName(), equalTo("eval"));
+        final List<Object> evalArgs = evalCommand.getArgs();
+        assertThat(evalArgs.size(), equalTo(1));
+        assertThat(((VariableReference)evalArgs.get(0)), equalTo(new VariableReference("foo")));
+    }
+
+    @Test
+    public void variableCannotHaveSameNameAsCommandWhenRedirected() throws CommandParserException {
+        addValidCommands("foo", "+");
+
         exception.expect(CommandParserException.class);
-        exception.expectMessage("Command 'foo' is not defined");
-        final scala.collection.immutable.List<Statement> statementList = parser.parse("foo");
+        exception.expectMessage("Variable 'foo' cannot have the same name as a command");
+        final scala.collection.immutable.List<Statement> statementList = parser.parse("2 + 3 > foo");
+        System.out.println(statementList);
+    }
+
+    @Test
+    public void variableCannotHaveSameNameAsCommandWhenAssigned() throws CommandParserException {
+        addValidCommands("foo", "+");
+
+        exception.expect(CommandParserException.class);
+        exception.expectMessage("Variable 'foo' cannot have the same name as a command");
+        final scala.collection.immutable.List<Statement> statementList = parser.parse("foo = 2 + 3");
         System.out.println(statementList);
     }
 
@@ -202,6 +246,53 @@ public class TestCommandParser {
     }
 
     @Test
+    public void literalSingleAssignment() throws CommandParserException {
+        CommandPipeline pipeline = (CommandPipeline) parser.parse("var = 5").apply(0);
+        checkLiteralStoring(pipeline, equalTo(5));
+    }
+
+    @Test
+    public void literalSingleRedirection() throws CommandParserException {
+        CommandPipeline pipeline = (CommandPipeline) parser.parse("5 > var").apply(0);
+        checkLiteralStoring(pipeline, equalTo(5));
+    }
+
+    @Test
+    public void literalMultipleAssignment() throws CommandParserException {
+        CommandPipeline pipeline = (CommandPipeline) parser.parse("var = true 2.0 5 \"foo\"").apply(0);
+        checkLiteralStoring(pipeline, equalTo(Boolean.TRUE), closeTo(2.0, 0.001), equalTo(5), equalTo("foo"));
+    }
+
+    @Test
+    public void literalMultipleRedirection() throws CommandParserException {
+        CommandPipeline pipeline = (CommandPipeline) parser.parse("true 2.0 5 \"foo\" > var").apply(0);
+        checkLiteralStoring(pipeline, equalTo(Boolean.TRUE), closeTo(2.0, 0.001), equalTo(5), equalTo("foo"));
+    }
+
+    @Test
+    public void literalMultipleAssignmentAndRedirectionFails() throws CommandParserException {
+        exception.expect(CommandParserException.class);
+        exception.expectMessage("Use one of = and >, but not both");
+
+        parser.parse("var = true 2.0 5 \"foo\" > var");
+    }
+
+    private void checkLiteralStoring(CommandPipeline pipeline, Matcher... matchers) {
+        assertThat(pipeline.getOutputVariable().variableName(), equalTo("var"));
+
+        final scala.collection.immutable.List<Command> cmds = pipeline.getCommands();
+        assertThat(cmds.size(), equalTo(1));
+        final Command cmd = cmds.apply(0);
+        assertThat(cmd.getName(), equalTo("eval"));
+
+        final List<Object> literals = cmd.args();
+        assertThat(literals.size(), equalTo(matchers.length));
+        for (int i=0; i < matchers.length; i++) {
+            assertThat(literals.get(i), matchers[i]);
+        }
+    }
+
+    @Test
     public void storeIntoVariableWithAssignmentAndDirectToFails() throws CommandParserException {
         addValidCommands("foo");
 
@@ -257,33 +348,56 @@ public class TestCommandParser {
 
         final scala.collection.immutable.List<Command> cmds = pipeline.getCommands();
         assertThat(cmds.size(), equalTo(3));
-        
+
         final Command command1 = cmds.apply(0);
         assertThat(command1.getName(), equalTo("cmd1"));
         final List<Object> cmd1args = command1.getArgs();
         assertThat(cmd1args.size(), equalTo(5));
-        assertThat(((java.lang.Double)cmd1args.get(0)), closeTo(2.0, 0.001));
-        assertThat(((String)cmd1args.get(1)), Matchers.equalTo("string 'hello' "));
-        assertThat(((java.lang.Double)cmd1args.get(2)), closeTo(230000.0, 1));
-        assertThat(((java.lang.Double)cmd1args.get(3)), closeTo(6.8, 0.001));
-        assertThat(((VariableReference)cmd1args.get(4)).variableName(), equalTo("ident"));
-        
+        assertThat(((java.lang.Double) cmd1args.get(0)), closeTo(2.0, 0.001));
+        assertThat(((String) cmd1args.get(1)), Matchers.equalTo("string 'hello' "));
+        assertThat(((java.lang.Double) cmd1args.get(2)), closeTo(230000.0, 1));
+        assertThat(((java.lang.Double) cmd1args.get(3)), closeTo(6.8, 0.001));
+        assertThat(((VariableReference) cmd1args.get(4)).variableName(), equalTo("ident"));
+
         final Command command2 = cmds.apply(1);
         assertThat(command2.getName(), equalTo("cmd2"));
         assertNoArgs(command2);
-        
+
         final Command command3 = cmds.apply(2);
         assertThat(command3.getName(), equalTo("cmd3"));
         final List<Object> cmd3args = command3.getArgs();
         assertThat(cmd3args.size(), equalTo(3));
-        assertThat(((Integer)cmd3args.get(0)), equalTo(5));
-        assertThat(((Boolean)cmd3args.get(1)), equalTo(true));
-        assertThat(((Boolean)cmd3args.get(2)), equalTo(false));
+        assertThat(((Integer) cmd3args.get(0)), equalTo(5));
+        assertThat(((Boolean) cmd3args.get(1)), equalTo(true));
+        assertThat(((Boolean) cmd3args.get(2)), equalTo(false));
     }
 
-    /*
     @Test
     public void evalCommand() throws CommandParserException {
+        addValidCommands("eval");
+
+        final CommandPipeline pipeline = (CommandPipeline) parser.parse("eval true 2.0 5 \"foo\"").apply(0);
+        final scala.collection.immutable.List<Command> cmds = pipeline.getCommands();
+        assertThat(cmds.size(), equalTo(1));
+
+        final Command evalCommand = cmds.apply(0);
+        assertThat(evalCommand.getName(), equalTo("eval"));
+        final List<Object> evalArgs = evalCommand.getArgs();
+        assertThat(evalArgs.size(), equalTo(4));
+        assertThat(((java.lang.Boolean)evalArgs.get(0)), equalTo(Boolean.TRUE));
+        assertThat(((java.lang.Double)evalArgs.get(1)), closeTo(2.0, 0.001));
+        assertThat(((java.lang.Integer)evalArgs.get(2)), equalTo(5));
+        assertThat(((String)evalArgs.get(3)), equalTo("foo"));
+
+        assertThat(pipeline.getInputVariable(), nullValue());
+        assertThat(pipeline.getOutputVariable(), nullValue());
+    }
+
+    @Test
+    public void implicitEvalCommand() throws CommandParserException {
+        // not necessary to addValidCommands("eval"), since there's no search for the eval command
+        // it's added specifically to the Command
+
         final CommandPipeline pipeline = (CommandPipeline) parser.parse("true 2.0 5 \"foo\"").apply(0);
         final scala.collection.immutable.List<Command> cmds = pipeline.getCommands();
         assertThat(cmds.size(), equalTo(1));
@@ -296,8 +410,31 @@ public class TestCommandParser {
         assertThat(((java.lang.Double)evalArgs.get(1)), closeTo(2.0, 0.001));
         assertThat(((java.lang.Integer)evalArgs.get(2)), equalTo(5));
         assertThat(((String)evalArgs.get(3)), equalTo("foo"));
+
+        assertThat(pipeline.getInputVariable(), nullValue());
+        assertThat(pipeline.getOutputVariable(), nullValue());
     }
-    */
+
+    @Test
+    public void evalAssignmentCommand() throws CommandParserException {
+        addValidCommands("eval");
+
+        final CommandPipeline pipeline = (CommandPipeline) parser.parse("myvar = eval true 2.0 5 \"foo\"").apply(0);
+        final scala.collection.immutable.List<Command> cmds = pipeline.getCommands();
+        assertThat(cmds.size(), equalTo(1));
+
+        final Command evalCommand = cmds.apply(0);
+        assertThat(evalCommand.getName(), equalTo("eval"));
+        final List<Object> evalArgs = evalCommand.getArgs();
+        assertThat(evalArgs.size(), equalTo(4));
+        assertThat(((java.lang.Boolean)evalArgs.get(0)), equalTo(Boolean.TRUE));
+        assertThat(((java.lang.Double)evalArgs.get(1)), closeTo(2.0, 0.001));
+        assertThat(((java.lang.Integer)evalArgs.get(2)), equalTo(5));
+        assertThat(((String)evalArgs.get(3)), equalTo("foo"));
+
+        assertThat(pipeline.getInputVariable(), nullValue());
+        assertThat(pipeline.getOutputVariable().variableName(), equalTo("myvar"));
+    }
 
     @SuppressWarnings("unused")
     private void dumpArgs(final List<Object> args) {
@@ -464,10 +601,10 @@ public class TestCommandParser {
         final scala.collection.immutable.List<Command> cmds = pipeline.getCommands();
 
         assertThat(cmds.size(), equalTo(1));
-        final Command command = cmds.apply(0);
-        assertThat(command.getName(), equalTo("+"));
+        final Command plus = cmds.apply(0);
+        assertThat(plus.getName(), equalTo("+"));
 
-        final List<Object> args = command.getArgs();
+        final List<Object> args = plus.getArgs();
         assertThat(args.size(), equalTo(2));
 
         final Command times = (Command) args.get(0);

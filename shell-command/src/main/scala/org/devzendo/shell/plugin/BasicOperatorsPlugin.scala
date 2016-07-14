@@ -422,5 +422,11 @@ class BasicOperatorsPlugin extends AbstractShellPlugin with PluginHelper {
     def shiftLeft(variableRegistry: VariableRegistry, inputPipe: InputPipe, outputPipe: OutputPipe, args: java.util.List[Object]) {
 
     }
+
+    // eval --------------------------------------------------------------------
+    @throws(classOf[CommandExecutionException])
+    def eval(variableRegistry: VariableRegistry, inputPipe: InputPipe, outputPipe: OutputPipe, args: List[Object]) {
+      expandArgsThenPipeOut(variableRegistry, outputPipe, args)
+    }
 }
 

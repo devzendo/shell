@@ -158,6 +158,31 @@ trait PluginHelper {
         mapped.foreach( outputPipe.push(_) )
     }
 
+    // Pipe out the results of the expanded argument to a single list, no transformation needed.
+    def expandArgsThenPipeOut(
+                         variableRegistry: VariableRegistry,
+                         outputPipe: OutputPipe,
+                         arg: AnyRef,
+                         validate: (List[AnyRef]) => Unit) {
+        // LOGGER.debug("Wrapping arg: " + arg)
+        val argList = wrapArgAsList(variableRegistry)(arg)
+        // LOGGER.debug("Validating wrapped arg: " + argList)
+        validate(argList)
+        // LOGGER.debug("Validated arg: " + argList)
+        argList.foreach( outputPipe.push(_) )
+    }
+
+    // Pipe out the results of the expanded argument to a single list, no transformation needed.
+    def expandArgsThenPipeOut(
+                               variableRegistry: VariableRegistry,
+                               outputPipe: OutputPipe,
+                               arg: AnyRef) {
+        // LOGGER.debug("Wrapping arg: " + arg)
+        val argList = wrapArgAsList(variableRegistry)(arg)
+        // LOGGER.debug("Wrapped arg: " + argList)
+        argList.foreach( outputPipe.push(_) )
+    }
+
     // Coerce dissimilar String/Numeric arguments "upwards":
     // Double, Integer -> String
     // Integer -> Double
