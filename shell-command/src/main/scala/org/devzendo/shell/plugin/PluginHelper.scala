@@ -16,12 +16,21 @@
  
 package org.devzendo.shell.plugin
 
-import org.devzendo.shell.interpreter.{Variable, VariableRegistry, CommandExecutionException}
+import org.apache.log4j.Logger
+import org.devzendo.shell.interpreter.{CommandExecutionException, Variable, VariableRegistry}
 import org.devzendo.shell.ast.VariableReference
+
 import scala.annotation.tailrec
 import org.devzendo.shell.pipe.OutputPipe
 
+
+object PluginHelper {
+    private val LOGGER = Logger.getLogger(classOf[PluginHelper])
+}
+
 trait PluginHelper {
+    import PluginHelper.LOGGER
+
     def streamForeach(producer: => Option[Object], processor: (Object) => Unit) {
         Stream.continually(producer).takeWhile(_.isDefined).flatten.foreach(processor)
     }
@@ -180,7 +189,14 @@ trait PluginHelper {
         // LOGGER.debug("Wrapping arg: " + arg)
         val argList = wrapArgAsList(variableRegistry)(arg)
         // LOGGER.debug("Wrapped arg: " + argList)
-        argList.foreach( outputPipe.push(_) )
+        for (al <- argList) {
+            al match {
+                case subList: List[AnyRef] => for (sl <- subList) {
+                    outputPipe.push(sl)
+                }
+                case _ => outputPipe.push(_)
+            }
+        }
     }
 
     // Coerce dissimilar String/Numeric arguments "upwards":

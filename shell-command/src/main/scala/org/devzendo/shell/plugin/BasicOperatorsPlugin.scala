@@ -16,11 +16,20 @@
 
 package org.devzendo.shell.plugin
 
-import org.devzendo.shell.pipe.{OutputPipe, InputPipe}
-import org.devzendo.shell.interpreter.{VariableRegistry, CommandExecutionException}
+import org.apache.log4j.Logger
+import org.devzendo.shell.pipe.{InputPipe, OutputPipe}
+import org.devzendo.shell.interpreter.{CommandExecutionException, VariableRegistry}
+
 import scala.throws
 
+
+object BasicOperatorsPlugin {
+    private val LOGGER = Logger.getLogger(classOf[BasicOperatorsPlugin])
+}
+
 class BasicOperatorsPlugin extends AbstractShellPlugin with PluginHelper {
+    import BasicOperatorsPlugin.LOGGER
+
     def getName = "Operators"
 
     // plus --------------------------------------------------------------------

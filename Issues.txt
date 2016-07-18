@@ -1,5 +1,5 @@
 I don't have a bug database system, but this'll do!
-14/06/2016 Issue #1 Investigating
+14/06/2016 Issue #1 Fixed
 
 ] var = 45 * 3
 ] 1 2 3 > foo
@@ -11,6 +11,8 @@ foo=List(List(1, 2, 3))
 bar=List(List(3))
 
 Hmmm..
+
+Fix: eval wasn't flattening the list of lists it could get at the end of evaluation
 
 
 14/07/2016 Issue #2 Investigate
