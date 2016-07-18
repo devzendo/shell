@@ -1,5 +1,5 @@
 I don't have a bug database system, but this'll do!
-14/06/2016 Issue #1 Outstanding
+14/06/2016 Issue #1 Investigating
 
 ] var = 45 * 3
 ] 1 2 3 > foo

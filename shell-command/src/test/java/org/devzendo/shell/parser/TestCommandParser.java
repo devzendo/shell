@@ -675,13 +675,5 @@ public class TestCommandParser {
         barCommandArgs.addAll(asList(3));
         assertThat(barCommand.getArgs(), equalTo(barCommandArgs));
     }
-
-    @Test
-    public void oddIfStatement() throws CommandParserException {
-        addValidCommands("if", "||", "+", "==");
-
-        final CommandPipeline pipeline = (CommandPipeline) parser.parse("if ((x + y) == 6) { 69 } ").apply(0);
-
-    }
 }
 
