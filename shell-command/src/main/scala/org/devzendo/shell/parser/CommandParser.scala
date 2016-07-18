@@ -167,16 +167,19 @@ class CommandParser(commandExists: ExistenceChecker, debugParser: Boolean = fals
             }, ( _ => "Use one of = and >, but not both" )
         )
 
-        def commandVariant: Parser[Command] = (infixCommand | prefixFunction | prefixCommand)
+        def commandVariant: Parser[Command] = (infixCommand | prefixCommand)
 
         def command: Parser[Command] = (
             commandVariant |
             ("(" ~> command <~ ")")
-        )
+        ) ^^ ( x => {
+            if (debugParser) LOGGER.debug("in command(" + x + ")")
+            x
+        })
 
         def infixCommand: Parser[Command] = argument ~ existingCommandName ~ rep(argument) ^^ {
             case firstArgument ~ name ~ remainingArgumentList =>
-                if (debugParser) LOGGER.debug("in infixcommand")
+                if (debugParser) LOGGER.debug("in infixcommand(" + name + ", " + (firstArgument :: remainingArgumentList) + ")")
                 val argumentJavaList = new java.util.ArrayList[Object]
                 argumentJavaList.add(firstArgument.asInstanceOf[Object])
                 remainingArgumentList.foreach (x => argumentJavaList.add(x.asInstanceOf[Object]))
@@ -185,15 +188,7 @@ class CommandParser(commandExists: ExistenceChecker, debugParser: Boolean = fals
 
         def prefixCommand: Parser[Command] = existingCommandName ~ rep(argument) ^^ {
             case name ~ argumentList =>
-                if (debugParser) LOGGER.debug("in prefixcommand")
-                val argumentJavaList = new java.util.ArrayList[Object]
-                argumentList.foreach (x => argumentJavaList.add(x.asInstanceOf[Object]))
-                new Command(name, argumentJavaList)
-        }
-
-        def prefixFunction: Parser[Command] = (existingCommandName <~ "(") ~ (repsep(argument, ",") <~ ")") ^^ {
-            case name ~ argumentList =>
-                if (debugParser) LOGGER.debug("in prefixfunction")
+                if (debugParser) LOGGER.debug("in prefixcommand(" + name + ", " + argumentList + ")")
                 val argumentJavaList = new java.util.ArrayList[Object]
                 argumentList.foreach (x => argumentJavaList.add(x.asInstanceOf[Object]))
                 new Command(name, argumentJavaList)
@@ -208,25 +203,39 @@ class CommandParser(commandExists: ExistenceChecker, debugParser: Boolean = fals
         // Shell. | is also a valid operator, but must be enclosed in (sub-
         // commands) for reasons that should be obvious :)
 
-        def identifier: Parser[String] = (ident | operatorIdentifier)
+        def identifier: Parser[String] = (ident | operatorIdentifier) ^^ ( x => {
+            if (debugParser) LOGGER.debug("in identifier(" + x + ")")
+            x
+        })
 
         def existingCommandName: Parser[String] = identifier ^? ({
             case possibleCommand
                 if (commandExists.exists(possibleCommand)) => {
+                    if (debugParser) LOGGER.debug("in existingCommandName(" + possibleCommand + ")")
                     possibleCommand
                 }
             }, ( badCommand => "Command '" + badCommand + "' is not defined")
         )
 
-        def variable: Parser[VariableReference] = ident ^^ (x => new VariableReference(x.toString))
+        def variable: Parser[VariableReference] = ident ^^ (x => {
+            if (debugParser) LOGGER.debug("in variable(" + x + ")")
+            new VariableReference(x.toString)
+        })
 
-        def wholeIntegerNumber: Parser[String] = """-?\d+(?!\.)""".r
+        def wholeIntegerNumber: Parser[String] = """-?\d+(?!\.)""".r ^^ ( x => {
+            if (debugParser) LOGGER.debug("in wholeIntegerNumber(" + x + ")")
+            x
+        })
 
         def argument: Parser[Any] = (
-                literal
+              literal
+            | "(" ~> literal <~ ")"   // superfluous parenthesis but allows if (false) { ... } to be parsed as prefix
             | "(" ~> command <~ ")"
             | blockStatements
-            )
+            ) ^^ ( x => {
+            if (debugParser) LOGGER.debug("in argument(" + x + ")")
+            x
+        } )
 
         def literal: Parser[Any] = (
                 "true" ^^^ true
@@ -236,7 +245,10 @@ class CommandParser(commandExists: ExistenceChecker, debugParser: Boolean = fals
               | floatingPointNumber ^^ (_.toDouble)
               | variable
               | stringLiteral ^^ (x => x.substring(1, x.length - 1))
-              )
+              ) ^^ ( x => {
+            if (debugParser) LOGGER.debug("in literal(" + x + ")")
+            x
+        } )
         
         def parseProgram(input: String) = {
             parseAll(program, input)

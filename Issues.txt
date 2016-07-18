@@ -18,32 +18,36 @@ Semantic analyser, checking that variables don't have the same name as commands:
 variable registry in the eval command 'x = { z = 5; 2 + z }' (to know where to find z)?
 
 
-14/07/2016 Issue #3 Investigate
+14/07/2016 Issue #3 Fixed
 Although the language has progressed to almost the point of being useful,
 it's pretty hairy, with a few cases that make me wonder whether it is /too weird/,
 e.g.
   if false { "it is false" }
-... works fine, one 'if' command with 'false' as its conditional, and the block as
+... works fine, one prefix 'if' command with 'false' as its conditional, and the block as
 its 'then block'. No output emitted, since the conditional is false.
 
 However:
   if (false) { "it is false" }
-... is parsed as two commands - an 'if' with 'false' as conditional and no
-blocks (which is useless, but catered for), and a block pipeline that emits List("it is false").
+... is parsed as two commands - an 'if' function with 'false' as conditional and no
+blocks (which is useless, but not forbidden syntactically), and a block pipeline that emits List("it is false").
 
 WTF?
 The reason this happens is that the parens around the 'false' make the parser
 see the call to 'if' as a function, and the block is not inside those parens,
-and so the 'if' only has 'false' as its only arg.
+and so the 'if' has 'false' as its only arg.
 
 And:
   if (false { "it is false" } )
-... fails to parse.
+... correctly fails to parse as a function due to lack of commas separating the args in the parentheses.
 
 But:
   if (false, { "it is false" } )
-... parses as a correct if function, which executes correctly (does not emit anything), but is a weird thing to say.
+... parses as a correct if function, which executes correctly (does not emit anything), but is an unconventional way
+of expressing it. if is usually a language keyword, not a function - but this is an atypical language!
 
 So, I tell users, don't put parens around literals. But if you want to use an
 expression as the conditional [ (x || y) say ], then you have to.
 if (x || y} { echo "truth" } works fine, if x or y are true.
+
+Fix: get rid of function style, leaving infix and prefix; also added a parenthesised literal as an argument.
+For any conditional that contains a command you need parentheses.

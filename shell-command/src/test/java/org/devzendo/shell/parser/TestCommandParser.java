@@ -21,6 +21,7 @@ import org.devzendo.shell.ast.*;
 import org.hamcrest.Matcher;
 import org.hamcrest.Matchers;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -38,7 +39,8 @@ import static org.junit.Assert.fail;
 
 public class TestCommandParser {
     private Set<String> validCommands = new HashSet<String>();
-    private void addValidCommands(String ... commands) {
+
+    private void addValidCommands(String... commands) {
         validCommands.addAll(asList(commands));
     }
 
@@ -94,7 +96,7 @@ public class TestCommandParser {
         assertThat(evalCommand.getName(), equalTo("eval"));
         final List<Object> evalArgs = evalCommand.getArgs();
         assertThat(evalArgs.size(), equalTo(1));
-        assertThat(((VariableReference)evalArgs.get(0)), equalTo(new VariableReference("foo")));
+        assertThat(((VariableReference) evalArgs.get(0)), equalTo(new VariableReference("foo")));
     }
 
     @Test
@@ -132,19 +134,6 @@ public class TestCommandParser {
 
 
     @Test
-    public void singleWordFunction() throws CommandParserException {
-        addValidCommands("foo");
-
-        final CommandPipeline pipeline = (CommandPipeline) parser.parse("foo()").apply(0);
-        final scala.collection.immutable.List<Command> cmds = pipeline.getCommands();
-        assertThat(cmds.size(), equalTo(1));
-        final Command cmd = cmds.apply(0);
-        assertThat(cmd.getName(), equalTo("foo"));
-        assertNoArgs(cmd);
-        assertThat(pipeline.isEmpty(), equalTo(false));
-    }
-
-    @Test
     public void singleWordCommandWithSwitches() throws CommandParserException {
         addValidCommands("foo");
 
@@ -157,23 +146,7 @@ public class TestCommandParser {
         assertThat(args.get(0), instanceOf(Switch.class));
         assertThat(((Switch) args.get(0)).switchName(), equalTo("Minus"));
         assertThat(args.get(1), instanceOf(Switch.class));
-        assertThat( ((Switch)args.get(1)).switchName(), equalTo("Slash"));
-    }
-
-    @Test
-    public void singleWordFunctionWithSwitches() throws CommandParserException {
-        addValidCommands("foo");
-
-        final CommandPipeline pipeline = (CommandPipeline) parser.parse("foo(-Minus, /Slash)").apply(0);
-        final scala.collection.immutable.List<Command> cmds = pipeline.getCommands();
-        assertThat(cmds.size(), equalTo(1));
-        final Command cmd = cmds.apply(0);
-        final List<Object> args = cmd.getArgs();
-        assertThat(args.size(), equalTo(2));
-        assertThat(args.get(0), instanceOf(Switch.class));
-        assertThat(((Switch) args.get(0)).switchName(), equalTo("Minus"));
-        assertThat(args.get(1), instanceOf(Switch.class));
-        assertThat( ((Switch)args.get(1)).switchName(), equalTo("Slash"));
+        assertThat(((Switch) args.get(1)).switchName(), equalTo("Slash"));
     }
 
     @Test
@@ -287,7 +260,7 @@ public class TestCommandParser {
 
         final List<Object> literals = cmd.args();
         assertThat(literals.size(), equalTo(matchers.length));
-        for (int i=0; i < matchers.length; i++) {
+        for (int i = 0; i < matchers.length; i++) {
             assertThat(literals.get(i), matchers[i]);
         }
     }
@@ -307,17 +280,7 @@ public class TestCommandParser {
         addValidCommands("cmd1", "cmd2", "cmd3");
 
         final CommandPipeline pipeline = (CommandPipeline) parser.parse(
-            "cmd1 2.0 \"string 'hello' \" 2.3e5 6.8 ident < invar| cmd2 | cmd3 5 true false > outvar").apply(0);
-
-        checkComplex(pipeline);
-    }
-
-    @Test
-    public void complexFunction() throws CommandParserException {
-        addValidCommands("cmd1", "cmd2", "cmd3");
-
-        final CommandPipeline pipeline = (CommandPipeline) parser.parse(
-                "cmd1(2.0, \"string 'hello' \", 2.3e5, 6.8, ident) < invar| cmd2() | cmd3(5, true, false) > outvar").apply(0);
+                "cmd1 2.0 \"string 'hello' \" 2.3e5 6.8 ident < invar| cmd2 | cmd3 5 true false > outvar").apply(0);
 
         checkComplex(pipeline);
     }
@@ -328,16 +291,6 @@ public class TestCommandParser {
 
         final CommandPipeline pipeline = (CommandPipeline) parser.parse(
                 "2.0 cmd1 \"string 'hello' \" 2.3e5 6.8 ident < invar| cmd2 | 5 cmd3 true false > outvar").apply(0);
-
-        checkComplex(pipeline);
-    }
-
-    @Test
-    public void complexMixThreeStyles() throws CommandParserException {
-        addValidCommands("cmd1", "cmd2", "cmd3");
-
-        final CommandPipeline pipeline = (CommandPipeline) parser.parse(
-                "2.0 cmd1 \"string 'hello' \" 2.3e5 6.8 ident < invar| cmd2() | cmd3 5 true false > outvar").apply(0);
 
         checkComplex(pipeline);
     }
@@ -384,10 +337,10 @@ public class TestCommandParser {
         assertThat(evalCommand.getName(), equalTo("eval"));
         final List<Object> evalArgs = evalCommand.getArgs();
         assertThat(evalArgs.size(), equalTo(4));
-        assertThat(((java.lang.Boolean)evalArgs.get(0)), equalTo(Boolean.TRUE));
-        assertThat(((java.lang.Double)evalArgs.get(1)), closeTo(2.0, 0.001));
-        assertThat(((java.lang.Integer)evalArgs.get(2)), equalTo(5));
-        assertThat(((String)evalArgs.get(3)), equalTo("foo"));
+        assertThat(((java.lang.Boolean) evalArgs.get(0)), equalTo(Boolean.TRUE));
+        assertThat(((java.lang.Double) evalArgs.get(1)), closeTo(2.0, 0.001));
+        assertThat(((java.lang.Integer) evalArgs.get(2)), equalTo(5));
+        assertThat(((String) evalArgs.get(3)), equalTo("foo"));
 
         assertThat(pipeline.getInputVariable(), nullValue());
         assertThat(pipeline.getOutputVariable(), nullValue());
@@ -406,10 +359,10 @@ public class TestCommandParser {
         assertThat(evalCommand.getName(), equalTo("eval"));
         final List<Object> evalArgs = evalCommand.getArgs();
         assertThat(evalArgs.size(), equalTo(4));
-        assertThat(((java.lang.Boolean)evalArgs.get(0)), equalTo(Boolean.TRUE));
-        assertThat(((java.lang.Double)evalArgs.get(1)), closeTo(2.0, 0.001));
-        assertThat(((java.lang.Integer)evalArgs.get(2)), equalTo(5));
-        assertThat(((String)evalArgs.get(3)), equalTo("foo"));
+        assertThat(((java.lang.Boolean) evalArgs.get(0)), equalTo(Boolean.TRUE));
+        assertThat(((java.lang.Double) evalArgs.get(1)), closeTo(2.0, 0.001));
+        assertThat(((java.lang.Integer) evalArgs.get(2)), equalTo(5));
+        assertThat(((String) evalArgs.get(3)), equalTo("foo"));
 
         assertThat(pipeline.getInputVariable(), nullValue());
         assertThat(pipeline.getOutputVariable(), nullValue());
@@ -427,10 +380,10 @@ public class TestCommandParser {
         assertThat(evalCommand.getName(), equalTo("eval"));
         final List<Object> evalArgs = evalCommand.getArgs();
         assertThat(evalArgs.size(), equalTo(4));
-        assertThat(((java.lang.Boolean)evalArgs.get(0)), equalTo(Boolean.TRUE));
-        assertThat(((java.lang.Double)evalArgs.get(1)), closeTo(2.0, 0.001));
-        assertThat(((java.lang.Integer)evalArgs.get(2)), equalTo(5));
-        assertThat(((String)evalArgs.get(3)), equalTo("foo"));
+        assertThat(((java.lang.Boolean) evalArgs.get(0)), equalTo(Boolean.TRUE));
+        assertThat(((java.lang.Double) evalArgs.get(1)), closeTo(2.0, 0.001));
+        assertThat(((java.lang.Integer) evalArgs.get(2)), equalTo(5));
+        assertThat(((String) evalArgs.get(3)), equalTo("foo"));
 
         assertThat(pipeline.getInputVariable(), nullValue());
         assertThat(pipeline.getOutputVariable().variableName(), equalTo("myvar"));
@@ -449,17 +402,17 @@ public class TestCommandParser {
         addValidCommands("cmd1");
 
         final CommandPipeline pipeline = (CommandPipeline) parser.parse(
-            "cmd1 3 2.5 5").apply(0);
+                "cmd1 3 2.5 5").apply(0);
 
         final scala.collection.immutable.List<Command> cmds = pipeline.getCommands();
         assertThat(cmds.size(), equalTo(1));
-        
+
         final Command command1 = cmds.apply(0);
         final List<Object> cmd1args = command1.getArgs();
         assertThat(cmd1args.size(), equalTo(3));
-        assertThat(((Integer)cmd1args.get(0)), equalTo(3));
-        assertThat(((Double)cmd1args.get(1)), closeTo(2.5, 0.1));
-        assertThat(((Integer)cmd1args.get(2)), equalTo(5));
+        assertThat(((Integer) cmd1args.get(0)), equalTo(3));
+        assertThat(((Double) cmd1args.get(1)), closeTo(2.5, 0.1));
+        assertThat(((Integer) cmd1args.get(2)), equalTo(5));
     }
 
     @Test
@@ -467,22 +420,22 @@ public class TestCommandParser {
         addValidCommands("zero", "one", "two");
 
         final CommandPipeline pipeline = (CommandPipeline) parser.parse(
-            "zero | one | two").apply(0);
+                "zero | one | two").apply(0);
         final scala.collection.immutable.List<Command> cmds = pipeline.getCommands();
-        
+
         assertThat(pipeline.getInputVariable(), nullValue());
         assertThat(pipeline.getOutputVariable(), nullValue());
-        
+
         assertThat(cmds.size(), equalTo(3));
-        
+
         final Command command1 = cmds.apply(0);
         assertThat(command1.getName(), equalTo("zero"));
         assertNoArgs(command1);
-        
+
         final Command command2 = cmds.apply(1);
         assertThat(command2.getName(), equalTo("one"));
         assertNoArgs(command2);
-        
+
         final Command command3 = cmds.apply(2);
         assertThat(command3.getName(), equalTo("two"));
         assertNoArgs(command3);
@@ -519,7 +472,7 @@ public class TestCommandParser {
 
     @Test
     public void validOperatorIdentifiers() throws CommandParserException {
-        final String[] valids = new String[] {
+        final String[] valids = new String[]{
                 "*",
                 "+",
                 "++",
@@ -534,7 +487,7 @@ public class TestCommandParser {
                 "|" // but must be contained in (sub-commands)
         };
         addValidCommands(valids);
-        for (String valid: valids) {
+        for (String valid : valids) {
             final CommandPipeline pipeline = (CommandPipeline) parser.parse(valid).apply(0);
             assertThat(pipeline.getCommands().size(), equalTo(1));
             assertThat(pipeline.getCommands().apply(0).getName(), equalTo(valid));
@@ -543,7 +496,7 @@ public class TestCommandParser {
 
     @Test
     public void invalidOperatorIdentifiers() {
-        final String[] invalids = new String[] {
+        final String[] invalids = new String[]{
                 "\"",
                 "'",
                 "(",
@@ -557,7 +510,7 @@ public class TestCommandParser {
                 "`"
         };
         addValidCommands(invalids); // so they won't be rejected immediately, but parsed
-        for (String invalid: invalids) {
+        for (String invalid : invalids) {
             try {
                 parser.parse(invalid);
                 fail("Invalid operator identifier '" + invalid + "' was not parsed as invalid");
@@ -722,4 +675,13 @@ public class TestCommandParser {
         barCommandArgs.addAll(asList(3));
         assertThat(barCommand.getArgs(), equalTo(barCommandArgs));
     }
+
+    @Test
+    public void oddIfStatement() throws CommandParserException {
+        addValidCommands("if", "||", "+", "==");
+
+        final CommandPipeline pipeline = (CommandPipeline) parser.parse("if ((x + y) == 6) { 69 } ").apply(0);
+
+    }
 }
+

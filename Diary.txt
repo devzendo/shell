@@ -1,3 +1,6 @@
+18/06/2016
+Removed function style, and added parenthesised literals, to get round the weird cases of issue 3.
+
 14/06/2016
 
 ] var = 45 * 3
