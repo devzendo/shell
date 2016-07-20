@@ -18,13 +18,15 @@ package org.devzendo.shell.plugin
 
 import java.io.File
 import java.util.regex.{Pattern, PatternSyntaxException}
+
 import org.devzendo.shell.pipe.{InputPipe, OutputPipe}
 import org.devzendo.shell.ShellMain.LOGGER
+
 import scala.collection.JavaConversions._
 import scala.io.Source
 import scala.Option
 import org.devzendo.shell.ast.VariableReference
-import org.devzendo.shell.interpreter.VariableRegistry
+import org.devzendo.shell.interpreter.{Inspectable, VariableRegistry}
 
 class ExperimentalShellPlugin extends AbstractShellPlugin with PluginHelper {
     def getName = {
@@ -61,14 +63,18 @@ class ExperimentalShellPlugin extends AbstractShellPlugin with PluginHelper {
     // filterRegex -------------------------------------------------------------
     def filterRegex(inputPipe: InputPipe, outputPipe: OutputPipe, args: java.util.List[Object]) {
         val patternSeq = filterValidPatterns(args)
+        LOGGER.debug("patternSeq is " + patternSeq)
         def filterOutput(o: Object) = {
             patternSeq.find { (pattern: Pattern) =>  
                 val objString = o.toString
+                LOGGER.debug("matching '" + objString + "'")
                 val matcher = pattern.matcher(objString)
                 if (matcher.matches) {
+                    LOGGER.debug("it matches")
                     outputPipe.push(new MatchContext(objString, (1 to matcher.groupCount) map matcher.group))
                     true
                 } else {
+                    LOGGER.debug("does not match")
                     false
                 }
             }
@@ -77,10 +83,26 @@ class ExperimentalShellPlugin extends AbstractShellPlugin with PluginHelper {
         streamForeach(inputPipe.next(), (a: Object) => filterOutput(a))
     }
     
-    private class MatchContext(val inputString: String, val captureGroups: Seq[String]) {
+    private class MatchContext(val inputString: String, val captureGroups: Seq[String]) extends Inspectable {
         override def toString: String = inputString
+
+        override def inspect(output: (String) => Unit): Unit = {
+            output.apply("MatchContext(" + inputString + "), " + numberPlusPluralDescription(captureGroups.size, "capture group"))
+            for (index <- 0 to captureGroups.size) {
+                output.apply("  #" + (index + 1) + ": " + captureGroups.get(index))
+            }
+        }
     }
-    
+
+
+    // 1 house, 2 houses
+    // 1 cat, 3 cats
+    // 1 capture group, 4 capture groups
+    // 1 sheep, 2 sheeps (oh well...)
+    def numberPlusPluralDescription(size: Int, desc: String): String = {
+        size.toString + " " + desc + (if (size != 1) "s" else "")
+    }
+
     private def filterValidPatterns(possRegexs: java.util.List[Object]): Seq[Pattern] = {
         filterString(possRegexs).map(validPattern).flatten
     }
@@ -109,6 +131,18 @@ class ExperimentalShellPlugin extends AbstractShellPlugin with PluginHelper {
        })
     }
 
+
+    // matches -----------------------------------------------------------------
+    // matches takes MatchContexts (capture groups) on input and outputs the matching text.
+    def matches(inputPipe: InputPipe, outputPipe: OutputPipe) {
+        streamForeach(inputPipe.next(), (a: Object) => a match {
+            case mc: MatchContext =>
+                outputPipe.push(mc.inputString)
+            case s: String => // in case we got here straight from cat
+                LOGGER.info("Got string '" + s + "' - match doesn't know what to do with Strings")
+        })
+    }
+
     // echo --------------------------------------------------------------------
     def echo(variableRegistry: VariableRegistry, outputPipe: OutputPipe, args: java.util.List[Object]) {
         args.foreach((arg: AnyRef) => {
@@ -121,9 +155,37 @@ class ExperimentalShellPlugin extends AbstractShellPlugin with PluginHelper {
                         LOGGER.warn("No such variable '" + varRef.variableName + "'")
                     }
                 }
-                case str: String =>
-                    outputPipe.push(str)
+                case x: AnyRef =>
+                    outputPipe.push(x.toString)
             }
         })
     }
+
+    // inspect -----------------------------------------------------------------
+    def inspect(variableRegistry: VariableRegistry, inputPipe: InputPipe, outputPipe: OutputPipe, args: java.util.List[Object]) {
+        def inspectIt: (AnyRef) => Unit = {
+            (arg: AnyRef) => {
+                arg match {
+                    case varRef: VariableReference => {
+                        LOGGER.debug("looking up variable reference " + varRef + " in variable registry " + variableRegistry)
+                        if (variableRegistry.exists(varRef)) {
+                            outputPipe.push(variableRegistry.getVariable(varRef).get)
+                        } else {
+                            LOGGER.warn("No such variable '" + varRef.variableName + "'")
+                        }
+                    }
+                    case insp: Inspectable =>
+                        insp.inspect(outputPipe.push(_))
+                    case x: AnyRef =>
+                        outputPipe.push(x.toString)
+                }
+            }
+        }
+
+        LOGGER.debug("inspecting args...")
+        args.foreach(inspectIt)
+        LOGGER.debug("inspecting input pipe...")
+        streamForeach(inputPipe.next(), inspectIt)
+    }
+
 }
