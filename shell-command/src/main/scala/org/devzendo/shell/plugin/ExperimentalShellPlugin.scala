@@ -88,7 +88,7 @@ class ExperimentalShellPlugin extends AbstractShellPlugin with PluginHelper {
 
         override def inspect(output: (String) => Unit): Unit = {
             output.apply("MatchContext(" + inputString + "), " + numberPlusPluralDescription(captureGroups.size, "capture group"))
-            for (index <- 0 to captureGroups.size) {
+            for (index <- captureGroups.indices) {
                 output.apply("  #" + (index + 1) + ": " + captureGroups.get(index))
             }
         }

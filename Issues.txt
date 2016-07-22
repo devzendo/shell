@@ -53,3 +53,14 @@ if (x || y} { echo "truth" } works fine, if x or y are true.
 
 Fix: get rid of function style, leaving infix and prefix; also added a parenthesised literal as an argument.
 For any conditional that contains a command you need parentheses.
+
+
+20/07/2016 Issue #4 Outstanding
+Was trying to do a regex search through a text file with
+cat "testfile" | filterRegex "^.*(.*ing).*$" | inspect
+but this either deadlocked, or threw a 'multiple commands failed' exception.
+The deadlock showed cat: No thread is calling next() when the RendezvousPipe is terminated.
+Something is wrong in the implementation of RendezvousPipe?
+
+Analysis: crashing commands can result in the blocking of a previous command pushing into its output pipe, stalling the
+pipeline.

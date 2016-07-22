@@ -1,7 +1,28 @@
-18/06/2016
+22/07/2016
+Deadlock fixed; inspect was crashing - haven't yet fixed why the multiple thread pipeline execution deadlocked though,
+looks like filterRegex blocked trying to push into the RendezvousPipe that inspect would no longer be reading from
+since it crashed. Perhaps on crash, a CommandHandler should set the input pipe to /dev/null, and interrupt any reading
+thread (unblockiing filterRegex and draining it).
+
+But why does a crash (specifically the plugin causing a runtime error (index out of bounds) that gets translated over
+the reflective invoke call to an InvocationTargetException, which is translated into a CommandExecutionException)
+trigger the deadlock, but normal execution doesn't?
+
+Perhaps a 'head N' plugin (that only passes the first N entries on its input pipe onto its output pipe) would exhibit
+the same behaviour when fed with say a range of 1 to 10?
+
+
+19/07/2016
+Was trying to do a regex search through a text file with
+cat "testfile" | filterRegex "^.*(.*ing).*$" | inspect
+but this either deadlocked, or threw a 'multiple commands failed' exception.
+The deadlock showed cat: No thread is calling next() when the RendezvousPipe is terminated.
+
+
+18/07/2016
 Removed function style, and added parenthesised literals, to get round the weird cases of issue 3.
 
-14/06/2016
+14/07/2016
 
 ] var = 45 * 3
 ] 1 2 3 > foo
