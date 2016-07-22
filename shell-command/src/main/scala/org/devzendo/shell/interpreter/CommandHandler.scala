@@ -76,6 +76,7 @@ abstract class CommandHandler(
     @throws[CommandExecutionException]
     final def executeAndTerminatePipes() {
         try {
+            CommandHandler.LOGGER.debug(name + ": < " + inputPipe + " > " + outputPipe)
             CommandHandler.LOGGER.debug(name + ": executing subcommands...")
             executeSubCommands()
             CommandHandler.LOGGER.debug(name + ": executing...")
@@ -99,9 +100,11 @@ abstract class CommandHandler(
 
     private final def terminatePipes() {
         if (getInputPipe != null) {
+            CommandHandler.LOGGER.debug(name + ": terminating < " + getInputPipe)
             getInputPipe.setTerminated()
         }
         if (getOutputPipe != null) {
+            CommandHandler.LOGGER.debug(name + ": terminating > " + getOutputPipe)
             getOutputPipe.setTerminated()
         }
     }

@@ -58,13 +58,16 @@ case class ExecutionContainer(commandHandlers: List[CommandHandler]) {
                             handler.executeAndTerminatePipes()
                         } catch {
                             case e: CommandExecutionException =>
+                                ExecutionContainer.LOGGER.debug("Adding CommandExecutionException to list of exceptions", e)
                                 exceptions.add(e)
                         } finally {
+                            ExecutionContainer.LOGGER.debug("Decrementing variable registry and counting down latch")
                             val variableRegistry = handler.getVariableRegistry
                             if (variableRegistry != null) {
                                 variableRegistry.decrementUsage()
                             }
                             latch.countDown()
+                            ExecutionContainer.LOGGER.debug("Ending thread run")
                         }
                     }
                 })

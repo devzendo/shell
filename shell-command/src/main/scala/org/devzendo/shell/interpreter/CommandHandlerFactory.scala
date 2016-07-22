@@ -18,9 +18,18 @@ package org.devzendo.shell.interpreter
 
 import org.devzendo.shell.plugin.ShellPlugin
 import java.lang.reflect.InvocationTargetException
+
+import org.apache.log4j.Logger
+
 import collection.JavaConverters._
 
+
+object CommandHandlerFactory {
+    private val LOGGER = Logger.getLogger(classOf[CommandHandlerFactory])
+}
+
 class CommandHandlerFactory {
+    import CommandHandlerFactory.LOGGER
 
     /**
      * Create a CommandHandler that adapts a Method to a CommandHandler.
@@ -67,17 +76,24 @@ class CommandHandlerFactory {
                         argsMap += (pos -> getVariableRegistry)
                     val argsList = (0 until argsMap.size).map { argsMap(_) }
                     val array = argsList.toArray
+                    LOGGER.debug("Dynamically invoking...")
                     method.invoke(plugin, array:_*) // :_* ensures varargs gets called correctly
+                    LOGGER.debug("End of dynamic invocation, no exception")
                 } catch {
                     case iae: IllegalArgumentException =>
+                        LOGGER.debug("Caught IllegalArgumentException", iae)
                         throw new CommandExecutionException("Illegal arguments: " + iae.getMessage)
                     case e: IllegalAccessException =>
+                        LOGGER.debug("Caught IllegalAccessException", e)
                         throw new CommandExecutionException("Illegal access: " + e.getMessage)
                     case ite: InvocationTargetException => {
+                        LOGGER.debug("Caught InvocationTargetException", ite)
                         val cee = new CommandExecutionException(ite.getCause.getMessage, ite.getCause)
                         cee.setStackTrace(ite.getCause.getStackTrace)
                         throw cee
                     }
+                } finally {
+                    LOGGER.debug("End of execute")
                 }
             }
         }

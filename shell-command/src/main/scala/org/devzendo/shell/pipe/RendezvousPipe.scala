@@ -30,20 +30,26 @@ class RendezvousPipe extends InputPipe with OutputPipe {
     private var terminated = false
 
     def setTerminated() {
-        RendezvousPipe.LOGGER.debug("Waiting to terminate the RendezvousPipe")
+        RendezvousPipe.LOGGER.debug("Waiting for lock to terminate the RendezvousPipe")
         lock.synchronized {
+            RendezvousPipe.LOGGER.debug("setTerminate has lock")
             terminated = true
             RendezvousPipe.LOGGER.debug("Terminating the RendezvousPipe")
             if (threadCallingNext == null) {
                 RendezvousPipe.LOGGER.debug("No thread is calling next() when the RendezvousPipe is terminated")
             } else {
+                RendezvousPipe.LOGGER.debug("Interrupting thread " + threadCallingNext.getName)
                 threadCallingNext.interrupt()
+                RendezvousPipe.LOGGER.debug("Interrupted thread " + threadCallingNext.getName)
             }
+            RendezvousPipe.LOGGER.debug("setTerminate released lock")
         }
     }
     def push(any: AnyRef) {
         try {
+            RendezvousPipe.LOGGER.debug("pushing '" + any + "' in " + this)
             queue.put(any)
+            RendezvousPipe.LOGGER.debug("pushed '" + any + "'")
         } catch {
             case e: InterruptedException =>
                 RendezvousPipe.LOGGER.warn("Interrupted pushing into RendezvousPipe: " + e.getMessage)
@@ -51,17 +57,20 @@ class RendezvousPipe extends InputPipe with OutputPipe {
     }
 
     def next(): Option[AnyRef] = {
+        RendezvousPipe.LOGGER.debug("next waiting for lock")
         lock.synchronized {
+            RendezvousPipe.LOGGER.debug("next has lock")
             if (terminated) {
                 RendezvousPipe.LOGGER.debug("Pipe terminated; not returning data")
                 return None
             }
             threadCallingNext = Thread.currentThread()
             RendezvousPipe.LOGGER.debug("Waiting for data")
+            RendezvousPipe.LOGGER.debug("next releasing lock")
         }
         try {
             val obj = queue.take()
-            RendezvousPipe.LOGGER.debug("Got data " + obj)
+            RendezvousPipe.LOGGER.debug("Got data '" + obj + "'")
             Some(obj)
         } catch {
             case e: InterruptedException =>
@@ -70,8 +79,11 @@ class RendezvousPipe extends InputPipe with OutputPipe {
             RendezvousPipe.LOGGER.debug("Interrupted pulling from RendezvousPipe")
             return None
         } finally {
+            RendezvousPipe.LOGGER.debug("next waiting for lock to nullify threadCallingNext")
             lock.synchronized {
+                RendezvousPipe.LOGGER.debug("next has lock to nullify threadCallingNext")
                 threadCallingNext = null
+                RendezvousPipe.LOGGER.debug("next releasing lock")
             }
         }
     }
