@@ -27,6 +27,7 @@ class RendezvousPipe extends InputPipe with OutputPipe {
     private val queue = new ArrayBlockingQueue[AnyRef](1)
     // TODO change this to Option
     private var threadCallingNext: Thread = null
+    private var threadCallingPush: Thread = null
     private var terminated = false
 
     def setTerminated() {
@@ -34,25 +35,50 @@ class RendezvousPipe extends InputPipe with OutputPipe {
         lock.synchronized {
             RendezvousPipe.LOGGER.debug("setTerminate has lock")
             terminated = true
-            RendezvousPipe.LOGGER.debug("Terminating the RendezvousPipe")
+            RendezvousPipe.LOGGER.debug("Terminating the RendezvousPipe (thread calling next())")
             if (threadCallingNext == null) {
                 RendezvousPipe.LOGGER.debug("No thread is calling next() when the RendezvousPipe is terminated")
             } else {
-                RendezvousPipe.LOGGER.debug("Interrupting thread " + threadCallingNext.getName)
+                RendezvousPipe.LOGGER.debug("Interrupting thread '" + threadCallingNext.getName + "'")
                 threadCallingNext.interrupt()
-                RendezvousPipe.LOGGER.debug("Interrupted thread " + threadCallingNext.getName)
+                RendezvousPipe.LOGGER.debug("Interrupted thread '" + threadCallingNext.getName + "'")
+            }
+            RendezvousPipe.LOGGER.debug("Terminating the RendezvousPipe (thread calling push())")
+            if (threadCallingPush == null) {
+                RendezvousPipe.LOGGER.debug("No thread is calling push() when the RendezvousPipe is terminated")
+            } else {
+                RendezvousPipe.LOGGER.debug("Interrupting thread '" + threadCallingPush.getName + "'")
+                threadCallingPush.interrupt()
+                RendezvousPipe.LOGGER.debug("Interrupted thread '" + threadCallingPush.getName + "'")
             }
             RendezvousPipe.LOGGER.debug("setTerminate released lock")
         }
     }
+
     def push(any: AnyRef) {
+        RendezvousPipe.LOGGER.debug("push waiting for lock")
+        lock.synchronized {
+            RendezvousPipe.LOGGER.debug("push has lock")
+            if (terminated) {
+                RendezvousPipe.LOGGER.debug("Pipe terminated; not pushing data")
+                return
+            }
+            RendezvousPipe.LOGGER.debug("push releasing lock")
+            threadCallingPush = Thread.currentThread()
+        }
         try {
             RendezvousPipe.LOGGER.debug("pushing '" + any + "' in " + this)
             queue.put(any)
             RendezvousPipe.LOGGER.debug("pushed '" + any + "'")
         } catch {
+            // this is quite normal - see setTerminated; the message will be
+            // 'null', so don't log it.
             case e: InterruptedException =>
-                RendezvousPipe.LOGGER.warn("Interrupted pushing into RendezvousPipe: " + e.getMessage)
+                RendezvousPipe.LOGGER.debug("Interrupted pushing into RendezvousPipe")
+        } finally {
+            lock.synchronized {
+                threadCallingPush = null
+            }
         }
     }
 

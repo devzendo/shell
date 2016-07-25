@@ -95,4 +95,35 @@ public class TestRendezvousPipe {
         final Option<Object> option = (Option<Object>) store[0];
         assertThat(option, OptionMatcher.isNone());
     }
+
+    @SuppressWarnings("unchecked")
+    @Test(timeout = 4000)
+    public void pushIntoTerminatedPipePushesNothing() throws InterruptedException {
+        pipe.setTerminated();
+        pipe.push("data");
+        final Option<Object> option = pipe.next();
+        assertThat(option, OptionMatcher.isNone());
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test(timeout = 4000)
+    public void pushingThreadInterruptedWhenPipeTerminated() throws InterruptedException {
+        pipe.push("one"); // does not block, but next push will
+
+        final CountDownLatch outOfPush = new CountDownLatch(1);
+        final Thread pusher = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                pipe.push("two"); // will block
+                outOfPush.countDown();
+            }
+        });
+        pusher.setName("pusher");
+        pusher.start();
+        ThreadUtils.waitNoInterruption(250);
+        pipe.setTerminated();
+        outOfPush.await();
+        // can't sense any more here
+    }
+
 }

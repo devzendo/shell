@@ -55,7 +55,7 @@ Fix: get rid of function style, leaving infix and prefix; also added a parenthes
 For any conditional that contains a command you need parentheses.
 
 
-20/07/2016 Issue #4 Outstanding
+20/07/2016 Issue #4 Fixed
 Was trying to do a regex search through a text file with
 cat "testfile" | filterRegex "^.*(.*ing).*$" | inspect
 but this either deadlocked, or threw a 'multiple commands failed' exception.
@@ -64,3 +64,5 @@ Something is wrong in the implementation of RendezvousPipe?
 
 Analysis: crashing commands can result in the blocking of a previous command pushing into its output pipe, stalling the
 pipeline.
+
+Fix: threads calling push on a RendezvousPipe can now be terminated.

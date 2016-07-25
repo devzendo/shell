@@ -23,10 +23,11 @@ import org.devzendo.shell.pipe.{InputPipe, OutputPipe}
 import org.devzendo.shell.ShellMain.LOGGER
 
 import scala.collection.JavaConversions._
+import scala.util.control.Breaks._
 import scala.io.Source
 import scala.Option
 import org.devzendo.shell.ast.VariableReference
-import org.devzendo.shell.interpreter.{Inspectable, VariableRegistry}
+import org.devzendo.shell.interpreter.{CommandExecutionException, Inspectable, VariableRegistry}
 
 class ExperimentalShellPlugin extends AbstractShellPlugin with PluginHelper {
     def getName = {
@@ -186,6 +187,35 @@ class ExperimentalShellPlugin extends AbstractShellPlugin with PluginHelper {
         args.foreach(inspectIt)
         LOGGER.debug("inspecting input pipe...")
         streamForeach(inputPipe.next(), inspectIt)
+    }
+
+    // head --------------------------------------------------------------------
+    // head N takes N entries from the input pipe and pushes them onto the output pipe, then stops.
+    def head(inputPipe: InputPipe, outputPipe: OutputPipe, args: java.util.List[Object]) {
+        val numLinesSeq = filterInt(args)
+        if (numLinesSeq.size == 1) {
+            val numLines: Int = numLinesSeq.get(0)
+            LOGGER.debug("head passing " + numLines + " object(s)")
+            breakable {
+                for (n <- 0 until numLines) {
+                    LOGGER.debug("getting head object " + (n+1) + "/" + numLines)
+                    val obj = inputPipe.next()
+                    obj match {
+                        case Some(x) => {
+                            LOGGER.debug("pushing head object '" + x + "'")
+                            outputPipe.push(x)
+                            LOGGER.debug("pushed head object")
+                        }
+                        case None =>
+                            LOGGER.debug("input pipe empty")
+                            break()
+                    }
+                }
+            }
+            LOGGER.debug("head finished")
+        } else {
+            throw new CommandExecutionException("head takes a single integer argument")
+        }
     }
 
 }
