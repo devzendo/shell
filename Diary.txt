@@ -1,3 +1,6 @@
+01/08/2016
+Put on hold to concentrate on other projects for a while.
+
 25/07/2016
 Fixed deadlock by interrupting threads calling push() that have blocked; also by checking for terminated pipe on push.
 
