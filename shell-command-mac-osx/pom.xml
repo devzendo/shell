@@ -8,7 +8,7 @@
     <name>shell-command-mac-osx</name>
     <packaging>pom</packaging>
     <description>MacOSX launcher for the Shell command line utility.
-        (Apache License v2) 2011-2015 Matt Gumbley, DevZendo.org
+        (Apache License v2) 2011-2017 Matt Gumbley, DevZendo.org
     </description>
 
     <parent>
@@ -32,7 +32,7 @@
             <build>
                 <plugins>
                     <!--
-                      Create the Mac OS X Feurio command launcher structure under
+                      Create the Mac OS X Shell command launcher structure under
                       target/macosx.
                     -->
                     <plugin>
@@ -62,7 +62,7 @@
                     </plugin>
 
                     <!--
-                        Copy the JAnsi and Quaqua native libraries into the correct location in the
+                        Copy the JAnsi native libraries into the correct location in the
                         Mac OS X launcher structure created above.
                     -->
                     <plugin>
@@ -77,16 +77,6 @@
                                 </goals>
                                 <configuration>
                                     <artifactItems>
-                                        <artifactItem>
-                                            <groupId>org.devzendo</groupId>
-                                            <artifactId>LibQuaqua</artifactId>
-                                            <version>7.3.4</version>
-                                            <type>zip</type>
-                                            <overWrite>true</overWrite>
-                                            <includes>*</includes>
-                                            <outputDirectory>${project.build.directory}/macosx/lib
-                                            </outputDirectory>
-                                        </artifactItem>
                                         <artifactItem>
                                             <groupId>org.fusesource.jansi</groupId>
                                             <artifactId>jansi-native</artifactId>
@@ -126,13 +116,6 @@
 
                 </plugins>
             </build>
-            <dependencies>
-                <dependency>
-                    <groupId>org.devzendo</groupId>
-                    <artifactId>Quaqua</artifactId>
-                    <version>7.3.4</version>
-                </dependency>
-            </dependencies>
 
         </profile>
         <!--  mac os x -->

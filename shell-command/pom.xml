@@ -8,7 +8,7 @@
     <name>shell-command</name>
     <packaging>jar</packaging>
     <description>Shell's Command Line Utility.
-        (Apache License v2) 2011-2015 Matt Gumbley, DevZendo.org
+        (Apache License v2) 2011-2017 Matt Gumbley, DevZendo.org
     </description>
 
     <parent>
