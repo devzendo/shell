@@ -15,7 +15,7 @@
         <groupId>org.devzendo</groupId>
         <artifactId>group-parent-scala</artifactId>
         <version>0.0.1-SNAPSHOT</version>
-        <relativePath></relativePath>
+        <relativePath/>
     </parent>
 
     <dependencies>
