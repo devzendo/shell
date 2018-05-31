@@ -8,7 +8,7 @@
     <name>shell-command-linux</name>
     <packaging>pom</packaging>
     <description>Linux launcher for the Shell command line utility.
-        (Apache License v2) 2011-2017 Matt Gumbley, DevZendo.org
+        (Apache License v2) 2011-2018 Matt Gumbley, DevZendo.org
     </description>
 
     <parent>

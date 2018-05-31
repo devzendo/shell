@@ -7,7 +7,7 @@
     <packaging>pom</packaging>
     <name>DevZendo.org Shell</name>
     <description>An object pipeline shell language for interactive or script use.
-    (Apache License v2) 2011-2017 Matt Gumbley, DevZendo.org</description>
+    (Apache License v2) 2011-2018 Matt Gumbley, DevZendo.org</description>
     <url>http://www.devzendo.org/content/shell</url>
     <licenses>
         <license>
