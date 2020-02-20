@@ -17,9 +17,9 @@
         </license>
     </licenses>
     <scm>
-        <url>https://bitbucket.org/devzendo/shell</url>
-        <connection>scm:hg:https://bitbucket.org/devzendo/shell</connection>
-        <developerConnection>scm:hg:https://bitbucket.org/devzendo/shell</developerConnection>
+        <url>https://github.com/devzendo/shell.git</url>
+        <connection>scm:git:https://github.com/devzendo/shell.git</connection>
+        <developerConnection>scm:git:git@github.com:devzendo/shell.git</developerConnection>
     </scm>
     <developers>
         <developer>
